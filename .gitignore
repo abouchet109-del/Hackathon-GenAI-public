@@ -1,0 +1,13 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Local provider settings (holds the Meterless runtime token)
+.settings.json
+.test-tmp/
