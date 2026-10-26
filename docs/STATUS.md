@@ -13,7 +13,7 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 ### Bloquants (à faire par l'équipe, Claude ne peut pas créer de comptes ni saisir de clés)
 - [ ] Installer et lancer Meterless Nightshift (le port 8088 ne répondait pas le 26/10).
 - [ ] Ajouter la clé NVIDIA (build.nvidia.com) dans l'onglet Providers de Nightshift.
-- [ ] Créer la clé API Zetaris dans l'interface et la mettre dans `.env`.
+- [x] Clé API Zetaris renseignée dans `.env` (27/10 ; connexion pas encore testée).
 - [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Dans les deux cas, il faut ajouter les tâches et objectifs de chaque membre et un projet passé (« Orion »). Sans données, Zetaris n'a rien à servir.
 
 ### Prochaines étapes
