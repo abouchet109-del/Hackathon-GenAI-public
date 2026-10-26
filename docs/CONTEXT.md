@@ -13,15 +13,18 @@ Document de reprise : à lire en premier par toute personne (ou toute session Cl
 ## L'idée de l'équipe
 Chacun a déjà son IA (ChatGPT, Claude…) avec sa mémoire et son contexte ; les entreprises imposent un fournisseur unique et le contexte reste enfermé chez lui. Notre réponse : une mémoire projet qui appartient à l'entreprise, accessible depuis n'importe quelle IA via MCP.
 
-**Ce qui nous différencie** (le partage de mémoire multi-IA existe déjà chez Mem0 / OpenMemory ou Supermemory) :
-- la mémoire est autonome : elle suit l'avancement de chaque membre et garde l'équipe coordonnée ;
-- elle empêche que deux personnes fassent deux choses contradictoires ;
-- elle distingue ce qui fait foi (décision approuvée) de ce qui ne fait pas foi ;
-- elle agit : elle corrige un livrable périmé, avec ses preuves ;
-- une vue manager permet de suivre le projet de loin.
+**Ce qui nous différencie** (le partage de mémoire multi-IA existe déjà chez Mem0 / OpenMemory ou Supermemory) : la mémoire est **autonome et active**.
+- Elle distingue ce qui fait foi (décision approuvée) de ce qui ne fait pas foi.
+- Elle suit l'avancement de chaque membre par rapport à ses tâches et objectifs, et empêche que deux personnes fassent deux choses contradictoires.
+- Elle agit : elle corrige un livrable périmé, avec ses preuves.
+- Elle recommande les réunions utiles, selon l'avancement de chacun.
+- Elle donne au manager une vue d'ensemble (petit ou gros projet) et lui remonte automatiquement l'information pertinente.
+- Elle garde la mémoire de l'avancement du projet et celle de tous les projets menés par les équipes.
 
 ## Le cas d'usage retenu
-**Atlas** : une équipe produit prépare le lancement d'un portail client fictif ; ses sources se contredisent (date, périmètre, état de préparation) et ses membres travaillent avec des IA différentes. Détail : [use-case-atlas.md](use-case-atlas.md). Track visé : 01 — Solving Fragmented Intelligence.
+**Atlas** : une équipe prépare le lancement d'un portail client fictif ; ses sources se contredisent (date, périmètre, état de préparation), une tâche bloquante prend du retard, et ses membres travaillent avec des IA différentes. Détail : [use-case-atlas.md](use-case-atlas.md), avec la répartition entre ce qui est démontré et ce qui relève de la feuille de route.
+
+Track : à trancher dans l'architecture, entre 01 — Solving Fragmented Intelligence (démo centrée sur le rapprochement des sources) et 03 — Reasoning Architecture (démo centrée sur les décisions que la mémoire déclenche).
 
 Historique du choix : une première évaluation recommandait d'autres use cases (allégations alimentaires, puis vulnérabilités CISA KEV, voir [strategie/evaluation-use-case.md](strategie/evaluation-use-case.md)). Atlas a été retenu le 26 octobre parce qu'il démontre directement le produit que l'équipe veut construire.
 
@@ -37,6 +40,7 @@ Historique du choix : une première évaluation recommandait d'autres use cases 
 | [use-case-atlas.md](use-case-atlas.md) | Le cas d'usage en détail |
 | [architecture.md](architecture.md) | L'architecture (à remplir) |
 | [STATUS.md](STATUS.md) | Avancement, blocages, prochaines étapes |
+| [DECISIONS.md](DECISIONS.md) | Les décisions prises, pour ne pas les rediscuter |
 | [reference/guide-architecture-agentique.md](reference/guide-architecture-agentique.md) | Principes d'architecture agentique à suivre |
 | [strategie/prompt-jury.md](strategie/prompt-jury.md) | Prompt qui simule le jury, pour évaluer nos choix |
 | [strategie/evaluation-use-case.md](strategie/evaluation-use-case.md) | Évaluation des use cases (historique) |

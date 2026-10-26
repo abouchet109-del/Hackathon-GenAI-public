@@ -6,12 +6,15 @@
 Dans une équipe, chacun travaille avec son IA (ChatGPT, Claude, Cursor…), qui garde sa propre mémoire. Les décisions, l'avancement et le contexte du projet se dispersent : un brief reprend une date abandonnée, deux personnes avancent dans des directions contradictoires, et personne ne voit l'incohérence avant qu'elle ne parte chez le client.
 
 ## Notre réponse
-Un agent qui garde l'équipe alignée :
-- il rapproche les sources dispersées du projet (documents, messages, tickets, registre de décisions), servies par **Zetaris** ;
-- il distingue ce qui fait foi (une décision approuvée par une personne habilitée) de ce qui ne fait pas foi (une proposition, un message, une information remplacée) ;
-- il suit l'avancement de chaque membre et détecte les travaux contradictoires avant qu'ils ne produisent un livrable ;
-- il prépare la correction des livrables périmés, avec les sources de chaque changement ;
-- chaque membre récupère l'état du projet depuis son IA via **MCP**, et le manager le suit dans une vue dédiée.
+Une mémoire projet autonome, qui appartient à l'entreprise et garde l'équipe coordonnée :
+- elle rapproche les sources dispersées du projet (documents, messages, tickets, tâches, registre de décisions), servies par **Zetaris** ;
+- elle distingue ce qui fait foi (une décision approuvée par une personne habilitée) de ce qui ne fait pas foi (une proposition, un message, une information remplacée) ;
+- elle suit l'avancement de chaque membre par rapport à ses tâches et objectifs, et détecte les travaux contradictoires avant qu'ils ne produisent un livrable ;
+- elle prépare la correction des livrables périmés, avec les sources de chaque changement ;
+- elle recommande une réunion quand l'avancement de chacun l'exige, avec les bonnes personnes et un ordre du jour ;
+- elle donne au manager une vue d'ensemble, sur un petit comme sur un gros projet, et lui remonte automatiquement ce qui compte ;
+- elle garde la mémoire de l'avancement du projet et celle des projets passés de l'organisation ;
+- chaque membre récupère l'état du projet depuis son IA via **MCP**.
 
 Cas de démonstration : **Atlas**, le lancement d'un portail client fictif dont les sources se contredisent. Détail : [docs/use-case-atlas.md](docs/use-case-atlas.md).
 
@@ -19,7 +22,8 @@ Cas de démonstration : **Atlas**, le lancement d'un portail client fictif dont 
 | Technologie | Rôle |
 |---|---|
 | Zetaris | Couche de données : les sources du projet exposées comme des tables SQL |
-| Meterless World Model | État partagé du projet : décisions, observations, travail en cours de chaque membre, versions |
+| Meterless World Model | État partagé du projet : décisions, observations, avancement et travail en cours de chaque membre, versions |
+| Meterless H-MEM (si le temps le permet) | Mémoire de l'organisation : les enseignements des projets passés |
 | Meterless Nightshift | Fournisseur IA principal |
 | NVIDIA Nemotron | Modèles des agents, via Nightshift |
 | MCP | Accès à l'état du projet depuis l'IA de chaque membre |

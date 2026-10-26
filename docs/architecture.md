@@ -37,8 +37,11 @@ Quelles sources, comment elles sont enregistrées (table REST ou fichier), quell
 |---|---|---|---|
 | | | | |
 
-## 6. État et mémoire (World Model)
-Qu'est-ce qui est stocké (observations, décisions, travail en cours par membre, versions) ? Qui écrit ? Un seul écrivain par ressource ? Comment les conflits sont-ils détectés ? Quel test de conformité prouve que l'engine fonctionne ?
+## 6. État et mémoires (World Model, H-MEM)
+Deux mémoires distinctes : la mémoire du projet (état versionné, décisions, observations, avancement et travail en cours de chaque membre) et la mémoire de l'organisation (enseignements des projets passés). Laquelle vit dans quel engine ? Qui écrit ? Un seul écrivain par ressource ? Comment les conflits sont-ils détectés ? Quel test de conformité prouve que chaque engine fonctionne ? Si un seul engine est retenu, que devient l'autre mémoire ?
+
+## 6 bis. Réunions et remontées au manager
+Quelles règles déclenchent une recommandation de réunion (travaux contradictoires, dépendance en retard, jalon à risque, conflit sans arbitrage) ? Qui rédige la recommandation (participants, raison, preuves, ordre du jour) ? Quels événements déclenchent une remontée au manager, et sous quelle forme ? Que voit le manager dans sa vue, sur un petit et sur un gros projet ?
 
 ## 7. MCP
 Quels outils, avec quels paramètres et quelles sorties ? Quels clients réels pour la démo ? Quelles écritures sont contrôlées avant d'entrer dans l'état ?
