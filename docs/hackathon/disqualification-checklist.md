@@ -1,0 +1,497 @@
+# Pre-Submission Self-Check
+
+**OPEN AGENT HACKATHON 2026 | Build an agent that does real work**
+
+Run this before you submit. It won't tell you whether you'll win, but it catches the things that make a good project unscoreable.
+
+> **Submissions close:** **27 October 2026, 23:45 UTC.** Hard deadline.
+> **The principle:** a judge who has never seen your project should be able to run it, watch it work, and see how it got there.
+
+> **The binding rules are the Official Rules on the event page.** This document is preparation guidance. Where the two differ, the Official Rules apply.
+
+---
+
+## 1. The Hard Requirements
+
+Miss any of these and your submission is at risk before a judge looks at it.
+
+| Requirement | Rule |
+|---|---|
+| **Deadline** | Submissions close 27 October, 23:45 UTC. Late submissions are not evaluated. |
+| **One account** | One account per participant. Duplicates disqualify the whole team. |
+| **One team** | Each participant belongs to one team and appears on one submission. Solo builders still need a team on HackOS. |
+| **Zetaris** | Must be your project's data layer. |
+| **Meterless** | At least one Meterless Engine (H-MEM, Markovian, World Model or Scout Intent) working in a feature, and Meterless Nightshift as your primary AI provider. |
+| **Required components** | Demo video (1–4 minutes), slide deck, public GitHub repository with README, sponsor technology explanation. |
+| **Pre-existing work** | Work committed before 22 October, 00:00 UTC is not eligible unless declared in the submission form. |
+| **One track** | Each submission selects exactly one primary track. |
+
+Cursor is optional. You can build with any AI coding tool.
+
+Your team locks when your first submission is created, so confirm the roster before you create it.
+
+---
+
+## 2. The Things That Actually Cost You
+
+These take points off a project that deserved them. In rough order of damage:
+
+| Problem | What it costs |
+|---|---|
+| A judge can't run it | Technical and Demo both collapse; you're judged on your video alone |
+| Repository is private | Judges can't open it at all |
+| No traces or logs | No evidence the agent did the work; Technical suffers |
+| Hardcoded outputs | Reads as a mockup, and raises an integrity question |
+| Secrets committed | Bad practice, a real security risk to you, and it looks careless |
+| Sponsor tech mentioned but not used | Sponsor Tech scores near zero, and judges check |
+| A Meterless Engine installed but no feature uses it | Fails the Meterless requirement |
+| README overclaims | Costs credibility across every criterion |
+| Only works on your laptop | Same as "can't run it" |
+| Submitted at 23:44 | No margin when something goes wrong, and something will |
+
+---
+
+## 3. Repository Check
+
+There's no mandated structure. This one is easy for a judge to navigate:
+
+```text
+/project-root
+│── app/                # Core agent logic
+│── app/adapters/       # Zetaris and Meterless Nightshift integrations
+│── app/engines/        # Your Meterless Engine integration(s)
+│── data/               # Small samples or download scripts
+│── scripts/            # Helper scripts
+│── tests/              # Including your Meterless Engine test
+│── run.py              # Entry point
+│── requirements.txt    # Dependencies
+│── Dockerfile          # Strongly recommended
+│── input_examples/     # At least 3 sample inputs
+│── output_examples/    # At least 3 matching outputs
+│── logs/               # Agent traces
+│── .env.example        # Placeholders only
+│── README.md           # Setup, usage, dependencies, architecture, limitations
+```
+
+- [ ] Repository is **public** by the deadline
+- [ ] An entry point exists and is documented
+- [ ] `.env.example` exists, placeholders only
+- [ ] README covers setup, usage and dependencies, plus agent roles, examples and limitations
+- [ ] README explains how to set up Zetaris and Nightshift, or links to the Participant Setup Guide
+- [ ] Colab links are in the README, if your agents run in Google Colab
+- [ ] Sample inputs and matching outputs are included
+- [ ] `logs/` exists or is created at runtime
+- [ ] The repository is light; no large datasets committed
+- [ ] Nothing required is buried in a nested folder
+
+---
+
+## 4. Can a Judge Run It?
+
+The single most damaging failure. Test it the way they will.
+
+### Self-test
+
+With Zetaris and Nightshift running on your machine:
+
+```bash
+# From a fresh clone, not your working copy
+git clone <your-repo-url> final-check
+cd final-check
+
+cp .env.example .env     # fill in your Zetaris and Nightshift settings
+
+docker build -t oah-submission .
+docker run --rm -p 8000:8000 --env-file .env oah-submission
+```
+
+Inside a container, `localhost` means the container itself. On Docker Desktop, point your container at `host.docker.internal` to reach Zetaris and Nightshift on your machine.
+
+Or without Docker, from a clean environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python run.py
+```
+
+### Pass criteria
+
+- [ ] Build or install completes with no errors
+- [ ] Nothing installs after the app starts
+- [ ] It starts with no manual edits
+- [ ] No local GPU required; NVIDIA models are reached through Nightshift's hosted endpoints
+- [ ] A run finishes in minutes, not hours
+- [ ] It runs from a fresh clone, on a machine that isn't yours
+
+### What fails
+
+- The build breaks on missing system packages
+- Dependencies fail to install
+- It downloads a large model or dataset at runtime
+- Files have to be copied in by hand
+- A judge has to run notebook cells first
+- It only works on the author's laptop
+
+---
+
+## 5. Can a Judge Drive It?
+
+A UI is welcome, and Product & UX is worth 10 points. But a judge should be able to run your agent without clicking through screens.
+
+### Self-test
+
+```bash
+curl -X POST http://localhost:8000/run \
+  -H "Content-Type: application/json" \
+  -d @input_examples/example_1.json
+```
+
+### Pass criteria
+
+- [ ] There's a programmatic way in, not just a UI
+- [ ] It takes structured input and returns structured output
+- [ ] It needs no interactive input
+- [ ] The UI, if present, doesn't block the programmatic path
+- [ ] Failures return a useful message, not a stack trace or a hang
+
+---
+
+## 6. No Hidden Manual Steps
+
+**Allowed:** setting environment variables, running documented install or build commands, running the documented entry point, automated data downloads, a `SAMPLE_MODE=true` fallback, and the Zetaris and Nightshift setup described in the Participant Setup Guide.
+
+**Not:** downloading files by hand from a browser, editing source code, creating folders the app should create, pasting keys into files, running notebooks to prepare data, undocumented database or Zetaris setup.
+
+- [ ] The README has every command needed
+- [ ] Data setup is automated, including any sources registered in Zetaris
+- [ ] No credentials are needed beyond environment variables
+- [ ] It runs from a clean checkout
+- [ ] External failures are handled with timeouts, retries or sample mode
+
+The test: give the README to someone on your team who hasn't touched the repo and watch them follow it without asking you anything.
+
+---
+
+## 7. Sample Mode
+
+Every project depends on Zetaris and Meterless Nightshift running on the builder's machine, so **judges may not have them running, or have your credentials.**
+
+- [ ] `SAMPLE_MODE=true` runs the whole thing without Zetaris, Nightshift or live credentials
+- [ ] It's documented in the README
+- [ ] It still runs real agent logic on cached data, rather than replaying a saved output
+- [ ] You've tested it from a fresh clone with an empty `.env` and Zetaris and Nightshift stopped
+
+That last test is the one nobody does, and it's the one that decides whether a judge without your setup sees a working agent or an error.
+
+---
+
+## 8. No Hardcoded Outputs
+
+Your system must do real work on the input it's given.
+
+### Self-test
+
+Run it on all three of your examples and confirm the outputs differ meaningfully and trace back to their inputs.
+
+### Pass criteria
+
+- [ ] Output changes appropriately across different inputs
+- [ ] Output isn't read from `output_examples/`
+- [ ] Agent decisions are visible in the logs
+- [ ] There's no demo-only branch
+- [ ] No code maps a known input to a prewritten output
+- [ ] Sample mode still runs real logic
+
+### What fails
+
+- `if input == "example_1": return saved_output_1`
+- Every input returns the same response
+- Logs are static text unrelated to the run
+- A model client exists but is never called
+- The README says the demo uses mocked outputs
+
+Judges test with their own inputs. A project that only works on the three you shipped is a project that doesn't work.
+
+---
+
+## 9. Traces
+
+This is how a judge verifies your agent did the work rather than took one long prompt. It feeds the Technical score directly.
+
+### What the logs should show
+
+- At least two named agents doing distinct things
+- Handoffs between them
+- Critique, validation, retry, escalation or branching
+- Zetaris queries and what they returned
+- Your Meterless Engine at work
+- Requests through Nightshift, and which model handled each one
+- Status of each step
+- Logs tied to the input actually being processed
+
+If you're competing for the NVIDIA award, log the model name for each request. `meterless/auto` can route to a non-NVIDIA model, so your logs should show where a Nemotron model did the work.
+
+### Weak
+
+```text
+Agent A -> Agent B -> Agent C -> final answer
+```
+
+### Strong
+
+```text
+PlannerAgent -> ResearchAgent: requests evidence
+ResearchAgent -> PlannerAgent: returns findings from Zetaris with uncertainty
+PlannerAgent -> EvaluatorAgent: asks for critique
+EvaluatorAgent -> PlannerAgent: flags a missing source
+PlannerAgent -> ResearchAgent: requests a retry with a narrower query
+ResearchAgent -> EvaluatorAgent: provides revised evidence
+EvaluatorAgent -> WriterAgent: approves synthesis
+WriterAgent -> final response
+```
+
+### Format
+
+Print to stdout and save to `logs/`. JSONL works well:
+
+```json
+{"timestamp":"2026-10-25T20:14:03Z","agent_name":"PlannerAgent","action":"delegate","input_summary":"User requested a supplier reconciliation","output_summary":"Delegated source retrieval to ReconcilerAgent","target_agent":"ReconcilerAgent","model":"nvidia/nemotron-3-super-120b-a12b","confidence":0.86,"retry_count":0,"status":"success"}
+{"timestamp":"2026-10-25T20:14:19Z","agent_name":"ConflictCritic","action":"critique","input_summary":"Merged record set","output_summary":"Rejected the resolution for Supplier C as unsupported","target_agent":"ReconcilerAgent","model":"nvidia/nemotron-3.5-lightning-30b-a3b","confidence":0.79,"retry_count":0,"status":"needs_revision"}
+```
+
+### Pass criteria
+
+- [ ] Logs are generated during the run
+- [ ] Written to stdout and `logs/`
+- [ ] At least two named agents appear
+- [ ] Agent-to-agent interaction is visible
+- [ ] It's more than a single pass
+- [ ] At least one feedback, critique, retry or branch event appears
+- [ ] Zetaris queries, Meterless Engine activity and the model for each request appear
+- [ ] The logs match the input being processed
+
+**Never hand-write a trace.** A trace that doesn't match the code is an integrity problem, not a shortcut.
+
+---
+
+## 10. Sponsor Technology
+
+Sponsor Tech is worth **10 points**. It's the easiest ten points to lose by omission and the easiest to lose by faking.
+
+| Sponsor | Requirement |
+|---|---|
+| **Zetaris** | Required: your project's data layer |
+| **Meterless** | Required: at least one Meterless Engine working in a feature, and Meterless Nightshift as your primary AI provider |
+| **Cursor (with Space XAI)** | Optional: recommended AI coding tool |
+| **NVIDIA** | Wherever it contributes, connected through Nightshift. The best use of Nemotron wins an NVIDIA DGX Spark |
+
+- [ ] Zetaris is your data layer and load-bearing, not decorative
+- [ ] At least one Meterless Engine powers a real feature, and its test or conformance check passes
+- [ ] Your app uses Meterless Nightshift as its primary AI provider, and a real request passes through it
+- [ ] NVIDIA is used wherever it genuinely contributes
+- [ ] Your sponsor technology explanation covers how Zetaris was integrated, which Meterless Engine(s) you used and what each does, how your app connects to Nightshift, where NVIDIA contributes, and what was unique about your use of them
+- [ ] Each sponsor call has a timeout and a fallback, so an outage during judging degrades rather than kills
+- [ ] Sponsor settings come from environment variables
+
+A sponsor named in the README but absent from the code scores worse than not mentioning it, because it reads as padding.
+
+---
+
+## 11. Secrets
+
+### Never commit
+
+API keys of any kind, your Nightshift Runtime token, cloud credentials, database passwords, SSH private keys, OAuth tokens, personal access tokens, dataset credentials, or a real `.env`.
+
+### Required
+
+Your app only needs its Zetaris and Nightshift settings. Your NVIDIA API key belongs in Nightshift's Providers tab, not in your project.
+
+```bash
+# .env.example — placeholders only
+ZETARIS_REST_URL=http://localhost:8888/api/v1.0
+ZETARIS_ORG_ID=1
+ZETARIS_API_KEY=your-zetaris-api-key
+METERLESS_BASE_URL=http://127.0.0.1:8088/v1
+METERLESS_RUNTIME_TOKEN=your-nightshift-runtime-token
+METERLESS_MODEL=meterless/auto
+SAMPLE_MODE=false
+```
+
+```gitignore
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+```
+
+### Self-test
+
+```bash
+grep -RIn --exclude-dir=.git \
+  -E "(sk-|nvapi-|api[_-]?key|secret|token|password|BEGIN RSA PRIVATE KEY|BEGIN OPENSSH PRIVATE KEY)" .
+
+git ls-files | grep -E "(\.env$|\.pem$|\.key$|credentials|secrets)"
+```
+
+### If you find one
+
+**Rotate the key first.** Not after cleaning the repo. First. For a Zetaris key, create a new one in the Zetaris web interface. For an NVIDIA key, create a new one at build.nvidia.com and update it in Nightshift. Removing a key from the latest commit doesn't remove it from history, and a key that was ever public should be treated as compromised.
+
+### Pass criteria
+
+- [ ] No real keys or tokens in source, notebooks, README, screenshots or logs
+- [ ] No NVIDIA key anywhere in the project
+- [ ] No real `.env` committed
+- [ ] `.env.example` has placeholders only
+- [ ] Git history exposes no active secrets
+- [ ] Your demo video and slide deck show no keys
+
+That last one catches people. Check your video frame by frame around any terminal, and around Nightshift's Console and Providers tab.
+
+---
+
+## 12. Demo Video and Slide Deck
+
+### Demo video
+
+Demo is worth **15 points**.
+
+- [ ] 1 to 4 minutes
+- [ ] Shows the system actually running
+- [ ] Shows the main workflow and how the agent solves the selected challenge
+- [ ] Shows the key features
+- [ ] Shows how Zetaris and Meterless are integrated: your agent querying Zetaris, the feature your Meterless Engine powers, and one real request passing through Nightshift
+- [ ] No credentials visible anywhere
+
+If you share the video as a link, test it in a private browser window. A dead or permission-locked link costs you the whole 15 points.
+
+### Slide deck
+
+- [ ] The problem and target users
+- [ ] The solution
+- [ ] The agent workflow or architecture
+- [ ] The technical stack
+- [ ] How Zetaris and Meterless were used
+- [ ] What was unique about your use of the sponsor technologies
+- [ ] Product visuals
+- [ ] Future enhancements
+
+---
+
+## 13. Honesty Check
+
+Read your README and slide deck as if you were a judge who will check every claim, because they are.
+
+- [ ] Every capability claimed is one the code has
+- [ ] Data sources are described accurately, including whether they're live or cached
+- [ ] The agent description matches what the traces show
+- [ ] The models you claim to use match what your logs show
+- [ ] Pre-existing components are declared in the submission form
+- [ ] Limitations are stated honestly
+- [ ] Nothing is described as production-ready that isn't
+
+An accurate limitations section reads as confidence. An overclaim that a judge catches costs more than the gap it was hiding.
+
+---
+
+## 14. Full Validation Flow
+
+Run this in one sitting before submitting, with Zetaris and Nightshift running.
+
+```bash
+# 1. Fresh clone, not your working copy
+git clone <your-repo-url> final-check
+cd final-check
+
+# 2. Required files present?
+ls run.py README.md .env.example input_examples/ output_examples/
+
+# 3. Build
+docker build -t oah-submission .
+
+# 4. Run with your settings
+cp .env.example .env    # fill in; use host.docker.internal for Zetaris and Nightshift
+docker run --rm -p 8000:8000 --env-file .env oah-submission
+
+# 5. Call it, in another terminal
+curl -X POST http://localhost:8000/run \
+  -H "Content-Type: application/json" \
+  -d @input_examples/example_1.json
+
+# 6. And the other two
+curl -X POST http://localhost:8000/run -H "Content-Type: application/json" -d @input_examples/example_2.json
+curl -X POST http://localhost:8000/run -H "Content-Type: application/json" -d @input_examples/example_3.json
+
+# 7. Check the traces
+ls logs/
+cat logs/* | head -50
+
+# 8. Run your Meterless Engine test
+#    (use the command from your README)
+
+# 9. Scan for secrets
+grep -RIn --exclude-dir=.git -E "(sk-|nvapi-|api[_-]?key|secret|token|password)" .
+
+# 10. THE ONE PEOPLE SKIP: no credentials, Zetaris and Nightshift stopped
+rm .env
+docker run --rm -p 8000:8000 -e SAMPLE_MODE=true oah-submission
+curl -X POST http://localhost:8000/run -H "Content-Type: application/json" -d @input_examples/example_1.json
+```
+
+Step 10 is how a judge without your setup will experience your project. If it fails there, fix it before you submit.
+
+---
+
+## 15. Submit / Don't Submit
+
+Submit only when all of these are true:
+
+- [ ] It builds and runs from a clean clone
+- [ ] The GitHub repository is public
+- [ ] A judge can drive it without your UI
+- [ ] No hidden manual setup
+- [ ] Outputs are generated, not stored
+- [ ] Traces show real agent interaction
+- [ ] Sample mode works with no credentials and no Zetaris or Nightshift
+- [ ] No secrets anywhere, including the video and slide deck
+- [ ] Zetaris is your data layer
+- [ ] At least one Meterless Engine works in a feature, with a passing test
+- [ ] Meterless Nightshift is your primary AI provider
+- [ ] The sponsor technology explanation is complete
+- [ ] The README is accurate and honest
+- [ ] Demo video is 1–4 minutes
+- [ ] Slide deck is complete
+- [ ] Pre-existing components are declared
+- [ ] Your team roster is correct, since it locks when the first submission is created
+- [ ] Examples and traces match your track
+- [ ] You're submitting with hours to spare, not minutes
+
+---
+
+## 16. If Something Fails
+
+1. **Fix it now**, not after one more feature
+2. Re-run the full validation flow from a clean clone
+3. Update the README if the commands changed
+4. Regenerate the logs with the fixed version
+5. Confirm no secrets got introduced in the fix
+6. Submit
+
+**If you're blocked:**
+
+| Problem | Where to go |
+|---|---|
+| Setting up Zetaris, Meterless or NVIDIA | Participant Setup Guide in the Resource Center on HackOS |
+| Build problems, agent design, debugging | Mentor office hours |
+| General technical questions | #help desk channel on HackOS |
+| Sponsor technology | That sponsor's Help channel on HackOS (Help Zetaris, Help Meterless, Help Cursor, Help NVIDIA) |
+| Track scope | Challenge pages on HackOS |
+| Rules and requirements | Official Rules, or hackathons@genai.works |
+
+**Don't leave this to 27 October.** Run the full flow on day four, when you still have two days to fix what it finds. Almost everything on this list is preventable with 48 hours' notice and unfixable with two.

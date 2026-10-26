@@ -1,0 +1,258 @@
+Day 4 - Weekly Check-In
+1
+POWERED BY:
+Open Agent
+Hackathon
+
+
+=====PAGE=====
+MEET THE INSTRUCTOR
+
+=====PAGE=====
+OVER 60+ INTERVIEWS
+
+=====PAGE=====
+LETʼS TALK ABOUT AGENT CREATION
+● Is it a hard problem or 
+a complex one?
+● What are the elements 
+of an agent's jobs?
+● How do we compare 
+agents universally?
+YOU WILL NEED TO 
+POST TO CHANNELS
+
+=====PAGE=====
+COMPARE AGENTS ON JOBS TO BE DONE
+1. Workflow Structuring:
+a. Ask: “Whatʼs the best workflow for 
+managing team tasks?ˮ
+2. Feature Prioritization:
+a. Ask: “Rank features for MVP by 
+impact and complexity.ˮ
+3. Wireframe Creation:
+a. Ask: “Describe a homepage 
+wireframe for our app.ˮ
+
+
+=====PAGE=====
+CLIMBING AGENTIC ENTROPY MOUNTAIN 
+● Entropy represents the 
+complexity of the code 
+for your agent or its job 
+to be done
+● Agents are relatively low 
+entropy individually but 
+combine 
+ 
+● You can measure 
+entropy in agentic 
+systems in two ways
+○ Complexity
+○ Efficacy
+
+
+=====PAGE=====
+THE PROBLEM OF VALIDATING THE EFFICACY
+● How do you can you tell how complex 
+an application is?
+● How do I verify the levels of complexity: 
+○ Visual 
+○ Functional
+○ Outputs
+● Visual & Output is easy to see but I 
+might not have full visibility
+● Functional is what you can do or it does 
+under the hood but there is no direct 
+way to confirm.
+
+
+=====PAGE=====
+8
+Time to work
++ Open Q&A
+
+=====PAGE=====
+SPECIFYING AGENTIC AI LOOPS TOGETHER
+Agent Loop Spec (fill in 8 lines):
+1. Goal: _________
+2. Plan (≤5 steps): [ ] [ ] [ ] [ ] [ ]
+3. Tools (name → inputs → output → fail mode): __________
+4. Memory to keep: scratchpad / decisions / best template
+5. Rubric (0–3 ×3): accuracy • appropriateness • actionability
+6. Stop conditions: if score <7/9 → ask human
+7. Run log: step • decision • result • next
+8. Guardrails: cap steps; cap tool calls; hard stops; always log why.
+Take a sec to document the following for yourself and after the call 
+post yours in the team chat created under your team name 
+
+=====PAGE=====
+10
+Building 
+Better Agents
+
+=====PAGE=====
+FIVE AREAS TO BOOST AGENTIC EFFICACY
+Agents are powered by these core capabilities:
+Autonomy
+How far the agent can run independently without human 
+intervention.
+Reasoning & Planning
+Turning high-level goals into clear, checkable execution steps.
+Memory
+Scratchpad → Episodic log → Reusable knowledge notes.
+Tool Use
+Using APIs and apps as verbs with structured inputs and 
+outputs.
+Governance
+Defining the essential rules and safety guidelines for the agent.
+
+
+=====PAGE=====
+HOW TO PICK THE RIGHT LEVEL OF AUTONOMY
+12
+Re-evaluate your current Agentic Loop 
+and list yours in the project ideas channel 
+There are 4 levels of autonomy
+● L0 Macro: one-shot; human 
+executes steps
+● L1 Confirm: agent proposes, you 
+approve
+● L2 Loop/Stops: agent iterates, must 
+pass checks
+● L3 Free-run: rare; only for highly 
+repeatable tasks
+
+
+=====PAGE=====
+MASTERING AGENTIC PRIMITIVES
+13
+MEMORY REASONING TOOL USE
+Download each from the Resources Tab in the Agentathon App, Find More On Github
+
+=====PAGE=====
+GOVERNANCE POWERED BY AGENTIC PAIRINGS
+14
+You donʼt need an “agent tool” to govern work 
+agentically. Wrap your workflows in agentic pairings.
+Full autonomy is fragile governance wise. 
+Human-in-the-loop + light autonomy wins for most 
+knowledge work governance use cases.
+● Use Questions Upfront
+● Finding the Right Verification Protocols
+● Combine and Stack Agentic Pairings
+
+=====PAGE=====
+GOVERNANCE POWERED BY AGENTIC PAIRINGS
+15
+Planner + Doer
+● planner.md  → 
+turns a GOAL into 
+≤5 steps with 
+inputs/outputs & 
+tool hints
+● doer.md  → 
+executes 
+step-by-step, logs 
+results, stops on 
+rubric fail
+Proposer + Critic
+● propose.md  → 
+drafts full 
+(copy/brief)  & 
+(plan/decision)
+● critic.md → 
+scores against a 
+rubric; if <7/9, 
+returns one fix then 
+revise once
+Context-Packer + Actor
+● pack.md → condenses 
+messy inputs 
+(docs/links/notes) into 
+BRIEF | CITES[] | RISKS | 
+OPEN_QS
+● act.md →  executes 
+strictly from BRIEF; must 
+cite CITES; resolve 
+OPEN_QS or return 
+TODOs
+Evidence-Weaver + Synthesizer
+● gather.md  → pulls 
+multi-source facts with 
+QUOTES[], SOURCE[], 
+LIMITS, TIMESTAMP
+● weave.md  →  produces 
+claims; every claim maps 
+to QUOTES[source]; 
+unmet LIMITS become 
+QUESTIONS
+● Why this wins: tiny, auditable, 
+swappable pieces → reliable outputs 
+
+=====PAGE=====
+GOVERNANCE POWERED BY AGENTIC PAIRINGS
+16
+1⃣ Planner + Doer
+● planner.md  → turns a GOAL into ≤5 
+steps with inputs/outputs & tool hints
+● doer.md  → executes step-by-step, 
+logs results, stops on rubric fail
+2⃣ Proposer + Critic
+● propose.md  → drafts full 
+(copy/brief)  & (plan/decision)
+● critic.md → scores against 
+a rubric; if <7/9, returns one 
+fix then revise once
+3⃣ Context-Packer + Actor
+● pack.md → condenses messy inputs 
+(docs/links/notes) into BRIEF | CITES[] 
+| RISKS | OPEN_QS
+● act.md →  executes strictly from 
+BRIEF; must cite CITES; resolve 
+OPEN_QS as TODOs
+4⃣ Choose Your Own Pairing
+Create any two markdown files 
+that work together adversarially or 
+collaboratively to achieve goals
+💥
+ Ask: “How can I solve a bigger 
+problem with simple .md files? 
+Once complete 
+add both post your 
+combination to the 
+use-case-help 
+channel
+List your own 
+agentic pairings 
+of 1,2,3 or 4
+
+=====PAGE=====
+17
+Time to work
++ Open Q&A
+
+=====PAGE=====
+WEEKLY CHECKIN 5/20 RECAP
+Agents are powered by these core capabilities:
+Autonomy
+How far the agent can run independently without human 
+intervention.
+Reasoning & Planning
+Turning high-level goals into clear, checkable execution steps.
+Memory
+Scratchpad → Episodic log → Reusable knowledge notes.
+Tool Use
+Using APIs and apps as verbs with structured inputs and 
+outputs.
+Governance
+Defining the essential rules and safety guidelines for the agent.
+- Choose Based on Context Delta
+- Build A Stateful Engine
+- Memory is metabolic not static
+- Unify Tool Use in World Models
+- Leverage Agentic Pairings
+
+=====PAGE=====
+19
+What's Next

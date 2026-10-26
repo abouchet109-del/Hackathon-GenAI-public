@@ -11,3 +11,6 @@ __pycache__/
 # Local provider settings (holds the Meterless runtime token)
 .settings.json
 .test-tmp/
+
+# Third-party material not yet reviewed (e.g. the Atlas kit)
+external/
