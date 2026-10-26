@@ -26,7 +26,15 @@ Le jury réel, selon la page de l'événement (relevé le 26/10/2026) : Michael 
 
 Ce qu'il ne surévalue pas : le polish d'interface sans profondeur technique, un agent unique présenté comme un système, les chemins de démo codés en dur, les concepts trop larges mal implémentés, les affirmations de valeur non étayées, la technologie sponsor ajoutée à la fin sans rôle réel.
 
-## Le track visé : 03 — Reasoning Architecture
+## Le track visé : 01 — Solving Fragmented Intelligence
+
+> « Demonstrate a clever ability to discover and work across fragmented data sources. »
+
+Données typiques : plusieurs petites sources qui ne concordent pas (un export CSV, une API publique, une table, un ensemble de documents). Le guide conseille d'enregistrer trois ou quatre petites sources dans Zetaris plutôt qu'une grosse : la valeur est de les découvrir et de travailler à travers elles, pas le volume. Exemple de référence : un responsable des opérations interroge trois systèmes déconnectés via Zetaris, rapproche les enregistrements contradictoires et produit une réponse unique où chaque fait est rattaché à sa source ; le World Model garde cohérent l'état partagé pendant que le rapprocheur et le critique travaillent dessus.
+
+Signaux forts pour ce track : des sources réellement **en désaccord**, une **découverte** de quelle source répond à quoi, un **rapprochement** avec des règles explicites (qui fait foi), des **conflits** signalés plutôt que tranchés au hasard, et une **provenance** visible pour chaque fait.
+
+## Track alternatif : 03 — Reasoning Architecture
 
 > « Demonstrate a novel ability to turn data, knowledge, memory, and reasoning into reliable decisions and actions. »
 
@@ -136,4 +144,5 @@ Le guide hackathon du repo Meterless (`docs/community/hackathon-guide.md`) donne
 ## Historique
 
 - 26/10/2026 : première version.
+- 26/10/2026 : track visé passé au 01 (Solving Fragmented Intelligence) avec le choix du cas Atlas ; le track 03 reste décrit comme alternative.
 - 26/10/2026 : corrections issues de l'évaluation indépendante (données synthétiques autorisées, SAMPLE_MODE recommandé et non éliminatoire, travail préexistant, prix NVIDIA, départage par l'horodatage, Product & UX, Sponsor Tech, trois éléments de collaboration, sorties sensibles pour la sécurité, jury réel).

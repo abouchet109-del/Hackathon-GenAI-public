@@ -8,13 +8,13 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 - Environnement : Zetaris installé en local (test de fumée passé le 23/10) ; provider Meterless Runtime codé et testé contre un faux runtime (`agent/llm.py`).
 - Choix du use case : Atlas (voir [use-case-atlas.md](use-case-atlas.md)).
 - Organisation du repo et documentation de reprise.
+- Repo GitHub public : https://github.com/abouchet109-del/Hackathon-GenAI-public (branche `main`).
 
 ### Bloquants (à faire par l'équipe, Claude ne peut pas créer de comptes ni saisir de clés)
 - [ ] Installer et lancer Meterless Nightshift (le port 8088 ne répondait pas le 26/10).
 - [ ] Ajouter la clé NVIDIA (build.nvidia.com) dans l'onglet Providers de Nightshift.
 - [ ] Créer la clé API Zetaris dans l'interface et la mettre dans `.env`.
-- [ ] Déposer le kit Atlas dans `external/kit-demo-atlas/`.
-- [ ] Créer le repo GitHub (privé pendant le hackathon, public avant la soumission).
+- [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Sans elles, Zetaris n'a rien à servir.
 
 ### Prochaines étapes
 1. Architecture : remplir [architecture.md](architecture.md), puis revue avec Claude.
@@ -25,6 +25,6 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 6. README final, `.env.example`, `SAMPLE_MODE`, test depuis un clone propre.
 7. Vidéo, deck, explication des sponsors, soumission.
 
-### Avant de rendre le repo public
-- [ ] Décider si l'on garde `docs/strategie/` et `docs/hackathon/` dans le repo public.
+### Avant la soumission
+- [ ] Le repo est public depuis le 26/10 : décider si l'on garde `docs/strategie/` et `docs/hackathon/`.
 - [ ] Scanner les secrets (voir la checklist de disqualification, section 11).
