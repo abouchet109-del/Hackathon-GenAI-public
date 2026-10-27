@@ -28,3 +28,6 @@ Thumbs.db
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# Runtime state (alert inboxes, memories)
+.state/
