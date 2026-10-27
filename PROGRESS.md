@@ -55,5 +55,10 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 - On the Mac, `after-zetaris.sh` was started at 22:19 and still waits for the Zetaris key (step 2/4); `.env` keeps the placeholders.
 - `unify` = `63be0a9` on GitHub (4 docs commits ahead of `main`); Ryan asked for one more merge click.
 
+## 23:10 Feature freeze
+- No code change since `c21ab2f` (the `remember` tool description) and `a277f3a` (the Kind hint); everything after is documentation. State of the product: `main` = `20cd3b9` (merged, CI green), `unify` = `b131d4b` + this entry.
+- Not done, and why: the real-stack run (Zetaris registration of Brikk, a Nemotron trace, the real ablation) never happened on a machine this session could drive; the Mac script still waits for the Zetaris key, the team's PC is the plan (`docs/INSTALL.md` 1b). README keeps `UNKNOWN` where a figure would need that run. Sessions B and C never shared a folder with this session: nothing imported from `for-repo/`.
+- Left for Ryan, never deleted by this session: branch `transport`, `docs/ci-tests.yml`, `docs/atlas/README.md.orig`.
+
 ## Next action
-- Each new commit: `git bundle create /mnt/user-data/uploads/unify.bundle unify`, upload to `transport` via Chrome, wait for the import run. If a real run appears (Mac `logs/steward-demo-real.json`, or Adam's logs): read it, copy a Nemotron trace into `logs/samples/`, replace the README's `UNKNOWN`, update R14-R16. Feature freeze 23:15 (docs only after that), final report by 23:45, vault note.
+- Docs only. If a real run appears (Mac `logs/steward-demo-real.json`, or Adam's logs): read it, copy a Nemotron trace into `logs/samples/`, replace the README's `UNKNOWN`, update R14-R16 (a figure read from a log is a documentation change). Final report by 23:45, vault note, and one merge click by Ryan for the docs.

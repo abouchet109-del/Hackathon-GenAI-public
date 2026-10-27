@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T22:25:00+01:00",
+  "updated": "2026-10-27T23:10:00+01:00",
   "statuses": {
     "passing": 23,
     "failing": 0,
@@ -111,7 +111,7 @@
       "command": "python scripts/zetaris/run_steward_sql.py && ZETARIS_USE_USL=true python scripts/zetaris/run_steward_sql.py --verify-only",
       "expected": "19+ statements succeed; brief reads members through lightning.metastore.osef.brikk_usl",
       "status": "not_started",
-      "note": "the read-back check exists and is tested offline (tests/test_verify_sources.py); not run against a live Zetaris yet (session B owns the stack)",
+      "note": "the read-back check exists and is tested offline (tests/test_verify_sources.py); not run against a live Zetaris yet (session B owns the stack) | 23:10: still not run; the team's Windows PC (Zetaris, Nightshift, NVIDIA key) is the planned machine, docs/INSTALL.md section 1b",
       "name": "Zetaris: three sources registered and the USL brikk_usl compiled; the read-back check (counts vs CSVs) passes; Steward reads through them"
     },
     {
@@ -120,14 +120,15 @@
       "command": "python scripts/configure_nightshift.py && python run.py steward-demo && grep -l nemotron logs/trace-*.jsonl",
       "expected": "at least one trace file",
       "status": "not_started",
-      "note": "needs a machine with Nightshift and the NVIDIA key"
+      "note": "needs a machine with Nightshift and the NVIDIA key | 23:10: still not run; the team's Windows PC (Zetaris, Nightshift, NVIDIA key) is the planned machine, docs/INSTALL.md section 1b"
     },
     {
       "id": "R16",
       "requirement": "Ablation with Nemotron, one pass, numbers in the README",
       "command": "DOMAIN=project_memory python run.py ablation",
       "expected": "logs/ablation-*.md with a non-offline model",
-      "status": "not_started"
+      "status": "not_started",
+      "note": "23:10: still not run; the team's Windows PC (Zetaris, Nightshift, NVIDIA key) is the planned machine, docs/INSTALL.md section 1b"
     },
     {
       "id": "R17",
@@ -135,7 +136,7 @@
       "command": "docker compose config --quiet && docker compose up -d",
       "expected": "services healthy",
       "status": "not_started",
-      "note": "no Docker in the build container; validated on the Mac on 27/10 00:5x for brikk-db/drive only"
+      "note": "no Docker in the build container; validated on the Mac on 27/10 00:5x for brikk-db/drive only; compose publishes every port on 127.0.0.1"
     },
     {
       "id": "R18",
