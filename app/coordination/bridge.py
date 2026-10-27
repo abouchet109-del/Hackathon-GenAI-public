@@ -14,9 +14,9 @@ import re
 from datetime import date, datetime
 from pathlib import Path
 
-from .alerts import AlertInbox
-from .decisions import Decision, Source
-from .progress import Assumption, Report, Task, classify
+from atlas.alerts import AlertInbox
+from atlas.decisions import Decision, Source
+from atlas.progress import Assumption, Report, Task, classify
 
 SUBJECT = "brikk"
 DATE = re.compile(r"\b(20\d\d-\d\d-\d\d)\b")

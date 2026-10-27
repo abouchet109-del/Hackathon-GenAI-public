@@ -7,8 +7,8 @@ from pathlib import Path
 
 import requests
 
-from agent.sources import load_source, load_source_zetaris
-from agent.zetaris import ZetarisClient, ZetarisError
+from atlas.sources import load_source, load_source_zetaris
+from atlas.zetaris import ZetarisClient, ZetarisError
 
 ROOT = Path(__file__).resolve().parent.parent
 

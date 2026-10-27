@@ -10,7 +10,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from agent.structured import (LLMClient, LLMOutputError, LLMUnavailable, Route, Tracer,
+from atlas.structured import (LLMClient, LLMOutputError, LLMUnavailable, Route, Tracer,
                               extract_json)
 
 ROOT = Path(__file__).resolve().parent.parent

@@ -17,11 +17,11 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from agent import decisions as rules
-from agent.contracts import Evidence, InfoType
-from agent.decisions import Decision
-from agent.progress import Milestone, Report, Task
-from agent.sources import RoleEntry, Ticket
+from atlas import decisions as rules
+from atlas.contracts import Evidence, InfoType
+from atlas.decisions import Decision
+from atlas.progress import Milestone, Report, Task
+from atlas.sources import RoleEntry, Ticket
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_STATE_DIR = ROOT / ".state"  # git-ignored

@@ -1,8 +1,8 @@
 """Small Atlas-like fixtures shared by the foundation tests."""
 from datetime import date, datetime
 
-from agent.decisions import Decision, Source
-from agent.progress import Assumption, Report, Task
+from atlas.decisions import Decision, Source
+from atlas.progress import Assumption, Report, Task
 
 TODAY = date(2026, 10, 27)
 

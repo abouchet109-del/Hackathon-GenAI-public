@@ -2,7 +2,7 @@
 import unittest
 from datetime import date
 
-from agent.progress import classify
+from atlas.progress import classify
 from tests.fixtures import TODAY, decision, report, task
 
 DECISIONS = [

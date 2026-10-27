@@ -19,8 +19,8 @@ automatic conflict resolution is never called on them (architecture,
 section 6: conflicts on decisions are arbitrated by a person, rule 3).
 
 Command line:
-    python -m agent.hmem health
-    python -m agent.hmem explain <subject> <attribute>
+    python -m atlas.hmem health
+    python -m atlas.hmem explain <subject> <attribute>
 """
 import json
 import os
@@ -33,8 +33,8 @@ from typing import Literal, Optional
 import requests
 from pydantic import BaseModel
 
-from agent.decisions import Decision
-from agent.zetaris import sample_mode
+from atlas.decisions import Decision
+from atlas.zetaris import sample_mode
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_URL = "http://127.0.0.1:8765"

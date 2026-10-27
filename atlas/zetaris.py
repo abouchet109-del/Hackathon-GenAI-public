@@ -9,7 +9,7 @@ never calls Zetaris; otherwise, when Zetaris fails, it falls back to the cache
 and says so in the result.
 
 Command line:
-    python -m agent.zetaris "<sql>"
+    python -m atlas.zetaris "<sql>"
 """
 import hashlib
 import json

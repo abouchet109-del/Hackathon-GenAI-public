@@ -5,7 +5,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
-from agent.alerts import AlertInbox, affected_members
+from atlas.alerts import AlertInbox, affected_members
 from tests.fixtures import decision, report, task
 
 NEW_DATE = decision("D2", "launch_date", "2026-11-10", supersedes="D1", author="lea")

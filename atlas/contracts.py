@@ -20,8 +20,8 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from agent.decisions import Decision
-from agent.progress import Assumption, Report
+from atlas.decisions import Decision
+from atlas.progress import Assumption, Report
 
 __all__ = [
     "Evidence", "InfoType", "CandidateInfo", "UpdateProposal", "Check",

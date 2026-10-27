@@ -23,8 +23,8 @@ from pathlib import Path
 import requests
 from pydantic import ValidationError
 
-from agent import llm
-from agent.zetaris import sample_mode
+from atlas import llm
+from atlas.zetaris import sample_mode
 
 ROOT = llm.ROOT
 DEFAULT_MODEL = "nvidia/nemotron-3.5-lightning-30b-a3b"  # verified via Nightshift, 27/10

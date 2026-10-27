@@ -21,9 +21,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from agent.sources import (SOURCES, ZETARIS_DATABASE, load_source,  # noqa: E402
+from atlas.sources import (SOURCES, ZETARIS_DATABASE, load_source,  # noqa: E402
                            load_source_zetaris)
-from agent.zetaris import ZetarisClient, ZetarisError  # noqa: E402
+from atlas.zetaris import ZetarisClient, ZetarisError  # noqa: E402
 
 REPO = "abouchet109-del/Hackathon-GenAI-public"
 DESCRIPTION = "Atlas project sources, synthetic data"  # alphanumeric, _ . - , only

@@ -7,7 +7,7 @@ Two OpenAI-compatible providers:
   provider contract v4. This is the primary provider.
 
 Command line:
-    python -m agent.llm status | detect | models | token | connect <link> | chat <text>
+    python -m atlas.llm status | detect | models | token | connect <link> | chat <text>
 """
 import getpass
 import json
@@ -235,7 +235,7 @@ def chat(prompt, model=None, provider=None):
 
 def _ask_for_token():
     if not sys.stdin.isatty():
-        print("Set the token with: python -m agent.llm token")
+        print("Set the token with: python -m atlas.llm token")
         return
     set_token(getpass.getpass("Paste the Meterless Runtime token (hidden): "))
     print("Token saved. Status:", check_status())

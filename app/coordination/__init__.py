@@ -1,5 +1,7 @@
-"""Team coordination: decision register, per-member progress, alert inboxes.
+"""Team coordination: the bridge between Steward's company memory and the team's Atlas modules.
 
-Ported from the team's Atlas work (github.com/abouchet109-del/Hackathon-GenAI-public, agent/ at commit 961f320,
-by Adam Semlali and Alexandre Bouchet) and wired into Steward by app/steward.py.
+The decision register, the per-member progress classification and the alert inboxes live in `atlas/`
+(Adam Semlali, Alexandre Bouchet); `bridge.py` feeds them from H-MEM (decisions in force), Zetaris (tasks)
+and each person's AI (progress reports), and is used by app/steward.py and the MCP tools
+my_tasks, report_progress and my_alerts.
 """

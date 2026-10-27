@@ -11,8 +11,8 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel
 
-from agent.decisions import Decision
-from agent.progress import Milestone, Report, Task
+from atlas.decisions import Decision
+from atlas.progress import Milestone, Report, Task
 
 ROOT = Path(__file__).resolve().parent.parent
 SAMPLE_DIR = ROOT / "data" / "sample"
