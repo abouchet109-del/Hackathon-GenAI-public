@@ -43,7 +43,8 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 | Engine H-MEM | **Intégré** (27/10, 18:10) : service TypeScript `services/hmem/` autour de l'implémentation de référence, inchangée (D11 bis), client Python `agent/hmem.py` (décisions avec provenance et confiance, journal de confiance qui répond à « pourquoi le 10 novembre ? », retours helpful/wrong, enseignements d'Orion) ; **conformité officielle 13/13** ; repli local en Python |
 | Engine World Model | **Intégré** (27/10, 18:30) : service `services/world_model/` autour de la référence, inchangée ; `agent/world_model.py` implémente l'interface d'état (`agent/state.py`) : événements en ajout seul, pas de doublon à la réingestion, arêtes datées ; **conformité officielle 8/8** ; repli sur l'état JSON (D12) |
 | Données Atlas pour Zetaris | **Faites** (27/10) : corpus synthétique, variantes S2 et S3, résultats attendus S1 à S9 |
-| Agents LLM (6), orchestrateur, serveur MCP, `POST /run`, vue manager | Pas commencés |
+| Brique 1 et bout en bout (incrément 1) | **Fait** (27/10, 19:25) : état du projet versionné (`agent/state.py`), extracteur, agent de mise à jour, contrôleur (contrôles en code, puis preuves vérifiées par le LLM ; une révision, puis escalade), écriture de l'état avec alertes et H-MEM, agent manager, orchestrateur (limites, replis, `SAMPLE_MODE`, traces) et `POST /run` ; runs réels S1 et S3 comparés aux attendus |
+| Serveur MCP, remontées (brique 7), livrables (brique 4), réunions (brique 5) | Pas commencés |
 
 **Fondations déjà codées** (toutes couvertes par des tests unitaires, 36 tests au vert) :
 - `agent/decisions.py` : l'enregistrement d'une décision (sujet, attribut, valeur, statut, auteur, source, date, confiance, décision remplacée) et les règles qui disent quelle décision est en vigueur. Deux décisions approuvées incompatibles sont un conflit à arbitrer, jamais « la dernière gagne ».
@@ -146,7 +147,56 @@ Suites de conformité officielles (H-MEM 13/13, World Model 8/8) :
 .venv/Scripts/python scripts/engines_conformance.py
 ```
 
-Les instructions complètes (sources Zetaris, `SAMPLE_MODE`, point d'entrée de l'agent) seront ajoutées au fil de la construction.
+### Lancer le système : un run, ou `POST /run`
+Un run lit les sources dans Zetaris, fait passer les messages par l'extracteur, l'agent de mise à jour et le contrôleur (une révision au plus, puis escalade), écrit l'état (World Model, repli JSON) et les décisions validées (H-MEM), dépose les alertes, puis l'agent manager répond à la question du manager. Le point d'entrée est `agent/orchestrator.py` ; `agent/api.py` l'expose en HTTP.
+
+Sans aucun service ni clé, en `SAMPLE_MODE` (la vraie logique, sur les caches commités de Zetaris et de Nemotron) :
+
+```bash
+SAMPLE_MODE=true .venv/Scripts/python -m agent.orchestrator --today 2026-10-27
+```
+
+Le scénario S3 (deux décisions approuvées incompatibles) :
+
+```bash
+SAMPLE_MODE=true .venv/Scripts/python -m agent.orchestrator --today 2026-10-27 --scenario S3
+```
+
+En réel (clé Zetaris dans `.env`, Nightshift lancé ; services H-MEM et World Model conseillés), même commande sans `SAMPLE_MODE` : environ 5 à 7 minutes et 45 à 50 appels à Nemotron 3 Ultra (D16). Le serveur HTTP :
+
+```bash
+.venv/Scripts/python -m agent.api --port 8080
+```
+
+```bash
+curl -X POST http://127.0.0.1:8080/run -H "Content-Type: application/json" -d "{\"today\": \"2026-10-27\", \"scenario\": \"S3\"}"
+```
+
+Entrée (`RunRequest`, tous les champs sont facultatifs ; un champ inconnu est refusé avec un 400 détaillé) :
+
+| Champ | Défaut | Rôle |
+|---|---|---|
+| `project` | `atlas` | Projet dont on lit l'état |
+| `question` | la requête de la section 1 de l'architecture | Question du manager, à laquelle répond l'agent manager |
+| `today` | date du serveur | Date de référence des règles (retards, échéances) |
+| `scenario` | aucun | `S2` ou `S3` : ajoute `data/scenarios/<s>-*.json` aux sources |
+| `fresh_state` | vrai pour un scénario, faux sinon | Faux : l'état persiste d'un run à l'autre et un second run ne relit que ce qui est nouveau (S5) |
+| `max_llm_calls` | 120 | Budget d'appels LLM du run |
+| `timeout_s` | 900 | Durée maximale du run |
+
+Sortie (`RunResult`) : `run_id`, `state_store` et `state_version` (où et quelle version de l'état), `sources` (d'où chaque source a été lue : `zetaris`, `cache`, `cache-fallback`, `files`), `memory` (H-MEM : service ou repli local), `in_force` et `conflicts` (décisions en vigueur et conflits à arbitrer), `verdicts` (chaque verdict du contrôleur, révisions comprises), `escalations` (à qui, pourquoi), `alerts` (déposées chez les membres concernés), `facts` (jalons avec leur verdict calculé en code, avancement par membre, blocages, réunions), `report` (la réponse de l'agent manager et son contrôle), `limits` (appels, durée, arrêt anticipé), `degraded` (replis pris, messages sautés) et `trace_file`.
+
+Chaque run écrit une trace JSONL dans `logs/run-<run_id>.jsonl` : chaque appel LLM (agent, action, version du prompt, modèle **réellement utilisé** lu dans le reçu de Nightshift, tentatives, statut) et chaque étape (lecture des sources, verdict du contrôleur, écriture, alertes).
+
+Après une modification d'un prompt, le cache LLM de `SAMPLE_MODE` ne correspond plus : le régénérer par deux runs réels. `LLM_CACHE_FIRST=true` réutilise une réponse déjà enregistrée, pour que S1 et S3 se rejouent de façon cohérente (le modèle n'est pas déterministe) :
+
+```bash
+LLM_CACHE_FIRST=true .venv/Scripts/python -m agent.orchestrator --today 2026-10-27 --fresh
+```
+
+```bash
+LLM_CACHE_FIRST=true .venv/Scripts/python -m agent.orchestrator --today 2026-10-27 --scenario S3
+```
 
 ## Travailler sur le projet
 - Lire [docs/CONTEXT.md](docs/CONTEXT.md), puis [docs/STATUS.md](docs/STATUS.md).

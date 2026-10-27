@@ -181,7 +181,14 @@ Mis à jour par chaque session à chaque tâche terminée (heure de Paris). Éta
 | 0 | 3. Client Zetaris | Faite | 27/10 17:49 | `agent/zetaris.py`, cache dans `data/cache/zetaris/` (167c618) ; 60 tests au vert à 17:58 |
 | 0 | 4. Nemotron imposé et journalisé | Faite | 27/10 17:58 | Identifiant `nvidia/nemotron-3.5-lightning-30b-a3b` dans Nightshift ; modèle lu dans le reçu `meterless.routed_model` |
 | 0 | 5. Appel LLM commun | Faite | 27/10 17:58 | `agent/structured.py`, testé contre un faux runtime et par un appel réel |
-| 1 | 6, 10, 11, 12, 13, 21, 22, 23 | En cours | 27/10 18:05 | Session dédiée ; extracteur et agent de mise à jour séparés (D15) |
+| 1 | 6. État du projet | Faite | 27/10 18:15 | `agent/state.py`, interface `StateStore` (463e2f2) ; World Model branché derrière |
+| 1 | 10. Extracteur | Faite | 27/10 19:15 | `agent/extractor.py`, prompt versionné (4a71d20, eb8199f) ; Nemotron 3 Ultra (D16) |
+| 1 | 11. Agent de mise à jour | Faite | 27/10 19:15 | `agent/updater.py`, séparé de l'extracteur (D15) (4a71d20, eb8199f) |
+| 1 | 12. Contrôleur | Faite | 27/10 19:15 | `agent/controller.py` : contrôles en code, puis preuves par le LLM ; une révision, puis escalade, visibles dans les traces des runs réels (MSG-008 révisé ; DEC-007 et MSG-004 escaladés à Marc en S3) (6c6f965, eb8199f) |
+| 1 | 13. Écriture de l'état et notification | Faite | 27/10 18:35 | `agent/writer.py` : seul écrivain, alertes, décisions validées dans H-MEM (f21fc0b) |
+| 1 | 21. Agent manager | Faite | 27/10 18:45 | `agent/manager.py` : verdicts en code, rapport LLM contrôlé, une révision (5aaf2a9) |
+| 1 | 22. Orchestrateur | Faite | 27/10 19:20 | `agent/orchestrator.py` : Zetaris, limites, replis, `SAMPLE_MODE`, traces JSONL ; runs réels S1 et S3 comparés aux attendus (abfaa7d) |
+| 1 | 23. `POST /run` | Faite | 27/10 19:20 | `agent/api.py`, documenté dans le README (abfaa7d). Incrément 1 terminé à 19:25, environ 1 h 20, sous le probable |
 | 2 | 8. H-MEM | Faite | 27/10 18:10 | Service `services/hmem/` autour de la référence inchangée, client `agent/hmem.py` avec repli local ; décision avec provenance, « pourquoi le 10 novembre ? » par le journal de confiance, test d'intégration au vert, conformité 13/13 (499df21, 0bd1728) ; environ 1 h, sous le maximum |
 | 2 | 9. Mémoire de l'organisation (Orion) | Faite (côté mémoire) | 27/10 18:10 | `scripts/load_org_memory.py` ; Orion-1 rappelé en premier depuis le vrai engine ; le rappel dans la brique 5 ou le brief reste à brancher pour que S9 passe de bout en bout |
 | 2 | 7. World Model | Faite | 27/10 18:30 | Service `services/world_model/`, adaptateur `agent/world_model.py` (interface de `agent/state.py` inchangée), repli sur l'état JSON ; conformité 8/8, état relu depuis World Model identique à l'état JSON (7aa6e21) ; environ 25 min, sous le maximum. L'orchestrateur choisit encore le store à utiliser |

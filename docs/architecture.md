@@ -76,14 +76,16 @@ flowchart TD
   classDef done fill:#c8e6c9,stroke:#2e7d32,color:#000
   classDef partial fill:#ffe0b2,stroke:#ef6c00,color:#000
   classDef todo fill:#eeeeee,stroke:#9e9e9e,color:#000
-  class B1,B2,AL,ZET,HM partial
-  class B4,B5,B7,AM,WM,DIFF,REC,REP todo
+  class B1,AL,ZET,HM,WM,AM done
+  class B2 partial
+  class B4,B5,B7,DIFF,REC,REP todo
 ```
 
 | Couleur | Signification | Composants |
 |---|---|---|
-| Orange | En partie fait | Brique 1 : règles d'autorité et conflits codés et testés, agents à faire. Brique 2 : classement codé, outil MCP et cas S6 à faire. Alertes : boîtes codées, outils MCP à faire. Zetaris : connexion vérifiée, sources à enregistrer. H-MEM : conformité au vert (13/13), intégration à faire |
-| Gris | À construire | Briques 4, 5 et 7, agent manager, orchestrateur, World Model, serveur MCP, `POST /run` |
+| Vert | Fait (27/10, 19:25) | Brique 1 de bout en bout (extracteur, agent de mise à jour, contrôleur, écriture de l'état, notification), agent manager, orchestrateur et `POST /run`, Zetaris (sources lues en SQL), H-MEM et World Model intégrés. Les outils MCP des alertes restent à faire |
+| Orange | En partie fait | Brique 2 : classement codé et utilisé par l'agent manager ; outil MCP et cas S6 à faire |
+| Gris | À construire | Briques 4, 5 et 7, serveur MCP |
 
 ## 1. Objectif, décision, action
 Quelle décision le système aide-t-il à prendre, et quelle action en découle ?
@@ -408,6 +410,12 @@ On garde toujours : R1, R2, R4, le routage, le dédoublonnage, la ligne d'en-tê
 
 ### Orchestrateur (proposition K)
 Code déterministe. Il enchaîne un run : lecture des sources dans Zetaris, brique 1, puis briques 2 et 4, puis brique 5, règles de remontée (brique 7), rédaction par l'agent manager. Il porte aussi les déclenchements (à chaque changement d'état, à chaque `POST /run`), les limites (itérations, budget, timeouts), les replis et `SAMPLE_MODE`, et écrit les traces. Sans lui, un juge ne peut pas lancer le système de bout en bout.
+
+#### Ce qui est en place (incrément 1, 27/10, 19:25)
+- **État** : `agent/state.py`, interface `StateStore` (`load`, `commit`) ; une version par écriture qui change quelque chose, une référence de source déjà ingérée ne change rien (S5). World Model l'implémente (`agent/world_model.py`), l'état JSON sert de repli.
+- **Brique 1** : extracteur (`agent/extractor.py`) et agent de mise à jour (`agent/updater.py`) remplissent des brouillons ; le code y ajoute projet, auteur, date et preuve, lus dans l'enregistrement source, et déduit le genre d'un fait de son type. Les entrées du registre passent sans LLM (D17). Contrôleur (`agent/controller.py`) : schéma et cohérence, projet (S4), doublon et historique (S5, chronologie), habilitation (table des rôles), conflit ; puis le LLM vérifie que le texte dit bien ce que la proposition affirme. Une révision au plus ; ensuite une décision est escaladée à l'arbitre lu dans la table des rôles (le plus spécifique hors de la cause ; si toutes les personnes habilitées sont en cause, la plus large : Marc en S3), un fait non soutenu n'est pas écrit. Écriture (`agent/writer.py`) : seul appelant de `commit`, dépose les alertes pour chaque décision en vigueur et enregistre chaque décision validée dans H-MEM.
+- **Agent manager** (`agent/manager.py`) : les verdicts (date du jalon, retards, travaux obsolètes, blocages, escalades) sont calculés en code ; le LLM rédige ; un contrôle en code exige chaque jalon et chaque membre et seulement des identifiants connus, une révision, puis le code complète.
+- **Orchestrateur** (`agent/orchestrator.py`) : sources lues en parallèle dans Zetaris (cache, puis fichiers en dernier recours), enseignements des projets passés chargés dans H-MEM, sources structurées, registre, messages, puis rapport ; budget d'appels (120) et durée (900 s) par run, message en échec sauté et relu au run suivant, trace JSONL par run dans `logs/`. `POST /run` : `agent/api.py`. Modèle des runs : Nemotron 3 Ultra (D16).
 
 ## 3. Flux de contrôle
 Qui décide de l'étape suivante : le code (workflow) ou le modèle (agent) ? Où sont les boucles (critique, révision, retry), les branchements (confiance, conflit) et les escalades vers un humain ? Quelles limites (nombre d'itérations, budget, timeout) ?

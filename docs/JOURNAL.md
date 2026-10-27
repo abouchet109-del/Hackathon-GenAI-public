@@ -15,6 +15,14 @@ Format d'une entrée :
 
 ---
 
+## 27/10 19:25 — Incrément 1 : bout en bout (n° 6, 10, 11, 12, 13, 21, 22, 23) (session dédiée)
+- Fait : état du projet versionné derrière `StateStore` (`agent/state.py`) ; extracteur et agent de mise à jour séparés, prompts versionnés dans `agent/prompts/` ; contrôleur (contrôles en code, puis preuves par le LLM, une révision, puis escalade à l'arbitre de la table des rôles) ; écriture de l'état (seul écrivain, alertes, décisions validées dans H-MEM) ; agent manager (verdicts en code, rapport contrôlé) ; orchestrateur (Zetaris, World Model, H-MEM, limites, replis, `SAMPLE_MODE`, trace JSONL par run) ; `POST /run`. Décisions D16 (Nemotron 3 Ultra pour les runs) et D17 (le registre fait foi, chronologie).
+- Tâches du plan : n° 6, 10, 11, 12, 13, 21, 22 et 23 (incrément 1), faites.
+- Commits : 463e2f2, 4a71d20, 6c6f965, f21fc0b, 5aaf2a9, eb8199f, abfaa7d, puis le commit de cette entrée.
+- Vérifié : 167 tests au vert ; runs réels via Zetaris, Nightshift (Ultra), H-MEM et World Model : S1 conforme aux attendus sur les décisions en vigueur attendues, les messages non appliqués (MSG-007 à 010), le retard, le blocage et le travail obsolète ; S3 conforme (conflit DEC-004 / DEC-007, escalade à Marc, aucune date appliquée). Révision (MSG-008) et escalades visibles dans `logs/run-*.jsonl`. Les deux runs se rejouent en `SAMPLE_MODE` (test `tests/test_sample_run.py`).
+- Non vérifié ou repli : Lightning 30B lisait trop mal les sources, d'où Ultra (D16). Écart S1 : MSG-001 lu comme une décision sur `export_formats` (voir STATUS). Le service H-MEM garde des décisions de runs de mise au point (à vider avant la démo).
+- Reste / prochaine session : brique 7 (n° 18, 19), qui part de `RunResult.escalations` et `RunResult.facts` ; MCP (n° 24, 26, 27) ; brique 4 (n° 15) ; arbitrer l'écart MSG-001 et D17.
+
 ## 27/10 18:30 — Incrément 2 : H-MEM (n° 8), Orion (n° 9), World Model (n° 7) (session dédiée)
 - Fait : client `agent/hmem.py` (décision avec provenance et confiance, `explain` qui répond à « pourquoi le 10 novembre ? » par l'historique et le journal de confiance, retours helpful/not_helpful/wrong, rappel des enseignements), avec repli local en Python ; service `services/hmem/` autour de la référence H-MEM inchangée (résolution automatique des conflits jamais appelée) ; `scripts/load_org_memory.py` (enseignements d'Orion et Vega lus via Zetaris) ; service `services/world_model/` et adaptateur `agent/world_model.py` qui implémente `StateStore` sans toucher à `agent/state.py`, repli sur l'état JSON ; `scripts/engine_service.py` (lancement des deux services) et `scripts/engines_conformance.py` (les deux suites officielles).
 - Tâches du plan : n° 8 faite ; n° 9 faite côté mémoire (le rappel reste à brancher dans la brique 5 ou le brief) ; n° 7 faite.

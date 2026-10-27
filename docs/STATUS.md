@@ -33,7 +33,10 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 
 ### Question ouverte apparue
 - ~~Intégrer H-MEM à l'application~~ : tranché par D11 bis (service TypeScript autour de la référence), fait le 27/10 à 18:10.
-- À brancher par l'orchestrateur (incrément 1) : `WorldModelStateStore("atlas")` à la place de `JsonStateStore`, et `load_org_lessons()` à chaque run en `SAMPLE_MODE` ; rappel d'Orion dans la brique 5 ou le brief pour que S9 passe de bout en bout.
+- ~~À brancher par l'orchestrateur~~ : fait (incrément 1) : `WorldModelStateStore` pour l'état persistant, `load_org_lessons()` à chaque run. Reste le rappel d'Orion dans la brique 5 ou le brief, pour que S9 passe de bout en bout.
+- **Écart S1 (incrément 1)** : Nemotron Ultra lit MSG-001 (Léa, 15/09, « avec l'export CSV ») comme une décision sur `csv-export/export_formats` = csv, qui entre en vigueur ; les attendus n'en prévoient pas. Conséquence pour S6 (incrément 6) : le travail de Sarah (csv,xlsx) sort « obsolète » au lieu d'une contradiction entre membres. À trancher par l'équipe : accepter la lecture, ou exiger qu'une décision venue d'un message soit inscrite au registre.
+- **H-MEM à vider avant la démo** : le service (`.state/hmem/`) garde des décisions écrites par des runs de mise au point avant le correctif de chronologie (DEC-MSG-001-1, DEC-MSG-004-1) ; `explain atlas-launch launch_date` les montre. Arrêter le service et repartir d'un dossier vide (décision de l'équipe).
+- **D17 à valider** : le registre fait foi par lui-même (DEC-003 de Léa, alors que la table des rôles ne lui donne pas `csv-export/owner`).
 
 ### Prochaines étapes
 Détail, estimations et méthode : [PLAN.md](PLAN.md) (27/10, 17:20). Gel du code à 22:30, soumission vers 00:15 (heure de Paris).
@@ -44,7 +47,7 @@ Détail, estimations et méthode : [PLAN.md](PLAN.md) (27/10, 17:20). Gel du cod
    - **27/10, 17:58 — Nemotron imposé et appel LLM commun.** Nightshift liste des identifiants `nvidia/nemotron-*` à côté des modes `meterless/*` : on les impose par le champ `model`. Vérifié : `nvidia/nemotron-3.5-lightning-30b-a3b` (défaut, environ 2 s) et `nvidia/nemotron-3-ultra-550b-a55b` répondent ; `nemotron-3-super-120b` rend une erreur NVIDIA 404 ; les deux Llama-Nemotron sont désactivés dans les sources de calcul de Nightshift. La réponse porte un reçu (`meterless.routed_model`, `winning_route.provider = nvidia`, `receipt_id`), d'où le modèle tracé. `agent/structured.py` : sortie JSON validée par un schéma pydantic, une nouvelle tentative avec l'erreur, puis `LLMOutputError` ; timeout de 90 s ; routes Nightshift puis `MODEL_*`, puis cache (`data/cache/llm/`, seul utilisé en `SAMPLE_MODE`) ; trace JSONL dans `logs/llm-trace.jsonl`. Testé contre un faux runtime (8 tests) et par un appel réel. À noter : la route `MODEL_*` du `.env` pointe aussi sur Nightshift (`meterless/auto`), donc le repli n'est pas indépendant de Nightshift ; et le prompt de l'extracteur devra donner la date du message (le modèle a répondu 2024 pour « 12 novembre »).
    - **Incrément 0 terminé à 17:58**, en avance sur le point de contrôle de 19:45.
 2. À trancher par l'équipe après l'incrément 0 : D11, sort de World Model, fusion de l'analyste, brique 5 réduite, choix des incréments (PLAN, sections 3 et 4).
-3. Incréments 1 (bout en bout) et 2 (H-MEM, en parallèle) : le projet devient soumissible.
+3. **Fait — incrément 1 (bout en bout), 27/10, 19:25** : état versionné, extracteur, agent de mise à jour, contrôleur (une révision, puis escalade), écriture avec alertes et H-MEM, agent manager, orchestrateur, `POST /run`. Runs réels S1 (47 appels, 6 min 30) et S3 (escalade à Marc) sur Nemotron 3 Ultra, rejoués en `SAMPLE_MODE` par les tests ; 167 tests au vert. Avec l'incrément 2, le projet est soumissible.
 4. Incréments suivants selon le temps : remontées (brique 7), MCP et skill manager, correction du brief.
 5. README final, `.env.example`, `SAMPLE_MODE`, test depuis un clone propre.
 6. Vidéo, deck, explication des sponsors, soumission.
