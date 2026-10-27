@@ -39,7 +39,7 @@ SAMPLE_MODE=true .venv/bin/python run.py serve                # console at http:
 
 ## Video script (target 3:00, hard limit 4:00)
 
-Record with Nightshift online so that the traces show `model: nvidia/...`; if it is offline, say so on screen (the console header says `LLM offline`). Hide `.env`. Split screen: left, a person's own AI (Claude Desktop or Cursor with the `steward` server configured); right, the console. Before recording: `STEWARD_SPACE=video STEWARD_SEED_POLICIES=true SAMPLE_MODE=true python run.py serve` (drop `SAMPLE_MODE` on the real stack), then open `http://127.0.0.1:8000/console`.
+Record with Nightshift online so that the traces show `model: nvidia/...`; if it is offline, say so on screen (the console header says `LLM offline`). Hide `.env`. Split screen: left, a person's own AI (Claude Desktop or Cursor with the `steward` server configured); right, the console. Before recording: `STEWARD_SPACE=video STEWARD_SEED_POLICIES=true SAMPLE_MODE=true python run.py serve` (drop `SAMPLE_MODE` on the real stack), then open `http://127.0.0.1:8000/console`. Call `whats_new` once from Karim's AI before recording: the first call of a person lists the whole record, the next ones only what changed (the per-person cursor), so the recorded call shows the price change alone.
 
 | Time | Screen | Command or click | Narration |
 | --- | --- | --- | --- |
