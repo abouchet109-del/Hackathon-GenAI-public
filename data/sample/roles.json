@@ -1,0 +1,12 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Role table: who may approve what. Authority is checked here, never in a message's text.",
+  "records": [
+    {"member": "marc", "name": "Marc", "project": "atlas", "role": "manager", "can_approve": ["*"]},
+    {"member": "lea", "name": "Léa", "project": "atlas", "role": "product_owner", "can_approve": ["atlas-launch/*", "csv-export/export_formats", "commercial-brief/*"]},
+    {"member": "hugo", "name": "Hugo", "project": "atlas", "role": "developer", "can_approve": ["csv-export/implementation"]},
+    {"member": "sarah", "name": "Sarah", "project": "atlas", "role": "sales", "can_approve": []},
+    {"member": "ines", "name": "Inès", "project": "atlas", "role": "qa", "can_approve": ["csv-export/qa_status"]},
+    {"member": "nora", "name": "Nora", "project": "helios", "role": "product_owner", "can_approve": ["helios-launch/*"]}
+  ]
+}

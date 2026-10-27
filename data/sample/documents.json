@@ -1,0 +1,16 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Briefs, specifications and deliverables.",
+  "records": [
+    {"id": "DOC-001", "project": "atlas", "title": "Brief de lancement Atlas", "kind": "brief", "author": "lea", "status": "archived", "updated_at": "2026-09-15T09:00:00+02:00",
+     "text": "Atlas est le nouveau portail client B2B. Lancement le 3 novembre 2026. Fonctionnalités de la version 1 : export CSV des commandes et connexion SSO avec l'annuaire du client."},
+    {"id": "DOC-002", "project": "atlas", "title": "Spécification de l'export CSV", "kind": "spec", "author": "hugo", "status": "published", "updated_at": "2026-10-02T14:00:00+02:00",
+     "text": "L'export produit un fichier CSV en UTF-8, séparateur point-virgule, une ligne par commande. Il doit tenir jusqu'à 100 000 lignes. Format unique en v1 : CSV."},
+    {"id": "DOC-003", "project": "atlas", "title": "Brief commercial Atlas (brouillon)", "kind": "brief", "author": "sarah", "status": "draft", "updated_at": "2026-10-26T15:45:00+01:00",
+     "text": "Atlas, le portail client B2B, sera disponible le 3 novembre. Vos équipes pourront exporter leurs commandes en CSV et en Excel, et se connecter avec leur compte d'entreprise grâce au SSO. Tout est prêt pour le lancement : la recette est terminée. Contact : Sarah, équipe commerciale."},
+    {"id": "DOC-004", "project": "atlas", "title": "Plan de recette de l'export CSV", "kind": "test_plan", "author": "ines", "status": "published", "updated_at": "2026-10-19T09:00:00+02:00",
+     "text": "Douze tests de recette, dont trois bloquants (EXP-03, EXP-07, EXP-11). La recette est close quand les trois tests bloquants passent."},
+    {"id": "DOC-005", "project": "atlas", "title": "Note SSO version 2", "kind": "note", "author": "hugo", "status": "draft", "updated_at": "2026-10-26T14:10:00+01:00",
+     "text": "Le SSO est prévu pour la version 2, après le lancement. Étude des fournisseurs d'identité en cours (TCK-DEV-007)."}
+  ]
+}

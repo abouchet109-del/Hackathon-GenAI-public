@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Scenario S2 (and S8 when injected during a run): an authorised decision moves the launch to 12 November. Records added to the decisions source.",
+  "scenario": "S2",
+  "source": "decisions",
+  "records": [
+    {
+      "id": "DEC-006", "subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-12",
+      "status": "approved", "author": "lea", "source": {"type": "register", "ref": "REG-2026-027"},
+      "date": "2026-10-27", "confidence": 1.0, "supersedes": "DEC-004",
+      "summary": "Report du lancement au 12 novembre : la recette CSV ne sera pas close avant le 10."
+    }
+  ]
+}

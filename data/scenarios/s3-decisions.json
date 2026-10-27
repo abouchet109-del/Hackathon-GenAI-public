@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Scenario S3: a second approved decision sets another launch date without replacing the one in force. Records added to the decisions source.",
+  "scenario": "S3",
+  "source": "decisions",
+  "records": [
+    {
+      "id": "DEC-007", "subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-17",
+      "status": "approved", "author": "marc", "source": {"type": "meeting", "ref": "MTG-2026-10-27-COPIL"},
+      "date": "2026-10-27", "confidence": 1.0, "supersedes": null,
+      "summary": "Comité de pilotage : lancement au 17 novembre, aligné sur le planning du support."
+    }
+  ]
+}

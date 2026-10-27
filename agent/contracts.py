@@ -31,7 +31,8 @@ __all__ = [
 
 # Zetaris tables the agents read, plus the MCP progress reports.
 SourceTable = Literal["documents", "messages", "tickets", "decisions", "tasks",
-                      "roles", "past_projects", "mcp_report"]
+                      "milestones", "reports", "roles", "past_projects",
+                      "mcp_report"]
 
 # Information types of the use case (use-case-atlas.md, section 3).
 InfoType = Literal[

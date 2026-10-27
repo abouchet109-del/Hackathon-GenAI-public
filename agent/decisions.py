@@ -28,6 +28,7 @@ class Decision(BaseModel):
     date: date
     confidence: float = Field(ge=0.0, le=1.0)  # H-MEM requires a confidence
     supersedes: Optional[str] = None  # id of the decision this one replaces
+    summary: str = ""  # the register's wording, for people; rules use the fields
 
     @property
     def key(self):

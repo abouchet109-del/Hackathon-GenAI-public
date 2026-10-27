@@ -46,6 +46,7 @@ class Assumption(BaseModel):
 
 
 class Report(BaseModel):
+    id: Optional[str] = None  # stable id when the report comes from a source
     member: str
     task_id: str
     progress: float = Field(ge=0.0, le=1.0)

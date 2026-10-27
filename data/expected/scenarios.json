@@ -1,0 +1,124 @@
+{
+  "synthetic": true,
+  "description": "Expected results of the Atlas scenarios, written by hand from the use case. Used only to evaluate the system's outputs: never read by the agents.",
+  "today": "2026-10-27",
+  "tolerances_assumed": {"milestone_delay_days": 0, "task_delay_days": 2, "urgency_horizon_working_days": 10, "urgency_horizon_inclusive": true},
+  "records": [
+    {
+      "id": "S1", "title": "État normal", "inputs": ["data/sample"],
+      "in_force": [
+        {"key": "atlas-launch/launch_date", "value": "2026-11-10", "decision": "DEC-004"},
+        {"key": "atlas-launch/sso_release", "value": "v2", "decision": "DEC-005"},
+        {"key": "csv-export/owner", "value": "hugo", "decision": "DEC-003"}
+      ],
+      "decision_conflicts": [],
+      "open_blockers": ["TCK-QA-012"],
+      "late_tasks": ["TSK-001"],
+      "not_applied": [
+        {"record": "MSG-007", "reason": "proposal: not authoritative"},
+        {"record": "MSG-008", "reason": "sarah is not authorised on atlas-launch/launch_date; a newer message does not override DEC-004"},
+        {"record": "MSG-009", "reason": "other project (helios), S4"},
+        {"record": "MSG-010", "reason": "restates DEC-004 and DEC-005: no duplicate decision, S5"}
+      ],
+      "obsolete_work": [
+        {"member": "sarah", "task": "TSK-003", "key": "atlas-launch/launch_date", "decision": "DEC-004"},
+        {"member": "sarah", "task": "TSK-003", "key": "atlas-launch/sso_release", "decision": "DEC-005"}
+      ],
+      "member_conflicts": [
+        {"key": "csv-export/export_formats", "members": ["hugo", "sarah"], "evidence": ["RPT-001", "RPT-003", "MSG-011", "MSG-012"], "arbiter": "lea"}
+      ],
+      "stale_claims": [
+        {"document": "DOC-003", "key": "atlas-launch/launch_date", "claimed": "2026-11-03", "expected": "2026-11-10", "contradicted_by": ["DEC-004"]},
+        {"document": "DOC-003", "key": "atlas-launch/sso_release", "claimed": "v1", "expected": "v2", "contradicted_by": ["DEC-005"]},
+        {"document": "DOC-003", "key": "atlas-launch/readiness", "claimed": "ready", "expected": "blocked", "contradicted_by": ["TCK-QA-012"]}
+      ],
+      "not_corrected_in_brief": [
+        {"document": "DOC-003", "key": "csv-export/export_formats", "reason": "no decision in force: reported as the S6 conflict, not rewritten"}
+      ],
+      "meetings": [
+        {"participants": ["hugo", "ines", "sarah"], "evidence": ["TSK-001", "TSK-002", "TSK-003", "TCK-QA-012"], "precedent": "LES-ORION-1"}
+      ],
+      "escalations": [
+        {"rule": "R1", "level": "P1", "subject": "MS-LAUNCH", "recipient": "lea", "evidence": ["TSK-001", "TSK-002", "RPT-001", "RPT-002"]},
+        {"rule": "R5", "level": "P1", "subject": "MS-LAUNCH", "recipient": "lea", "evidence": ["TCK-QA-012", "TSK-002"]},
+        {"rule": "R2", "level": "P1", "subject": "csv-export/export_formats", "recipient": "lea", "evidence": ["RPT-001", "RPT-003"]},
+        {"rule": "R7", "level": "P2", "subject": "DOC-003", "recipient": "lea", "evidence": ["DEC-004", "DEC-005", "TCK-QA-012"]},
+        {"rule": "R7", "level": "P2", "subject": "meeting:csv-acceptance", "recipient": "lea", "evidence": ["TSK-001", "TSK-002", "TSK-003"]}
+      ],
+      "lessons_recalled": ["LES-ORION-1"],
+      "notes": "R1: TSK-001 projected to end 2026-11-03 (60% of 18 days, from today); TSK-002 cannot end before TSK-001, then needs 60% of 17 days: about 2026-11-13, after the milestone (2026-11-10). The milestone is 10 working days away: P1 assumes an urgency horizon H of 10 working days, inclusive; with the architecture's default of 5, R1 and R5 would be P2."
+    },
+    {
+      "id": "S2", "title": "Nouvelle décision autorisée : report au 12 novembre", "inputs": ["data/sample", "data/scenarios/s2-decisions.json"],
+      "in_force": [
+        {"key": "atlas-launch/launch_date", "value": "2026-11-12", "decision": "DEC-006"},
+        {"key": "atlas-launch/sso_release", "value": "v2", "decision": "DEC-005"}
+      ],
+      "decision_conflicts": [],
+      "obsolete_work": [
+        {"member": "hugo", "task": "TSK-001", "key": "atlas-launch/launch_date", "decision": "DEC-006"},
+        {"member": "ines", "task": "TSK-002", "key": "atlas-launch/launch_date", "decision": "DEC-006"},
+        {"member": "sarah", "task": "TSK-003", "key": "atlas-launch/launch_date", "decision": "DEC-006"},
+        {"member": "lea", "task": "TSK-007", "key": "atlas-launch/launch_date", "decision": "DEC-006"}
+      ],
+      "escalations": [
+        {"rule": "R4", "level": "P2", "subject": "MS-LAUNCH", "recipient": "lea", "evidence": ["DEC-006", "DEC-004"]}
+      ],
+      "client_view": {"launch_date": "2026-11-12", "sources": ["DEC-006"], "state_version_increases": true},
+      "notes": "The second MCP client reads the new date, the new state version and DEC-006 as its source. The reports were written before DEC-006, so every report that relied on 10 November becomes obsolete: alerts go to their authors, except lea who wrote the decision."
+    },
+    {
+      "id": "S3", "title": "Deux décisions contradictoires applicables", "inputs": ["data/sample", "data/scenarios/s3-decisions.json"],
+      "in_force": [
+        {"key": "atlas-launch/sso_release", "value": "v2", "decision": "DEC-005"}
+      ],
+      "decision_conflicts": [
+        {"key": "atlas-launch/launch_date", "decisions": ["DEC-004", "DEC-007"]}
+      ],
+      "escalations": [
+        {"rule": "R2", "level": "P1", "subject": "atlas-launch/launch_date", "recipient": "marc", "evidence": ["DEC-004", "DEC-007"]}
+      ],
+      "notes": "Neither date is applied on its own; the latest one does not win. DEC-007 is marc's, so the arbiter is marc (the only person authorised above lea)."
+    },
+    {
+      "id": "S4", "title": "Information venant d'un autre projet", "inputs": ["data/sample"],
+      "not_applied": [{"record": "MSG-009", "reason": "project helios"}],
+      "notes": "Nothing about helios-launch appears in the Atlas state."
+    },
+    {
+      "id": "S5", "title": "Réingestion d'un doublon", "inputs": ["data/sample"],
+      "not_applied": [{"record": "MSG-010", "reason": "restates DEC-004 and DEC-005"}],
+      "notes": "Ingesting every source twice leaves the state unchanged: same decisions, same version."
+    },
+    {
+      "id": "S6", "title": "Deux membres travaillent sur des choses contradictoires", "inputs": ["data/sample"],
+      "member_conflicts": [
+        {"key": "csv-export/export_formats", "members": ["hugo", "sarah"], "evidence": ["RPT-001", "RPT-003", "MSG-011", "MSG-012"], "arbiter": "lea"}
+      ],
+      "escalations": [
+        {"rule": "R2", "level": "P1", "subject": "csv-export/export_formats", "recipient": "lea", "evidence": ["RPT-001", "RPT-003"]}
+      ],
+      "notes": "No decision in force on export_formats: neither member is 'obsolete'; both are alerted and lea, authorised on the subject, is asked to arbitrate."
+    },
+    {
+      "id": "S7", "title": "Une tâche bloquante en retard dont d'autres dépendent", "inputs": ["data/sample"],
+      "late_tasks": ["TSK-001"],
+      "meetings": [
+        {"participants": ["hugo", "ines", "sarah"], "evidence": ["TSK-001", "TSK-002", "TSK-003", "TCK-QA-012"], "precedent": "LES-ORION-1"}
+      ],
+      "notes": "TSK-001 (hugo, due 2026-10-23, 60%) blocks TSK-002 (ines), on which TSK-003 (sarah) depends; sarah plans to send the brief on Thursday (MSG-014). Agenda: date the end of the CSV acceptance before the brief is sent. Duration about 15 minutes."
+    },
+    {
+      "id": "S8", "title": "Un changement d'état important pendant le run", "inputs": ["data/sample", "data/scenarios/s2-decisions.json (injected during the run)"],
+      "escalations": [
+        {"rule": "R4", "level": "P2", "subject": "MS-LAUNCH", "recipient": "lea", "evidence": ["DEC-006", "DEC-004"]}
+      ],
+      "notes": "The escalation is in the inbox as soon as the rule fires, and at the top of the next brief."
+    },
+    {
+      "id": "S9", "title": "Une situation déjà vécue sur un projet passé", "inputs": ["data/sample"],
+      "lessons_recalled": ["LES-ORION-1"],
+      "notes": "The brief is about to be sent (MSG-014) while the acceptance it announces is open (TCK-QA-012): Orion's lesson is recalled as a recommendation, never as a fact about Atlas. LES-VEGA-1 (SSO acceptance) is not relevant to v1 since SSO moved to v2."
+    }
+  ]
+}

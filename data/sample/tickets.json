@@ -1,0 +1,36 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). QA and technical tickets.",
+  "records": [
+    {
+      "id": "TCK-QA-009", "project": "atlas", "title": "Export CSV : libellés de colonnes en anglais",
+      "description": "Les en-têtes du fichier exporté ne sont pas traduits.",
+      "status": "closed", "severity": "minor", "blocking": false, "blocks": [], "related_task": "TSK-001",
+      "reporter": "ines", "assignee": "hugo", "created_at": "2026-10-14T10:05:00+02:00", "updated_at": "2026-10-16T17:40:00+02:00"
+    },
+    {
+      "id": "TCK-QA-012", "project": "atlas", "title": "Export CSV : échec du test bloquant au-delà de 10 000 lignes",
+      "description": "Le test de recette EXP-07 échoue : au-delà de 10 000 lignes, l'export s'interrompt et le fichier est tronqué. Bloque la clôture de la recette.",
+      "status": "open", "severity": "blocker", "blocking": true, "blocks": ["TSK-002"], "related_task": "TSK-001",
+      "reporter": "ines", "assignee": "hugo", "created_at": "2026-10-19T15:20:00+02:00", "updated_at": "2026-10-27T09:10:00+01:00"
+    },
+    {
+      "id": "TCK-QA-013", "project": "atlas", "title": "Export CSV : séparateur décimal",
+      "description": "Les montants sont exportés avec un point au lieu d'une virgule. Contournable dans le tableur.",
+      "status": "open", "severity": "minor", "blocking": false, "blocks": [], "related_task": "TSK-001",
+      "reporter": "ines", "assignee": "hugo", "created_at": "2026-10-22T11:00:00+02:00", "updated_at": "2026-10-22T11:00:00+02:00"
+    },
+    {
+      "id": "TCK-DEV-004", "project": "atlas", "title": "Logo flou sur l'écran de connexion",
+      "description": "Le logo est en basse résolution sur les écrans haute densité.",
+      "status": "open", "severity": "minor", "blocking": false, "blocks": [], "related_task": null,
+      "reporter": "lea", "assignee": "hugo", "created_at": "2026-10-12T09:30:00+02:00", "updated_at": "2026-10-12T09:30:00+02:00"
+    },
+    {
+      "id": "TCK-DEV-007", "project": "atlas", "title": "SSO : choix du fournisseur d'identité pour la v2",
+      "description": "Étude des fournisseurs SAML et OIDC compatibles avec les clients pilotes.",
+      "status": "open", "severity": "major", "blocking": false, "blocks": [], "related_task": "TSK-005",
+      "reporter": "hugo", "assignee": "hugo", "created_at": "2026-10-26T14:00:00+01:00", "updated_at": "2026-10-26T14:00:00+01:00"
+    }
+  ]
+}

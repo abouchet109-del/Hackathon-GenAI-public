@@ -1,0 +1,19 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Archives of the organisation's past projects and their lessons.",
+  "records": [
+    {"id": "PRJ-ORION", "name": "Orion", "ended": "2025-06-30",
+     "summary": "Lancement d'un module de facturation en ligne pour les clients grands comptes.",
+     "outcome": "Lancement raté : le brief commercial a été envoyé aux clients avant la fin de la recette ; deux fonctionnalités annoncées ne marchaient pas le jour J et le lancement a été repoussé de trois semaines.",
+     "lessons": [
+       {"id": "LES-ORION-1", "text": "Ne pas envoyer le brief commercial avant la fin de la recette des fonctionnalités qu'il annonce.", "situation": ["commercial-brief", "acceptance-testing", "launch"]},
+       {"id": "LES-ORION-2", "text": "Faire relire le brief commercial par le développeur de chaque fonctionnalité annoncée.", "situation": ["commercial-brief", "scope"]}
+     ]},
+    {"id": "PRJ-VEGA", "name": "Vega", "ended": "2026-02-15",
+     "summary": "Migration de l'annuaire interne vers un nouveau fournisseur d'identité.",
+     "outcome": "Livré à l'heure, mais la recette des clients pilotes a pris deux semaines de plus que prévu.",
+     "lessons": [
+       {"id": "LES-VEGA-1", "text": "Prévoir deux semaines de recette avec les clients pilotes pour toute intégration SSO.", "situation": ["sso", "acceptance-testing"]}
+     ]}
+  ]
+}

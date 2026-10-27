@@ -62,10 +62,15 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 - **Agent manager et orchestrateur** : l'orchestrateur, en code, enchaîne un run complet ; l'agent manager rédige le point périodique et répond aux questions du manager (`POST /run` ou MCP) ; un contrôle en code vérifie qu'aucune remontée urgente n'est omise.
 
 ## Structure du repo
+**Les données de `data/` sont synthétiques** (entreprise et projet fictifs, règlement §11.1) ; chaque fichier le déclare (`"synthetic": true`).
+
 ```text
 agent/              Logique de l'agent (provider Meterless Runtime déjà en place : agent/llm.py)
 tests/              Tests (dont le provider Meterless)
-data/sample/        Petits jeux de données (corpus Atlas, à venir)
+data/sample/        Corpus Atlas synthétique : un JSON {"records": [...]} par source Zetaris
+data/scenarios/     Variantes injectées pour les scénarios S2, S3 et S8
+data/expected/      Résultats attendus des scénarios S1 à S9 (évaluation seulement, jamais lus par les agents)
+evaluation/         Chargement des résultats attendus
 scripts/            Scripts utilitaires (enregistrement des sources dans Zetaris, à venir)
 input_examples/     Exemples d'entrées (à venir)
 output_examples/    Exemples de sorties (à venir)

@@ -1,0 +1,31 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Progress reports as members' AIs send them through report_progress: progress, the values the work relies on, blockers.",
+  "records": [
+    {"id": "RPT-001", "member": "hugo", "task_id": "TSK-001", "progress": 0.6, "reported_at": "2026-10-26T18:00:00+01:00",
+     "assumptions": [
+       {"subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-10"},
+       {"subject": "atlas-launch", "attribute": "sso_release", "value": "v2"},
+       {"subject": "csv-export", "attribute": "export_formats", "value": "csv"}
+     ],
+     "blockers": ["TCK-QA-012"], "note": "Correctif au-delà de 10 000 lignes en cours ; il me faut encore une semaine."},
+    {"id": "RPT-002", "member": "ines", "task_id": "TSK-002", "progress": 0.4, "reported_at": "2026-10-26T17:30:00+01:00",
+     "assumptions": [{"subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-10"}],
+     "blockers": ["TCK-QA-012"], "note": "9 tests sur 12 passés ; EXP-07 bloque."},
+    {"id": "RPT-003", "member": "sarah", "task_id": "TSK-003", "progress": 0.8, "reported_at": "2026-10-26T16:00:00+01:00",
+     "assumptions": [
+       {"subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-03"},
+       {"subject": "atlas-launch", "attribute": "sso_release", "value": "v1"},
+       {"subject": "csv-export", "attribute": "export_formats", "value": "csv,xlsx"}
+     ],
+     "blockers": [], "note": "Brief presque fini, envoi prévu jeudi."},
+    {"id": "RPT-004", "member": "ines", "task_id": "TSK-006", "progress": 1.0, "reported_at": "2026-10-16T17:00:00+02:00",
+     "assumptions": [], "blockers": [], "note": "Plan de test publié."},
+    {"id": "RPT-005", "member": "hugo", "task_id": "TSK-005", "progress": 0.1, "reported_at": "2026-10-26T18:05:00+01:00",
+     "assumptions": [{"subject": "atlas-launch", "attribute": "sso_release", "value": "v2"}],
+     "blockers": [], "note": "Étude des fournisseurs d'identité commencée."},
+    {"id": "RPT-006", "member": "lea", "task_id": "TSK-007", "progress": 0.6, "reported_at": "2026-10-26T19:00:00+01:00",
+     "assumptions": [{"subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-10"}],
+     "blockers": [], "note": ""}
+  ]
+}

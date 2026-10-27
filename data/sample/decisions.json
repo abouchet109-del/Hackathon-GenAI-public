@@ -1,0 +1,36 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Decision register of the Atlas project: one record per decision.",
+  "records": [
+    {
+      "id": "DEC-001", "subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-03",
+      "status": "approved", "author": "lea", "source": {"type": "register", "ref": "REG-2026-014"},
+      "date": "2026-09-15", "confidence": 1.0, "supersedes": null,
+      "summary": "Lancement du portail Atlas fixé au 3 novembre."
+    },
+    {
+      "id": "DEC-002", "subject": "atlas-launch", "attribute": "sso_release", "value": "v1",
+      "status": "approved", "author": "lea", "source": {"type": "register", "ref": "REG-2026-015"},
+      "date": "2026-09-15", "confidence": 1.0, "supersedes": null,
+      "summary": "La connexion SSO fait partie de la version 1, avec l'export CSV."
+    },
+    {
+      "id": "DEC-003", "subject": "csv-export", "attribute": "owner", "value": "hugo",
+      "status": "approved", "author": "lea", "source": {"type": "register", "ref": "REG-2026-016"},
+      "date": "2026-09-18", "confidence": 1.0, "supersedes": null,
+      "summary": "Hugo est responsable de l'export CSV."
+    },
+    {
+      "id": "DEC-004", "subject": "atlas-launch", "attribute": "launch_date", "value": "2026-11-10",
+      "status": "approved", "author": "lea", "source": {"type": "register", "ref": "REG-2026-021"},
+      "date": "2026-10-20", "confidence": 1.0, "supersedes": "DEC-001",
+      "summary": "Report du lancement au 10 novembre, le temps de terminer la recette de l'export CSV."
+    },
+    {
+      "id": "DEC-005", "subject": "atlas-launch", "attribute": "sso_release", "value": "v2",
+      "status": "approved", "author": "lea", "source": {"type": "register", "ref": "REG-2026-022"},
+      "date": "2026-10-20", "confidence": 1.0, "supersedes": "DEC-002",
+      "summary": "La connexion SSO est déplacée en version 2 ; la version 1 sort avec l'export CSV seul."
+    }
+  ]
+}

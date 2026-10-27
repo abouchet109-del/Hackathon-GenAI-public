@@ -1,0 +1,7 @@
+{
+  "synthetic": true,
+  "description": "Synthetic data for the Open Agent Hackathon 2026 (Atlas use case). Milestones: the date is the decision in force on (subject, attribute), never a copy.",
+  "records": [
+    {"id": "MS-LAUNCH", "subject": "atlas-launch", "attribute": "launch_date", "title": "Lancement du portail Atlas", "depends_on": ["TSK-001", "TSK-002", "TSK-003", "TSK-004"]}
+  ]
+}
