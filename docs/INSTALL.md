@@ -51,6 +51,8 @@ Then, in two PowerShell windows:
 $env:DOMAIN = "project_memory"; .venv\Scripts\python run.py ablation --profiles no_memory,full   # the real figures (logs\ablation-*.md)
 ```
 
+If `run_steward_sql.py` says that Zetaris cannot reach `host.docker.internal:8000` (the finance API) or `:5434` (Postgres): Docker Desktop normally forwards `host.docker.internal` to services bound on the host's loopback, but if it does not on that PC, start the console with `$env:HOST = "0.0.0.0"; .venv\Scripts\python run.py serve` (demo machine only: the console has no login) and change the `brikk-db` line `ports: ["127.0.0.1:5434:5432"]` of `docker-compose.yml` to `ports: ["5434:5432"]`, then `docker compose up -d brikk-db` again and rerun the registration with `--from` at the failed statement (the script prints its number).
+
 What the registration touches on the shared Zetaris: it creates objects named `brikk`, `BRIKK_FINANCE_REST`, `BRIKK_CATALOGUE`, `brikk_api`, `brikk_drive` and the USL `brikk_usl`; it drops nothing and does not touch the team's `ATLAS` objects. Zetaris runs in Docker, so the SQL reaches the PC through `host.docker.internal` (Postgres on 5434, the finance API on 8000): keep window 1 open while it runs. Source 3 is served by jsDelivr from this repository, pinned on the last commit that touched `domains/project_memory/data/procedures.json` (checked: it resolves).
 
 For the video on that PC: `$env:STEWARD_SPACE = "video"; $env:STEWARD_SEED_POLICIES = "true"; .venv\Scripts\python run.py serve` then `http://127.0.0.1:8000/console`; the MCP side is Cursor (`.cursor\mcp.json`, level 2) and Claude Desktop if it is installed; otherwise two Cursor projects with two configs (the CEO and the CTO), or the console's **Simulate an AI** for the second person.
