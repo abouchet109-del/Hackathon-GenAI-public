@@ -76,14 +76,16 @@ flowchart TD
   classDef done fill:#c8e6c9,stroke:#2e7d32,color:#000
   classDef partial fill:#ffe0b2,stroke:#ef6c00,color:#000
   classDef todo fill:#eeeeee,stroke:#9e9e9e,color:#000
-  class B1,B2,AL,ZET,HM partial
-  class B4,B5,B7,AM,WM,DIFF,REC,REP todo
+  class B1,AL,ZET,HM,WM,AM done
+  class B2 partial
+  class B4,B5,B7,DIFF,REC,REP todo
 ```
 
 | Couleur | Signification | Composants |
 |---|---|---|
-| Orange | En partie fait | Brique 1 : règles d'autorité et conflits codés et testés, agents à faire. Brique 2 : classement codé, outil MCP et cas S6 à faire. Alertes : boîtes codées, outils MCP à faire. Zetaris : connexion vérifiée, sources à enregistrer. H-MEM : conformité au vert (13/13), intégration à faire |
-| Gris | À construire | Briques 4, 5 et 7, agent manager, orchestrateur, World Model, serveur MCP, `POST /run` |
+| Vert | Fait (27/10, 19:25) | Brique 1 de bout en bout (extracteur, agent de mise à jour, contrôleur, écriture de l'état, notification), agent manager, orchestrateur et `POST /run`, Zetaris (sources lues en SQL), H-MEM et World Model intégrés. Les outils MCP des alertes restent à faire |
+| Orange | En partie fait | Brique 2 : classement codé et utilisé par l'agent manager ; outil MCP et cas S6 à faire |
+| Gris | À construire | Briques 4, 5 et 7, serveur MCP |
 
 ## 1. Objectif, décision, action
 Quelle décision le système aide-t-il à prendre, et quelle action en découle ?
@@ -266,7 +268,7 @@ Chaque règle porte une référence, pour que le choix soit justifié devant le 
 - avancement attendu d'une tâche = part du temps écoulé entre son début et son échéance ;
 - date de fin projetée = aujourd'hui + (1 − avancement déclaré) × durée prévue de la tâche ;
 - une tâche est en dépassement si sa date de fin projetée dépasse son échéance de plus de la **tolérance de délai** ;
-- un jalon est en dépassement si une tâche dont il dépend (directement ou par transitivité) l'est. Les dépendances viennent de la vue graphe de World Model, ou du champ `depends_on` des tâches dans le repli JSON ; il faut ajouter une date de début aux tâches (`agent/progress.py`).
+- un jalon est en dépassement si une tâche dont il dépend (directement ou par transitivité) l'est. Les dépendances viennent de la vue graphe de World Model, ou du champ `depends_on` des tâches dans le repli JSON ; il faut ajouter une date de début aux tâches (`atlas/progress.py`).
 
 Une tâche bloquée par un ticket ouvert (R5) est projetée au-delà de son échéance tant que le ticket est ouvert.
 
@@ -292,7 +294,7 @@ Une tâche bloquée par un ticket ouvert (R5) est projetée au-delà de son éch
 **Le « tout va bien » n'est pas une remontée d'exception, mais il figure dans le point périodique.** Les classements « ok » de la brique 2 sont des traces P3 : elles servent au système (une absence de rapport déclenche R6) et à la preuve. Pour le manager, elles se résument à **la ligne d'en-tête** du point. Cette ligne a de la valeur : le manager sait que l'absence d'alerte est vérifiée, pas un oubli.
 
 #### Format d'une remontée
-Dans le code, les noms de champs sont en anglais sans accent (`rule`, `level`, `subject`…), comme dans `agent/decisions.py`.
+Dans le code, les noms de champs sont en anglais sans accent (`rule`, `level`, `subject`…), comme dans `atlas/decisions.py`.
 
 | Champ | Contenu |
 |---|---|
@@ -365,7 +367,7 @@ Estimations du 27/10 à 17:00, avec Claude qui code ; à confirmer en construisa
 
 | Élément | Estimation | Dépend de | Verdict |
 |---|---|---|---|
-| Règles R2 et R4, routage, dédoublonnage, boîte de remontées (réutilise `agent/alerts.py`), ligne d'en-tête, tests | ~1 h | `agent/decisions.py`, `agent/alerts.py` (existants) | Démo |
+| Règles R2 et R4, routage, dédoublonnage, boîte de remontées (réutilise `atlas/alerts.py`), ligne d'en-tête, tests | ~1 h | `atlas/decisions.py`, `atlas/alerts.py` (existants) | Démo |
 | R1 (prévision) et tenue du planning | ~45 min | Date de début des tâches, corpus | Démo |
 | Point périodique (mode A), lancé par une commande | ~30 min en plus de l'agent manager | Agent manager | Démo |
 | Skill manager et outils MCP du manager | ~30 min en plus du serveur MCP | Serveur MCP | Démo |
@@ -408,6 +410,12 @@ On garde toujours : R1, R2, R4, le routage, le dédoublonnage, la ligne d'en-tê
 
 ### Orchestrateur (proposition K)
 Code déterministe. Il enchaîne un run : lecture des sources dans Zetaris, brique 1, puis briques 2 et 4, puis brique 5, règles de remontée (brique 7), rédaction par l'agent manager. Il porte aussi les déclenchements (à chaque changement d'état, à chaque `POST /run`), les limites (itérations, budget, timeouts), les replis et `SAMPLE_MODE`, et écrit les traces. Sans lui, un juge ne peut pas lancer le système de bout en bout.
+
+#### Ce qui est en place (incrément 1, 27/10, 19:25)
+- **État** : `atlas/state.py`, interface `StateStore` (`load`, `commit`) ; une version par écriture qui change quelque chose, une référence de source déjà ingérée ne change rien (S5). World Model l'implémente (`atlas/world_model.py`), l'état JSON sert de repli.
+- **Brique 1** : extracteur (`atlas/extractor.py`) et agent de mise à jour (`atlas/updater.py`) remplissent des brouillons ; le code y ajoute projet, auteur, date et preuve, lus dans l'enregistrement source, et déduit le genre d'un fait de son type. Les entrées du registre passent sans LLM (D17). Contrôleur (`atlas/controller.py`) : schéma et cohérence, projet (S4), doublon et historique (S5, chronologie), habilitation (table des rôles), conflit ; puis le LLM vérifie que le texte dit bien ce que la proposition affirme. Une révision au plus ; ensuite une décision est escaladée à l'arbitre lu dans la table des rôles (le plus spécifique hors de la cause ; si toutes les personnes habilitées sont en cause, la plus large : Marc en S3), un fait non soutenu n'est pas écrit. Écriture (`atlas/writer.py`) : seul appelant de `commit`, dépose les alertes pour chaque décision en vigueur et enregistre chaque décision validée dans H-MEM.
+- **Agent manager** (`atlas/manager.py`) : les verdicts (date du jalon, retards, travaux obsolètes, blocages, escalades) sont calculés en code ; le LLM rédige ; un contrôle en code exige chaque jalon et chaque membre et seulement des identifiants connus, une révision, puis le code complète.
+- **Orchestrateur** (`atlas/orchestrator.py`) : sources lues en parallèle dans Zetaris (cache, puis fichiers en dernier recours), enseignements des projets passés chargés dans H-MEM, sources structurées, registre, messages, puis rapport ; budget d'appels (120) et durée (900 s) par run, message en échec sauté et relu au run suivant, trace JSONL par run dans `logs/`. `POST /run` : `atlas/api.py`. Modèle des runs : Nemotron 3 Ultra (D16).
 
 ## 3. Flux de contrôle
 Qui décide de l'étape suivante : le code (workflow) ou le modèle (agent) ? Où sont les boucles (critique, révision, retry), les branchements (confiance, conflit) et les escalades vers un humain ? Quelles limites (nombre d'itérations, budget, timeout) ?
@@ -503,8 +511,8 @@ Les déclencheurs de la brique 5 qui portent sur les sources (échéances, dépe
 ### Ce qui est réellement en place (vérifié le 27/10, 17:49)
 - **Base Lightning `ATLAS`**, une **table REST par source** : `documents`, `messages`, `tickets`, `decisions`, `tasks`, `milestones`, `reports`, `roles`, `past_projects`. Chaque table lit `https://cdn.jsdelivr.net/gh/abouchet109-del/Hackathon-GenAI-public@<commit>/data/sample/<source>.json`, épinglé sur le commit `85018638` (une URL de branche serait mise en cache par jsDelivr).
 - **Enregistrement** : `scripts/register_zetaris.py` (idempotent ; `--dry-run`, `--verify-only`, `--repin <source>` après une modification du corpus, qui supprime et recrée la table sur le nouveau commit).
-- **Requête des agents**, une par source : `SELECT to_json(r) AS record FROM atlas.<source> LATERAL VIEW explode(records) AS r` ; chaque ligne est validée par le modèle pydantic de la source (`agent/sources.py`). Vérification : les 9 sources rendent exactement les enregistrements des fichiers locaux.
-- **Client** (`agent/zetaris.py`) : timeout de 60 s ; chaque résultat est mis en cache dans `data/cache/zetaris/` (commité, pour qu'un clone neuf tourne en `SAMPLE_MODE`) ; si Zetaris ne répond pas (réseau, timeout, 5xx), repli sur le cache, signalé dans le résultat ; une erreur SQL n'est jamais masquée par le cache ; avec `SAMPLE_MODE=true`, aucun appel à Zetaris.
+- **Requête des agents**, une par source : `SELECT to_json(r) AS record FROM atlas.<source> LATERAL VIEW explode(records) AS r` ; chaque ligne est validée par le modèle pydantic de la source (`atlas/sources.py`). Vérification : les 9 sources rendent exactement les enregistrements des fichiers locaux.
+- **Client** (`atlas/zetaris.py`) : timeout de 60 s ; chaque résultat est mis en cache dans `data/cache/zetaris/` (commité, pour qu'un clone neuf tourne en `SAMPLE_MODE`) ; si Zetaris ne répond pas (réseau, timeout, 5xx), repli sur le cache, signalé dans le résultat ; une erreur SQL n'est jamais masquée par le cache ; avec `SAMPLE_MODE=true`, aucun appel à Zetaris.
 - Constaté : une requête sur une table REST prend 3 à 10 s, car Zetaris relit l'URL à chaque fois. Le `CACHE TABLE` n'est pas utilisé, pour qu'une modification de la source apparaisse (voie B de la démo).
 - Pas encore fait : la voie B (API locale via `host.docker.internal`), qui servirait à montrer en direct une décision ajoutée (S2, S8).
 
@@ -550,8 +558,8 @@ Reste à décider : l'emplacement de la table des rôles (proposition : une enti
 ### Ce qui est réellement en place (vérifié le 27/10, 18:30)
 Les deux engines tournent comme **services HTTP locaux autour des implémentations de référence de Meterless, inchangées** (Apache-2.0, chargées depuis `external/meterless`, non copiées dans le repo). Les suites de conformité officielles passent sur ces mêmes modules : **H-MEM 13/13, World Model 8/8** (`scripts/engines_conformance.py`). Lancement : `scripts/engine_service.py hmem|world_model`.
 
-- **H-MEM** (`services/hmem/server.ts`, port 8765 ; client `agent/hmem.py`). Une décision validée devient une mémoire de la couche « travail » : contenu structuré, tags `subject:`, `attribute:`, `value:`, `status:`, `author:`, provenance (origine, libellé `register REG-2026-021`, références) et confiance de la décision. Écriture idempotente par identifiant externe (`DEC-004`). Une décision qui en remplace une autre marque l'ancienne `supersededBy` par `store.update()`, donc le changement est dans le journal de confiance ; rien n'est supprimé. `explain(sujet, attribut)` rend la valeur en vigueur, la chaîne des remplacements et le journal (create, update, feedback) : c'est la réponse à « pourquoi le 10 novembre ? ». Deux valeurs approuvées en vigueur donnent « pas de valeur courante » : la mémoire ne tranche jamais. **La résolution automatique des conflits (`conflicts.resolve`, seuil 0,70) et le cycle de sommeil ne sont jamais appelés** : les conflits sur les décisions restent au contrôleur et à un humain (règle 3). Les retours `helpful`, `not_helpful`, `wrong` appliquent les écarts de la référence (+0,05, −0,03, −0,20 ; `wrong` ajoute le tag `review`). Les enseignements des projets passés sont dans la couche long terme (`scripts/load_org_memory.py`, lus via Zetaris) ; le rappel utilise la formule de classement de la référence, restreinte à cette couche, avec un seuil de 0,15 au lieu de 0,35 (l'embedder factice de la référence donne environ 0,2 à un enseignement en français qui correspond à la situation ; Orion-1 passe devant Orion-2 et Vega-1, S9). Horloge par requête : une décision porte sa date.
-- **World Model** (`services/world_model/server.ts`, port 8766 ; adaptateur `agent/world_model.py`, qui implémente `StateStore` de `agent/state.py` sans le modifier). Un espace de noms par projet, journal d'événements en ajout seul persisté dans `.state/world-model/`. Chaque enregistrement de l'état (rôle, tâche, jalon, ticket, rapport, décision, fait) est une entité à identifiant stable ; `commit()` calcule le nouvel état avec `apply_change()` et n'envoie que ce qui a changé, donc réingérer les mêmes sources n'écrit aucun événement (S5). Les liens à cible unique sont des arêtes datées : responsable d'une tâche, tâche et auteur d'un rapport, décision remplacée ; un nouveau responsable ferme l'ancienne arête. Les dépendances entre tâches, à cibles multiples, restent dans les enregistrements : une arête de même origine et de même type fermerait la précédente dans la référence. Version, sources ingérées et historique sont dans le contexte du projet.
+- **H-MEM** (`services/hmem/server.ts`, port 8765 ; client `atlas/hmem.py`). Une décision validée devient une mémoire de la couche « travail » : contenu structuré, tags `subject:`, `attribute:`, `value:`, `status:`, `author:`, provenance (origine, libellé `register REG-2026-021`, références) et confiance de la décision. Écriture idempotente par identifiant externe (`DEC-004`). Une décision qui en remplace une autre marque l'ancienne `supersededBy` par `store.update()`, donc le changement est dans le journal de confiance ; rien n'est supprimé. `explain(sujet, attribut)` rend la valeur en vigueur, la chaîne des remplacements et le journal (create, update, feedback) : c'est la réponse à « pourquoi le 10 novembre ? ». Deux valeurs approuvées en vigueur donnent « pas de valeur courante » : la mémoire ne tranche jamais. **La résolution automatique des conflits (`conflicts.resolve`, seuil 0,70) et le cycle de sommeil ne sont jamais appelés** : les conflits sur les décisions restent au contrôleur et à un humain (règle 3). Les retours `helpful`, `not_helpful`, `wrong` appliquent les écarts de la référence (+0,05, −0,03, −0,20 ; `wrong` ajoute le tag `review`). Les enseignements des projets passés sont dans la couche long terme (`scripts/load_org_memory.py`, lus via Zetaris) ; le rappel utilise la formule de classement de la référence, restreinte à cette couche, avec un seuil de 0,15 au lieu de 0,35 (l'embedder factice de la référence donne environ 0,2 à un enseignement en français qui correspond à la situation ; Orion-1 passe devant Orion-2 et Vega-1, S9). Horloge par requête : une décision porte sa date.
+- **World Model** (`services/world_model/server.ts`, port 8766 ; adaptateur `atlas/world_model.py`, qui implémente `StateStore` de `atlas/state.py` sans le modifier). Un espace de noms par projet, journal d'événements en ajout seul persisté dans `.state/world-model/`. Chaque enregistrement de l'état (rôle, tâche, jalon, ticket, rapport, décision, fait) est une entité à identifiant stable ; `commit()` calcule le nouvel état avec `apply_change()` et n'envoie que ce qui a changé, donc réingérer les mêmes sources n'écrit aucun événement (S5). Les liens à cible unique sont des arêtes datées : responsable d'une tâche, tâche et auteur d'un rapport, décision remplacée ; un nouveau responsable ferme l'ancienne arête. Les dépendances entre tâches, à cibles multiples, restent dans les enregistrements : une arête de même origine et de même type fermerait la précédente dans la référence. Version, sources ingérées et historique sont dans le contexte du projet.
 - **Replis** : avec `SAMPLE_MODE=true` ou un service injoignable (timeout de 5 s, erreur réseau, 5xx), H-MEM passe sur une mémoire locale en Python qui reprend les mêmes contrats, et World Model sur l'état JSON (`JsonStateStore`) ; le client reste sur le repli jusqu'à la fin du run, pour lire ce qu'il a écrit, et `origin` le dit. Une requête refusée (4xx) n'est jamais masquée par le repli. En `SAMPLE_MODE`, la mémoire locale est vide au départ : l'orchestrateur y recharge les enseignements à chaque run.
 
 ## 6 bis. Réunions et remontées au manager

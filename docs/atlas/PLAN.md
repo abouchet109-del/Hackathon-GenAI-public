@@ -26,7 +26,7 @@ Hypothèse : Claude code, l'équipe relit. L'estimation **maximale** est celle d
 | # | Élément | Probable | Max | Critère servi | Fait quand… |
 |---|---|---|---|---|---|
 | **Données et Zetaris** ||||||
-| 1 | Corpus Atlas synthétique : documents, messages, tickets, registre des décisions, tâches (début, échéance, dépendances, responsable), rapports d'avancement, table des rôles, projet passé Orion ; **résultats attendus dans des fichiers séparés**, jamais lus par les agents | 30 min | 45 min | Toutes | Chaque fichier se charge dans les modèles de `agent/` ; les pièges du cas d'usage sont présents ; l'équipe a relu |
+| 1 | Corpus Atlas synthétique : documents, messages, tickets, registre des décisions, tâches (début, échéance, dépendances, responsable), rapports d'avancement, table des rôles, projet passé Orion ; **résultats attendus dans des fichiers séparés**, jamais lus par les agents | 30 min | 45 min | Toutes | Chaque fichier se charge dans les modèles de `atlas/` ; les pièges du cas d'usage sont présents ; l'équipe a relu |
 | 2 | Enregistrement des sources dans Zetaris : table REST sur une URL (jsDelivr épinglé sur un commit) ; repli : API locale via `host.docker.internal`, ou fichier sur S3 | 30 min | **1 h 30** | Sponsor, porte 2 | Une requête SQL sur chaque source rend les enregistrements attendus ; le script d'enregistrement est dans `scripts/` |
 | 3 | Client Zetaris en Python : requêtes SQL, timeout, repli sur le cache de `SAMPLE_MODE` | 20 min | 30 min | Technical | Test unitaire avec un faux serveur ; requête réelle vérifiée ; cache écrit et relu |
 | **Modèle** ||||||
@@ -41,7 +41,7 @@ Hypothèse : Claude code, l'équipe relit. L'estimation **maximale** est celle d
 | 10 | Brique 1 : analyste (extraction et qualification fusionnées) | 30 min | 1 h | Porte 3 | Sur le corpus, les informations attendues sont retrouvées |
 | 11 | Brique 1 : agent de mise à jour séparé de l'extracteur | 20 min | 45 min | Peu de chose | — |
 | 12 | Brique 1 : contrôleur (code, puis LLM), avec une révision au plus puis escalade | 30 min | 1 h | **Porte 3**, Technical | La boucle de révision et l'escalade sont visibles dans les traces |
-| 13 | Écriture de l'état et notification (`agent/alerts.py` existe déjà) | 10 min | 20 min | Technical | Une décision validée dépose une alerte chez les membres concernés |
+| 13 | Écriture de l'état et notification (`atlas/alerts.py` existe déjà) | 10 min | 20 min | Technical | Une décision validée dépose une alerte chez les membres concernés |
 | 14 | Brique 2 : cas 5 (contradiction entre membres, S6), tickets bloquants, date de début des tâches | 30 min | 45 min | Demo | S6 passe |
 | 15 | Brique 4 complète : affirmations, comparaison en code, rédacteur, validateur | 45 min | 1 h 30 | Impact (« un vrai travail »), Demo | Diff du brief : chaque changement cite sa source, rien d'autre n'est modifié |
 | 16 | Brique 5 complète : score, analyste outillé, verdict, calibration | 2 h | 3 h 15 | Innovation | — |
@@ -111,7 +111,7 @@ Ordre : les portes d'abord (1 et 2), car sans elles la note s'effondre. Puis la 
 ## 5. Incrément 0 en détail (en cours)
 
 ### 5.1 Contrats (avant tout code)
-Les schémas des objets échangés : information candidate, proposition de mise à jour, résultat du contrôleur, remontée, rapport d'avancement, affirmation d'un livrable. On part des modèles existants (`agent/decisions.py`, `agent/progress.py`, `agent/alerts.py`) et du format de remontée de la brique 7. Tant qu'ils ne sont pas écrits, deux sessions ne peuvent pas coder en parallèle.
+Les schémas des objets échangés : information candidate, proposition de mise à jour, résultat du contrôleur, remontée, rapport d'avancement, affirmation d'un livrable. On part des modèles existants (`atlas/decisions.py`, `atlas/progress.py`, `atlas/alerts.py`) et du format de remontée de la brique 7. Tant qu'ils ne sont pas écrits, deux sessions ne peuvent pas coder en parallèle.
 
 ### 5.2 Données (n° 1)
 - Un fichier JSON par source, au format attendu par Zetaris (un objet qui contient un tableau : `{"records": [...]}`), dans `data/sample/`.
@@ -175,16 +175,23 @@ Mis à jour par chaque session à chaque tâche terminée (heure de Paris). Éta
 
 | Incrément | Tâche (n° de la section 2) | État | Mis à jour | Note |
 |---|---|---|---|---|
-| 0 | Contrats entre composants | Faite | 27/10 17:31 | `agent/contracts.py` (76d3b58) |
+| 0 | Contrats entre composants | Faite | 27/10 17:31 | `atlas/contracts.py` (76d3b58) |
 | 0 | 1. Corpus Atlas et résultats attendus | Faite | 27/10 17:40 | Variantes S2 et S3, attendus S1 à S9 (8501863) ; relu par l'équipe |
 | 0 | 2. Enregistrement dans Zetaris | Faite | 27/10 17:49 | Sources Atlas enregistrées, script `scripts/register_zetaris.py` (167c618) |
-| 0 | 3. Client Zetaris | Faite | 27/10 17:49 | `agent/zetaris.py`, cache dans `data/cache/zetaris/` (167c618) ; 60 tests au vert à 17:58 |
+| 0 | 3. Client Zetaris | Faite | 27/10 17:49 | `atlas/zetaris.py`, cache dans `data/cache/zetaris/` (167c618) ; 60 tests au vert à 17:58 |
 | 0 | 4. Nemotron imposé et journalisé | Faite | 27/10 17:58 | Identifiant `nvidia/nemotron-3.5-lightning-30b-a3b` dans Nightshift ; modèle lu dans le reçu `meterless.routed_model` |
-| 0 | 5. Appel LLM commun | Faite | 27/10 17:58 | `agent/structured.py`, testé contre un faux runtime et par un appel réel |
-| 1 | 6, 10, 11, 12, 13, 21, 22, 23 | En cours | 27/10 18:05 | Session dédiée ; extracteur et agent de mise à jour séparés (D15) |
-| 2 | 8. H-MEM | Faite | 27/10 18:10 | Service `services/hmem/` autour de la référence inchangée, client `agent/hmem.py` avec repli local ; décision avec provenance, « pourquoi le 10 novembre ? » par le journal de confiance, test d'intégration au vert, conformité 13/13 (499df21, 0bd1728) ; environ 1 h, sous le maximum |
+| 0 | 5. Appel LLM commun | Faite | 27/10 17:58 | `atlas/structured.py`, testé contre un faux runtime et par un appel réel |
+| 1 | 6. État du projet | Faite | 27/10 18:15 | `atlas/state.py`, interface `StateStore` (463e2f2) ; World Model branché derrière |
+| 1 | 10. Extracteur | Faite | 27/10 19:15 | `atlas/extractor.py`, prompt versionné (4a71d20, eb8199f) ; Nemotron 3 Ultra (D16) |
+| 1 | 11. Agent de mise à jour | Faite | 27/10 19:15 | `atlas/updater.py`, séparé de l'extracteur (D15) (4a71d20, eb8199f) |
+| 1 | 12. Contrôleur | Faite | 27/10 19:15 | `atlas/controller.py` : contrôles en code, puis preuves par le LLM ; une révision, puis escalade, visibles dans les traces des runs réels (MSG-008 révisé ; DEC-007 et MSG-004 escaladés à Marc en S3) (6c6f965, eb8199f) |
+| 1 | 13. Écriture de l'état et notification | Faite | 27/10 18:35 | `atlas/writer.py` : seul écrivain, alertes, décisions validées dans H-MEM (f21fc0b) |
+| 1 | 21. Agent manager | Faite | 27/10 18:45 | `atlas/manager.py` : verdicts en code, rapport LLM contrôlé, une révision (5aaf2a9) |
+| 1 | 22. Orchestrateur | Faite | 27/10 19:20 | `atlas/orchestrator.py` : Zetaris, limites, replis, `SAMPLE_MODE`, traces JSONL ; runs réels S1 et S3 comparés aux attendus (abfaa7d) |
+| 1 | 23. `POST /run` | Faite | 27/10 19:20 | `atlas/api.py`, documenté dans le README (abfaa7d). Incrément 1 terminé à 19:25, environ 1 h 20, sous le probable |
+| 2 | 8. H-MEM | Faite | 27/10 18:10 | Service `services/hmem/` autour de la référence inchangée, client `atlas/hmem.py` avec repli local ; décision avec provenance, « pourquoi le 10 novembre ? » par le journal de confiance, test d'intégration au vert, conformité 13/13 (499df21, 0bd1728) ; environ 1 h, sous le maximum |
 | 2 | 9. Mémoire de l'organisation (Orion) | Faite (côté mémoire) | 27/10 18:10 | `scripts/load_org_memory.py` ; Orion-1 rappelé en premier depuis le vrai engine ; le rappel dans la brique 5 ou le brief reste à brancher pour que S9 passe de bout en bout |
-| 2 | 7. World Model | Faite | 27/10 18:30 | Service `services/world_model/`, adaptateur `agent/world_model.py` (interface de `agent/state.py` inchangée), repli sur l'état JSON ; conformité 8/8, état relu depuis World Model identique à l'état JSON (7aa6e21) ; environ 25 min, sous le maximum. L'orchestrateur choisit encore le store à utiliser |
+| 2 | 7. World Model | Faite | 27/10 18:30 | Service `services/world_model/`, adaptateur `atlas/world_model.py` (interface de `atlas/state.py` inchangée), repli sur l'état JSON ; conformité 8/8, état relu depuis World Model identique à l'état JSON (7aa6e21) ; environ 25 min, sous le maximum. L'orchestrateur choisit encore le store à utiliser |
 | 3 | 18, 19 | À faire | — | — |
 | 4 | 24, 26, 27 | À faire | — | — |
 | 5 | 15 | À faire | — | — |
