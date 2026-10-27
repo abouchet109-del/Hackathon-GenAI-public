@@ -189,8 +189,8 @@ Zetaris ne lit pas un fichier local : il lit une URL (API REST en GET) ou un fic
 | Technologie | Rôle concret |
 |---|---|
 | **Zetaris** | Expose les sources comme des tables ; les agents les interrogent en SQL (sujet, date, statut, membre, échéance) |
-| **Meterless World Model** | État partagé du projet, fondé sur des événements : décisions, observations, avancement et travail en cours de chaque membre, versions. Demande une implémentation et une suite de conformité |
-| **Meterless H-MEM** | Mémoire de l'organisation : les enseignements des projets passés, avec leur source et leur niveau de confiance. Second engine, à n'ajouter que si le premier marche |
+| **Meterless H-MEM** | Mémoires du projet : décisions et leur historique, rôles et avancement de chaque membre (choix du brouillon d'architecture du 27/10) ; plus tard, la mémoire de l'organisation (projets passés) |
+| **Meterless World Model** | Option : état partagé entre agents, si l'architecture finale le retient. Demande une implémentation et une suite de conformité |
 | **Meterless Nightshift** | Fournisseur IA principal de tous les appels (provider déjà codé dans `agent/llm.py`) |
 | **NVIDIA Nemotron** | Les agents (analyse, contrôle, synthèse pour le manager), via Nightshift ; le modèle est journalisé pour chaque requête |
 

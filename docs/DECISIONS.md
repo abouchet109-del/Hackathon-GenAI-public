@@ -11,4 +11,5 @@ Journal des décisions prises. Une décision ne se rediscute pas sans une raison
 | D5 | 26/10/2026 | Le **repo GitHub est public** dès maintenant | Zetaris doit lire les données par URL (jsDelivr) ; le règlement exige un repo public | Acquise |
 | D6 | 26/10/2026 | Capacités 1 à 4, 8 et 10 dans la démo ; réunion, vue manager et remontées en version simple ; mémoire de l'organisation si le temps le permet | Délai : clôture le 27/10 à 23:45 UTC | Proposée, à confirmer dans l'architecture |
 | D7 | — | Track 01 ou 03 | À trancher dans l'architecture | Ouverte |
-| D8 | — | Un engine (World Model) ou deux (World Model + H-MEM) | À trancher après le test de l'implémentation de référence | Ouverte |
+| D8 | — | Un engine (World Model) ou deux (World Model + H-MEM) | À trancher après le test de l'implémentation de référence | Remplacée par D9 |
+| D9 | 27/10/2026 | **H-MEM** porte les mémoires du projet (décisions, rôles, avancement par membre) ; World Model seulement si l'architecture finale en a besoin | Brouillon d'architecture de l'équipe ; H-MEM a un template de démarrage | Proposée, à confirmer à la revue |

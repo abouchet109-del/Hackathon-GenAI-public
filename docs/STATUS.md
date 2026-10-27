@@ -16,9 +16,12 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 - [x] Clé API Zetaris renseignée dans `.env` (27/10 ; connexion pas encore testée).
 - [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Dans les deux cas, il faut ajouter les tâches et objectifs de chaque membre et un projet passé (« Orion »). Sans données, Zetaris n'a rien à servir.
 
+### En cours
+- Architecture : brouillon du 27/10 (briques « suivi des décisions » et « avancement par membre ») dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Restent : Zetaris, MCP, réunions et vue manager, flux de contrôle détaillé, garde-fous, tests, coupes.
+
 ### Prochaines étapes
-1. Architecture : remplir [architecture.md](architecture.md), puis revue avec Claude.
-2. Tests bloquants (deux heures au plus) : une requête Zetaris sur les sources Atlas, un appel Nemotron via Nightshift avec le modèle journalisé, l'implémentation de référence du World Model et sa suite de conformité, un client MCP connecté.
+1. Architecture : terminer [architecture.md](architecture.md), puis revue avec Claude.
+2. Tests bloquants (deux heures au plus) : une requête Zetaris sur les sources Atlas, un appel Nemotron via Nightshift avec le modèle journalisé, l'implémentation de référence de H-MEM et sa suite de conformité, un client MCP connecté.
 3. Parcours complet minimal sur le scénario S1, avec traces.
 4. Scénarios S2 à S6 et les 14 cas de test.
 5. Second client MCP, détection des travaux contradictoires, vue manager.

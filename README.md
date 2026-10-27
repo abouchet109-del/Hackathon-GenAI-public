@@ -22,14 +22,28 @@ Cas de démonstration : **Atlas**, le lancement d'un portail client fictif dont 
 | Technologie | Rôle |
 |---|---|
 | Zetaris | Couche de données : les sources du projet exposées comme des tables SQL |
-| Meterless World Model | État partagé du projet : décisions, observations, avancement et travail en cours de chaque membre, versions |
-| Meterless H-MEM (si le temps le permet) | Mémoire de l'organisation : les enseignements des projets passés |
+| Meterless H-MEM | Mémoires du projet : décisions et leur historique, rôles et avancement de chaque membre (choix du brouillon d'architecture) |
+| Meterless World Model (option) | État partagé entre agents, si l'architecture finale le retient |
 | Meterless Nightshift | Fournisseur IA principal |
 | NVIDIA Nemotron | Modèles des agents, via Nightshift |
 | MCP | Accès à l'état du projet depuis l'IA de chaque membre |
 
 ## État d'avancement
-Voir [docs/STATUS.md](docs/STATUS.md). À ce jour : environnement en place, provider Meterless Runtime codé et testé contre un faux runtime, cas d'usage défini, architecture en cours de conception. L'agent n'est pas encore construit.
+Détail : [docs/STATUS.md](docs/STATUS.md).
+
+| Étape | État |
+|---|---|
+| Environnement (Zetaris en local, provider Meterless Runtime testé contre un faux runtime) | Fait |
+| Clé API Zetaris | Renseignée, connexion pas encore testée |
+| Meterless Nightshift | **Bloqué** : ne fonctionne pas encore sur la machine |
+| Cas d'usage Atlas | Défini |
+| Architecture | **Brouillon en cours** (27/10) |
+| Données Atlas pour Zetaris | À créer |
+| Agents, MCP, vue manager | Pas commencés |
+
+**Brouillon d'architecture du 27/10** ([docs/architecture.md](docs/architecture.md), notes manuscrites dans [docs/architecture-notes/](docs/architecture-notes/)) : deux briques sont définies.
+- **Suivi des décisions** : un agent rédige les comptes rendus de réunion, un agent relit le canal commun et n'en garde que les décisions, un agent les rapproche des décisions déjà prises et décide ce qui fait foi, puis un algorithme prévient les personnes concernées. Les décisions sont gardées dans H-MEM.
+- **Avancement par membre** : un skill installé sur l'IA de chaque collaborateur remonte son avancement ; un agent, en lecture seule, le compare aux tâches et objectifs ; un algorithme classe chaque situation (tout va bien, retard, travail rendu obsolète par une décision) et agit en conséquence. Un agent dédié remontera l'information au manager.
 
 ## Structure du repo
 ```text
