@@ -71,7 +71,7 @@ for path, value in targets:
             cfg = json.load(open(path))
         except json.JSONDecodeError:
             print(f"!! {path} is not valid JSON: left untouched"); continue
-    cfg.setdefault("mcpServers", {})["osef-steward"] = value
+    cfg.setdefault("mcpServers", {})["steward"] = value
     json.dump(cfg, open(path, "w"), indent=2)
     print("connected:", path)
 PYEOF
@@ -86,4 +86,4 @@ else
 fi
 
 echo
-echo "Done. Restart Claude Desktop (Cmd+Q, reopen) and open ~/open-agent-hack in Cursor to see the 'osef-steward' tools."
+echo "Done. Restart Claude Desktop (Cmd+Q, reopen) and open ~/open-agent-hack in Cursor to see the 'steward' tools."

@@ -103,11 +103,13 @@ class Steward:
 
     # ----- write path: every proposal is arbitrated -----
     def remember(self, content: str, author: str, ai_tool: str, kind: str = "fact", topic: str | None = None,
-                 run_id: str | None = None) -> dict:
+                 run_id: str | None = None, source_flags: list[str] | None = None) -> dict:
         if not topic:  # the watchlist in Zetaris decides the topic, not the client
             found = self.ctx.topics_in(content, self.watchlist())
             topic = found[0] if found else ""
         item = {"content": content, "author": author, "ai_tool": ai_tool, "kind": kind, "topic": topic or ""}
+        if source_flags:  # the excerpt this item comes from tried to instruct AI tools or carried a secret
+            item["source_flags"] = list(source_flags)
         with _exclusive(self._lock_path):  # the dedup check, the run and the alerts are one critical section
             waiting = next((e for e in self.logic.journal(self.memory)
                             if e["status"] in {"pending", "awaiting_author"} and e.get("topic") == (topic or "")
@@ -179,13 +181,16 @@ class Steward:
                                        "content", "reason", "citations")}
                 for e in self.logic.journal(self.memory) if e["status"] == "pending"]
 
-    def resolve(self, journal_id: str, decision: str, policy: str | None = None) -> dict:
+    def resolve(self, journal_id: str, decision: str, policy: str | None = None, by: str | None = None) -> dict:
+        """The CEO's ruling. The callers check that `by` is the CEO; here it is written to the journal."""
         if decision not in {"store", "supersede", "reject"}:
             raise ValueError("decision must be store, supersede or reject")
         with _exclusive(self._lock_path):
-            entry = self.logic.resolve(journal_id, decision, self.memory, policy)
+            entry = self.logic.resolve(journal_id, decision, self.memory, policy, by=by)
             alerts = self._alert_on(entry.get("memory_id"))
-        out = {k: entry.get(k) for k in ("journal_id", "status", "memory_id", "supersedes", "policy_id", "content")}
+        out = {k: entry.get(k) for k in ("journal_id", "status", "memory_id", "supersedes", "policy_id", "content",
+                                         "resolved_by", "topic")}
+        out["decision"] = decision
         out["alerts_sent"] = alerts
         return out
 
@@ -197,16 +202,17 @@ class Steward:
     def observe(self, text: str, author: str, ai_tool: str, source: str = "conversation", title: str = "") -> dict:
         """An excerpt (or a document, or meeting notes) from someone's AI. Only extracted items are arbitrated and
         possibly stored; the raw text is never kept."""
-        items = self.ctx.extract(text, self.watchlist(), self.h.llm)
+        items = self.ctx.extract(text, self.watchlist(), self.h.llm)  # code screens the raw text before any model
         outcomes = []
         for i, it in enumerate(items[:12]):
-            res = self.remember(it["content"], author, ai_tool, it.get("kind", "fact"), it.get("topic") or None)
+            res = self.remember(it["content"], author, ai_tool, it.get("kind", "fact"), it.get("topic") or None,
+                                source_flags=it.get("source_flags"))
             outcomes.append({"extracted": it["content"], "kind": it.get("kind"), "topic": it.get("topic"),
                              "decision": res.get("decision"), "why": res.get("why"), "citations": res.get("citations"),
                              "journal_id": (res.get("applied") or {}).get("journal_id"),
                              "extracted_by": it.get("extracted_by"), "trace": res.get("trace")})
         return {"source": source, "title": title, "items_found": len(items), "outcomes": outcomes,
-                "stack": self.describe(),
+                "source_flags": self.ctx.guard_source(text), "stack": self.describe(),
                 "stored": sum(o["decision"] in {"store", "supersede", "redact"} for o in outcomes),
                 "raw_text_stored": False}
 
@@ -215,7 +221,10 @@ class Steward:
                                         self.logic.journal(self.memory), budget_tokens)
 
     def whats_new(self, name: str, advance: bool = True) -> dict:
-        return self.ctx.whats_new(name, self.data, self.schema, self.memory, self.logic.journal(self.memory), advance)
+        if not advance:
+            return self.ctx.whats_new(name, self.data, self.schema, self.memory, self.logic.journal(self.memory), False)
+        with _exclusive(self._lock_path):  # the cursor file is read-modify-write: one writer at a time
+            return self.ctx.whats_new(name, self.data, self.schema, self.memory, self.logic.journal(self.memory), True)
 
     def clarifications(self, name: str | None = None) -> list[dict]:
         return [{k: e.get(k) for k in ("journal_id", "at", "author", "ai_tool", "topic", "content", "question",
@@ -223,10 +232,13 @@ class Steward:
                 for e in self.logic.journal(self.memory)
                 if e["status"] == "awaiting_author" and (name is None or e.get("author") == name)]
 
-    def answer_clarification(self, journal_id: str, answer: str, note: str = "") -> dict:
+    def answer_clarification(self, journal_id: str, answer: str, note: str = "", by: str | None = None,
+                             ceo: bool = False) -> dict:
+        """The author's answer. `by` is who answers: anyone but the author (or the CEO) is refused."""
         with _exclusive(self._lock_path):
-            entry = self.logic.answer_clarification(journal_id, answer, self.memory, note)
-        return {k: entry.get(k) for k in ("journal_id", "status", "topic", "content", "reason")}
+            entry = self.logic.answer_clarification(journal_id, answer, self.memory, note, by=by, ceo=ceo)
+        return {k: entry.get(k) for k in ("journal_id", "status", "topic", "content", "reason", "answered_by",
+                                          "decision", "author")}
 
     def my_contributions(self, name: str) -> list[dict]:
         return [{k: e.get(k) for k in ("journal_id", "at", "ai_tool", "topic", "kind", "content", "decision",
@@ -310,7 +322,8 @@ class Steward:
                 for q in self.ctx.ONBOARDING]
 
     def onboard(self, answers: dict) -> dict:
-        return self.ctx.onboard(answers, self.data, self.schema, self.memory)
+        with _exclusive(self._lock_path):  # the profiles overlay is read-modify-write: one writer at a time
+            return self.ctx.onboard(answers, self.data, self.schema, self.memory)
 
     def profile(self, name: str) -> dict:
         return self.ctx.member_profile(name, self.data, self.schema, self.memory)

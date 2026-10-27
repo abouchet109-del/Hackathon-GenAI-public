@@ -1,7 +1,7 @@
 """OSEF decision agent - single entry point.
 
   python run.py run --input input_examples/example_1.json [--profile full]
-  python run.py serve                      # POST /run on 0.0.0.0:$PORT
+  python run.py serve                      # POST /run and the console on $HOST:$PORT (127.0.0.1:8000 by default)
   python run.py ablation [--repeats 3]     # what each block adds, written to logs/
   python run.py learn --input item.json --decision pay --note "EDF up to 120 EUR"
   python run.py demo-memory                # 3 sessions: wrong, corrected, remembered
@@ -75,7 +75,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "serve":
         import uvicorn
-        uvicorn.run("app.server:app", host="0.0.0.0", port=int(os.getenv("PORT", "8000")))
+        # The console is a trusted local surface (no login): it listens on the loopback unless HOST says otherwise
+        # (docker-compose sets HOST=0.0.0.0 inside the container).
+        uvicorn.run("app.server:app", host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", "8000")))
         return 0
 
     from app.pipeline import Harness

@@ -56,7 +56,7 @@ Mac: `bash scripts/install-zetaris.sh` then `bash scripts/after-zetaris.sh` do a
 | --- | --- |
 | `python run.py steward-demo` | The scenario of the video: onboarding, the same question for two roles, the watch layer, a clarification, a CEO ruling that becomes a policy, a replaced price and the alert to the people whose work relied on it, the intern's contradiction, a masked secret and a quarantined injection, the CEO's weak signals |
 | `python run.py serve` | Console at `/console` (shared truth with topic history, CEO queue with policies, clarifications, weak signals, context preview, onboarding, simulate an AI); `POST /run` (one arbitration, the harness contract); `GET /finance/budgets`; `GET /health` |
-| `python run.py mcp` | The MCP server `osef-steward` over stdio: `onboard`, `observe`, `remember`, `my_context`, `whats_new`, `clarifications`, `answer_clarification`, `recall`, `why`, `project_brief`, `my_contributions`, `escalations`, `resolve_escalation` (the specification), plus `my_tasks`, `report_progress`, `my_alerts`; resource `osef://watchlist`; prompt `role_procedures` |
+| `python run.py mcp` | The MCP server `steward` over stdio: `onboard`, `observe`, `remember`, `my_context`, `whats_new`, `clarifications`, `answer_clarification`, `recall`, `why`, `project_brief`, `my_contributions`, `escalations`, `resolve_escalation` (the specification), plus `my_tasks`, `report_progress`, `my_alerts`; resource `osef://watchlist`; prompt `role_procedures` |
 | `python scripts/make_examples.py --check` | Re-runs the three examples of `input_examples/` and compares with `output_examples/` |
 | `python -m pytest -q` | 118 offline tests |
 | `cd hmem-service && npm run conformance` | The official Meterless H-MEM conformance suite, 13 checks |

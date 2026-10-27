@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "osef-steward": {
+    "steward": {
       "command": "/Users/ryandalier-dulys/open-agent-hack/.venv/bin/python",
       "args": ["/Users/ryandalier-dulys/open-agent-hack/run.py", "mcp"],
       "env": {

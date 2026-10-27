@@ -202,6 +202,7 @@ def decide(ctx: Context, domain: Domain, llm: LLM, tr: Tracer, critique: str | N
     if proposal and proposal.get("decision") in domain.config["decisions"]:
         proposal["model"] = result.model
         proposal["via"] = result.source
+        proposal["receipt_id"] = getattr(result, "receipt_id", None)  # Nightshift's receipt, when it sent one
     else:
         proposal = fallback_decision(ctx, domain)
     tr.event("Decider", "proposed_decision", input_summary=f"rules={len(ctx.matched_rules)} memories={len(ctx.memories)}"
@@ -209,7 +210,7 @@ def decide(ctx: Context, domain: Domain, llm: LLM, tr: Tracer, critique: str | N
              output_summary=f"{proposal['decision']}: {proposal.get('justification', '')}", target="Critic",
              model=proposal.get("model"), confidence=proposal.get("confidence"), retry=attempt,
              via=proposal.get("via"), cached=proposal.get("via") == "replay",
-             citations=proposal.get("citations", []))
+             receipt_id=proposal.get("receipt_id"), citations=proposal.get("citations", []))
     return proposal
 
 
@@ -257,12 +258,12 @@ def critique(ctx: Context, proposal: dict, domain: Domain, llm: LLM, tr: Tracer,
         problems += extra
         hard = hard or bool(extra)
 
-    scores, model, via = None, None, "rules-only"
+    scores, model, via, receipt_id = None, None, "rules-only", None
     result = llm.chat("judge", domain.critic_prompt, _evidence(ctx) + "\n\nPROPOSAL:\n" + json.dumps(proposal, ensure_ascii=False))
     judged = parse_json(result.text) if result else None
     if judged and isinstance(judged.get("scores"), dict):
         scores = {k: int(v) for k, v in judged["scores"].items() if isinstance(v, (int, float))}
-        model, via = result.model, result.source
+        model, via, receipt_id = result.model, result.source, getattr(result, "receipt_id", None)
         if judged.get("fix"):
             problems.append(judged["fix"])
     total = sum(scores.values()) if scores else (9 - 3 * len(problems))
@@ -274,5 +275,5 @@ def critique(ctx: Context, proposal: dict, domain: Domain, llm: LLM, tr: Tracer,
              input_summary=f"proposal={decision} citations={proposal.get('citations')}",
              output_summary=f"score={total}/9 " + ("; ".join(problems) if problems else "no issue"),
              target="Reporter" if passed else "Decider", model=model, confidence=total / 9, retry=attempt,
-             status="success" if passed else "needs_revision", via=via, cached=via == "replay")
+             status="success" if passed else "needs_revision", via=via, cached=via == "replay", receipt_id=receipt_id)
     return verdict

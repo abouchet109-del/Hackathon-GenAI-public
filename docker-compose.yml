@@ -9,6 +9,7 @@ services:
       ZETARIS_REST_URL: http://host.docker.internal:8888/api/v1.0
       METERLESS_BASE_URL: http://host.docker.internal:8088/v1
       HMEM_URL: http://hmem:8787
+      HOST: 0.0.0.0   # inside the container only; on a laptop `run.py serve` binds 127.0.0.1
     volumes: ["./logs:/app/logs", "./data:/app/data"]
     depends_on: [hmem]
     extra_hosts: ["host.docker.internal:host-gateway"]
@@ -42,7 +43,8 @@ services:
       - ./db/steward-init:/docker-entrypoint-initdb.d:ro
       - ./domains/project_memory/data:/seed:ro
 
-  # OSEF Steward, source 3/3: the company drive (S3-compatible), holding the role procedures as a CSV file.
+  # Optional S3 variant of source 3 (the company drive) for scripts/zetaris/register_steward_minio.sql.
+  # The submitted recipe (register_steward.sql) reads the same catalogue as a pinned jsDelivr REST table instead.
   # Source 2/3 is the finance REST API served by the app itself: GET /finance/budgets
   drive:
     image: minio/minio:latest

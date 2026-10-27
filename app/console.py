@@ -1,7 +1,13 @@
-"""Web console for Steward: CEO queue, shared truth, clarifications, context preview, onboarding.
+"""Web console for Steward: escalations, shared truth, clarifications, context preview, onboarding.
 
 The people of the team keep working in their own AI (MCP); this page is for the CEO, for the
 judges and for the demo. Every endpoint is a thin wrapper over app/steward.py.
+
+The console is a trusted local surface: it has no login, so `run.py serve` binds 127.0.0.1 by default,
+and the person behind it is named by STEWARD_CONSOLE_USER (the CEO of the team directory when unset).
+Escalations are resolved only when that person is the CEO; a clarification is answered only by its author
+or by the CEO. "Simulate an AI" takes the author from the form on purpose: it is a demo device that plays
+another member's AI, and its proposals go through the same arbitration as an MCP call.
 """
 from __future__ import annotations
 
@@ -27,13 +33,34 @@ def steward() -> Steward:
 def _guard(fn, *args, **kwargs):
     try:
         return fn(*args, **kwargs)
+    except PermissionError as error:
+        raise HTTPException(status_code=403, detail=str(error)) from error
     except (KeyError, ValueError) as error:
         raise HTTPException(status_code=400, detail=str(error).strip("'\"")) from error
 
 
+def operator() -> dict:
+    """Who is behind the console: STEWARD_CONSOLE_USER, else the CEO of the team directory."""
+    st = steward()
+    name = os.getenv("STEWARD_CONSOLE_USER", "").strip()
+    if not name:
+        rows = st.data.run_sql(f"SELECT name FROM {st.schema}.members WHERE level = 'ceo'", ["name"])
+        name = rows[0]["name"] if rows else ""
+    return st.profile(name) if name else {"name": "", "level": "unknown"}
+
+
+def _require_ceo() -> dict:
+    who = operator()
+    if who.get("level") != "ceo":
+        raise HTTPException(status_code=403, detail=f"{who.get('name') or 'the console operator'} is not the CEO "
+                            "in the team directory; escalations are answered by the CEO.")
+    return who
+
+
 @router.get("/stack")
 def stack() -> dict:
-    return steward().describe()
+    who = operator()
+    return {**steward().describe(), "operator": {"name": who.get("name"), "level": who.get("level")}}
 
 
 @router.get("/brief")
@@ -49,8 +76,9 @@ def escalations() -> dict:
 
 @router.post("/resolve")
 def resolve(payload: dict = Body(...)) -> dict:
+    who = _require_ceo()
     return _guard(steward().resolve, payload.get("journal_id", ""), payload.get("decision", ""),
-                  (payload.get("policy") or "").strip() or None)
+                  (payload.get("policy") or "").strip() or None, by=who["name"])
 
 
 @router.get("/clarifications")
@@ -60,8 +88,9 @@ def clarifications() -> list[dict]:
 
 @router.post("/answer")
 def answer(payload: dict = Body(...)) -> dict:
+    who = operator()
     return _guard(steward().answer_clarification, payload.get("journal_id", ""), payload.get("answer", ""),
-                  payload.get("note", ""))
+                  payload.get("note", ""), by=who.get("name") or "", ceo=who.get("level") == "ceo")
 
 
 @router.get("/why/{topic}")

@@ -99,10 +99,24 @@ def topics_in(text: str, wl: list[dict]) -> list[str]:
     return [t for _, t in sorted(scored, reverse=True)]
 
 
+def guard_source(text: str) -> list[str]:
+    """Code screens the raw excerpt before any model sees it: instructions aimed at AI tools and secrets.
+    The flags come back with the extraction, so every item of a flagged excerpt is quarantined or redacted
+    even if a model would have paraphrased the attempt away."""
+    flags = []
+    if logic.INJECTION.search(text or ""):
+        flags.append("injection")
+    flags += [f"secret:{name}" for name, p in logic.SECRET_PATTERNS.items() if p.search(text or "")]
+    return flags
+
+
 def extract(text: str, wl: list[dict], llm=None) -> list[dict]:
-    """Candidate items from an excerpt, a document or meeting notes. The model (fast lane) is tried first;
-    the deterministic splitter keeps the run going without it. Raw text is never stored."""
-    if llm is not None:
+    """Candidate items from an excerpt, a document or meeting notes. The guard runs first, in code, on the
+    raw text (guard_source); a flagged excerpt never reaches the model and goes through the deterministic
+    splitter sentence by sentence. Otherwise the model (fast lane) is tried first and the splitter keeps the
+    run going without it. Raw text is never stored."""
+    flags = guard_source(text)
+    if llm is not None and not flags:
         prompt = ("Extract from the text the items worth sharing with the whole team: decisions, facts, tasks, "
                   "progress updates, personal preferences. One self-contained English sentence each, keep figures and "
                   "dates exactly. Topic must be one of: " + ", ".join(t["topic"] for t in wl) + ". "
@@ -134,7 +148,7 @@ def extract(text: str, wl: list[dict], llm=None) -> list[dict]:
         else:
             kind = "fact"
         items.append({"kind": kind, "topic": found[0] if found else "general", "content": sentence,
-                      "extracted_by": "deterministic-splitter"})
+                      "extracted_by": "deterministic-splitter", "source_flags": flags})
     return items
 
 

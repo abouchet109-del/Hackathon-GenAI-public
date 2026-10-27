@@ -19,7 +19,7 @@ flowchart LR
   subgraph Clients["Each person's own AI (unchanged interface)"]
     C1[Claude Desktop] & C2[Cursor] & C3[other MCP clients]
   end
-  subgraph MCP["MCP server osef-steward (Python, stdio)"]
+  subgraph MCP["MCP server steward (Python, stdio)"]
     T[16 tools, resource watchlist, prompt role_procedures]
   end
   subgraph Core["Steward service (Python)"]
@@ -55,7 +55,7 @@ flowchart LR
 
 | Component | Responsibility | Interface | Language | Why this, not the alternative |
 | --- | --- | --- | --- | --- |
-| MCP server `osef-steward` (`app/mcp_server.py`) | What each person's AI can do: the 13 tools of the spec plus 3 coordination tools, the `osef://watchlist` resource, the `role_procedures` prompt, and the server instructions that make the client AI watch the company domains | MCP over stdio (Python SDK), tool annotations (read-only hints) | Python | The MCP SDK, the harness and the domain pack share one process and one lock; an HTTP MCP transport would add auth and deployment work the demo does not need. Provenance comes from `clientInfo` and the client config, never from tool arguments (ADR-6). |
+| MCP server `steward` (`app/mcp_server.py`) | What each person's AI can do: the 13 tools of the spec plus 3 coordination tools, the `osef://watchlist` resource, the `role_procedures` prompt, and the server instructions that make the client AI watch the company domains | MCP over stdio (Python SDK), tool annotations (read-only hints) | Python | The MCP SDK, the harness and the domain pack share one process and one lock; an HTTP MCP transport would add auth and deployment work the demo does not need. Provenance comes from `clientInfo` and the client config, never from tool arguments (ADR-6). |
 | Steward service (`app/steward.py`) | One entry point for every surface (MCP, console, CLI, tests): remember, observe, context, what's new, clarifications, escalations, signals, onboarding, progress, alerts. Holds the cross-process write lock | Python API | Python | Every client AI runs its own MCP server process; without one writer per company memory two contradictory values could both pass arbitration (ADR-9). |
 | Harness (`app/pipeline.py`, `app/agents.py`) | The reasoning loop: intake and guard (code), researcher (SQL through Zetaris), memory keeper (H-MEM recall), rule matching, arbiter (model, deep lane) and judge (hard checks in code, then a 9-point rubric on the judge lane; below 7 the arbiter revises once, twice, then escalates), reporter, apply | `Harness.run(item, commit=True)`; domain hooks `research`, `enrich`, `recall`, `evaluate_with_memory`, `hard_checks`, `apply`, `learn` | Python | Generic: a second domain pack (`domains/admin/`) runs on the same loop, which is the proof that the architecture does not depend on the use case. The judge keeps non-negotiable checks in code (secrets, injection, authority, limits) so that a model cannot argue them away. |
 | Domain pack `project_memory` (`domains/project_memory/`) | Brikk's governance and the seven sub-agents of the spec: extractor (fast lane, deterministic splitter as fallback), guard, arbiter prompt, judge rubric, clarifier (S06/S10: "error or real change?"), CEO agent (queue, policies, weak signals, meetings), context composer (role x task x weight x recency, about 1,500 tokens, every line cited) | `domain.yaml` + `logic.py` + `context.py` + data CSVs + prompts + cases | Python + CSV + YAML | Rules, data and prompts live next to each other and are versioned; the harness stays generic. |
@@ -71,7 +71,7 @@ flowchart LR
 ```mermaid
 sequenceDiagram
   participant AI as Person's AI (MCP client)
-  participant MCP as osef-steward
+  participant MCP as steward
   participant X as Extractor (fast lane)
   participant G as Guard (code)
   participant R as Researcher (Zetaris)

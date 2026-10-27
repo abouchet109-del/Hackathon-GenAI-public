@@ -7,8 +7,8 @@ that AI's harness:
    a watched company domain, the AI sends the relevant excerpt to `observe`. Only extracted items are
    arbitrated and kept; the raw conversation never is.
 2. a CONTEXT LAYER: `my_context(task)` returns the smallest useful company context for this person's
-   role and this task (about 1,500 tokens), `whats_new` what changed since their last session.
-3. a TRUTH LAYER: every write is arbitrated by the Steward (guard -> Zetaris governance -> H-MEM ->
+   role and this task (within a 1,500-token budget), `whats_new` what changed since their last session.
+3. a TRUTH LAYER: every write is arbitrated by Steward (guard -> Zetaris governance -> H-MEM ->
    Decider <-> Critic): store, supersede, reject, redact, clarify, escalate or quarantine.
 
 Run:  python run.py mcp            (stdio; the client starts it)
@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 
 try:  # MCP Python SDK 2.x
     from mcp.server.mcpserver import Context, MCPServer as _Server
@@ -47,10 +48,21 @@ INSTRUCTIONS = """You are connected to Steward, the company's shared context. Fo
 3. TELL THE OUTCOME. observe and remember return the Steward's verdict per item (stored, replaced an older decision, masked, rejected, needs clarification, escalated, quarantined). Tell the user in one line. If a clarification is needed, ask the user the question ("error or real change?") and send the answer with answer_clarification.
 4. NEVER put passwords, keys, bank details or personal data in what you send; the Steward masks them anyway.
 5. PROGRESS. When the user finishes or advances one of their tasks (see my_tasks), call report_progress with the progress and the company values the work relies on (launch date, price, ...).
-6. RELAY. When you relay a Steward result, lead with the verdict in plain words and its ID in parentheses ("Steward escalated this to the CEO (j-1793...)."). Keep every number, name and ID exactly as given. Write current values in bold and replaced values struck through (~~29 EUR~~ **35 EUR**). Never present a value Steward marked as replaced as current. If Steward gives a Limits line, mention it. Do not add emoji. Each result carries a `text` field in that form: quote it when the user wants the detail.
+6. RELAY. When you relay a Steward result, lead with the verdict in plain words and its ID in parentheses ("Steward escalated this to the CEO (E-0013)."). Keep every number, name and ID exactly as given. Write current values in bold and replaced values struck through (~~€39~~ **€49**). Never present a value Steward marked as replaced as current. If Steward gives a Limits line, mention it. Do not add emoji. Each result carries a `text` field in that form (here the IDs look like j-1761... and mem-...): quote it when the user wants the detail.
 7. Personal preferences about how the user likes to work stay in your own memory, not in the company's."""
 
-server = _Server("osef-steward", instructions=INSTRUCTIONS)
+def _version() -> str:
+    try:
+        meta = json.loads((Path(__file__).resolve().parents[1] / "metadata.json").read_text(encoding="utf-8"))
+        return str(meta.get("version") or "")
+    except (OSError, ValueError):
+        return ""
+
+
+try:
+    server = _Server("steward", instructions=INSTRUCTIONS, version=_version())
+except TypeError:  # an SDK without the version argument
+    server = _Server("steward", instructions=INSTRUCTIONS)
 _steward: Steward | None = None
 
 
@@ -83,7 +95,7 @@ def _me(ctx: Context | None) -> tuple[str, str]:
 
 @server.tool(annotations=READ)
 def my_context(task: str, ctx: Context = None) -> dict:
-    """The company context this person needs for this task, tailored to their role (about 1,500 tokens).
+    """The company context this person needs for this task, tailored to their role (within a 1,500-token budget).
     task: what the user is working on, in their words (e.g. "answer a customer asking for a discount")."""
     member, _ = _me(ctx)
     res = steward().my_context(member, task)
@@ -103,13 +115,13 @@ def whats_new(ctx: Context = None) -> dict:
 
 @server.tool(annotations=READ)
 def recall(query: str, topic: str = "") -> dict:
-    """Active shared memories relevant to a question, each with who proposed it and from which AI."""
+    """Records of the shared truth relevant to a question, each with who proposed it and from which AI."""
     return {"memories": steward().recall(query, topic=topic or None)}
 
 
 @server.tool(annotations=READ)
 def why(topic: str) -> dict:
-    """History of a topic: the current decision, every replaced version (kept, never deleted) and the Steward's journal."""
+    """History of a topic: the current decision, every replaced version (kept, never deleted) and Steward's journal."""
     return steward().why(topic)
 
 
@@ -121,7 +133,7 @@ def project_brief() -> dict:
 
 @server.tool(annotations=READ)
 def my_contributions(ctx: Context = None) -> dict:
-    """Everything the Steward extracted from this person's conversations, and what it decided for each item."""
+    """Everything Steward extracted from this person's conversations, and what it decided for each item."""
     member, _ = _me(ctx)
     return {"contributions": steward().my_contributions(member)}
 
@@ -142,7 +154,7 @@ def observe(excerpt: str, source: str = "conversation", title: str = "", ctx: Co
                                  content=o.get("extracted", ""), author=member, ai_tool=ai, department=dept,
                                  to="CEO" if o.get("decision") == "escalate" else None)
     res["text"] = "\n\n".join(o["text"] for o in res.get("outcomes", [])) or \
-        "§ Steward · nothing to keep · the excerpt held no decision, fact or task on a watched topic."
+        "§ Steward · REJECTED · pending\nWhy         The excerpt held no decision, fact or task on a watched topic."
     return res
 
 
@@ -168,10 +180,21 @@ def clarifications(ctx: Context = None) -> dict:
 
 
 @server.tool(annotations=WRITE)
-def answer_clarification(journal_id: str, answer: str, note: str = "") -> dict:
-    """Answer the Steward's question about a contradiction. answer: "error" (withdraw it) or "change"
-    (it is a real change: it goes to the topic owner or the CEO)."""
-    return steward().answer_clarification(journal_id, answer, note)
+def answer_clarification(journal_id: str, answer: str, note: str = "", ctx: Context = None) -> dict:
+    """Answer Steward's question about a contradiction. answer: "error" (withdraw it) or "change"
+    (it is a real change: it goes to the CEO). Only the author of the proposal can answer."""
+    member, ai = _me(ctx)
+    try:
+        res = steward().answer_clarification(journal_id, answer, note, by=member)
+    except PermissionError as error:
+        return {"error": str(error)}
+    word = "withdrawn" if res.get("status", "").endswith("withdrawn_by_author") else "escalate"
+    res["text"] = verdict_text({"decision": word, "why": res.get("reason") or "Withdrawn by its author as an error.",
+                                "applied": {"journal_id": journal_id}, "stack": steward().describe()},
+                               content=res.get("content", ""), author=member, ai_tool=ai,
+                               department=steward().profile(member).get("department"),
+                               to="CEO" if word == "escalate" else None)
+    return res
 
 
 @server.tool(annotations=WRITE)
@@ -222,11 +245,18 @@ def escalations() -> dict:
 def resolve_escalation(journal_id: str, decision: str, policy: str = "") -> dict:
     """CEO only. Answer an escalation with store, supersede or reject. Optional policy: a standing rule in plain words
     (e.g. "Marketing may commit up to 12,000 EUR per trade show without asking me") that the Steward applies next time."""
-    member, _ = _me(None)
+    member, ai = _me(None)
     who = steward().profile(member)
     if who.get("level") != "ceo":
         return {"error": f"{member} is not the CEO in the team directory; escalations are answered by the CEO."}
-    return steward().resolve(journal_id, decision, policy or None)
+    res = steward().resolve(journal_id, decision, policy or None, by=member)
+    res["text"] = verdict_text({"decision": decision, "applied": {"memory_id": res.get("memory_id"),
+                                                                  "journal_id": journal_id},
+                                "why": f"Ruled by the CEO{' with a new policy' if policy else ''}.",
+                                "alerts_sent": res.get("alerts_sent"), "stack": steward().describe(),
+                                "citations": [c for c in (res.get("supersedes"), res.get("policy_id")) if c]},
+                               content=res.get("content", ""), author=member, ai_tool=ai, department="Executive")
+    return res
 
 
 # ---------- resources and prompts ----------

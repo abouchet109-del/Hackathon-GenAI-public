@@ -135,7 +135,8 @@ def intake(item: dict) -> dict:
         "amount_eur": max(amounts) if amounts else None,
         "dates": DATE.findall(content),
         "secrets": secrets,
-        "injection": bool(INJECTION.search(content)),
+        # the excerpt's own flags (context.guard_source) count as the item's: a model cannot launder them away
+        "injection": bool(INJECTION.search(content)) or "injection" in (item.get("source_flags") or []),
         "personal": kind == "preference" or bool(PERSONAL.search(content)),
         "received_at": item.get("received_at"),
     }
@@ -405,8 +406,13 @@ def apply(decision: str, item: dict, facts: dict, memories: list[dict], memory, 
             "status": entry["status"]}
 
 
-def resolve(journal_id: str, decision: str, memory, policy: str | None = None) -> dict:
-    """The CEO answers an escalation: store / supersede / reject, and optionally turns the answer into a policy."""
+def _now() -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%S")
+
+
+def resolve(journal_id: str, decision: str, memory, policy: str | None = None, by: str | None = None) -> dict:
+    """The CEO answers an escalation: store / supersede / reject, and optionally turns the answer into a policy.
+    `by` names the person who answered; the callers (MCP tool, console) check that this person is the CEO."""
     rows = journal(memory)
     entry = next((r for r in rows if r["journal_id"] == journal_id), None)
     if entry is None:
@@ -430,13 +436,16 @@ def resolve(journal_id: str, decision: str, memory, policy: str | None = None) -
         content, tags = learn(entry["item"], decision, policy, department=entry.get("department"))
         policy_record = memory.add(content, tags, source="CEO", confidence=0.95, event="user_correction")
     entry.update({"status": f"resolved:{decision}", "memory_id": record["id"] if record else None,
-                  "supersedes": replaced, "policy_id": policy_record["id"] if policy_record else None})
+                  "supersedes": replaced, "policy_id": policy_record["id"] if policy_record else None,
+                  "resolved_by": by, "resolved_at": _now()})
     _journal_write(memory, rows)
     return entry
 
 
-def answer_clarification(journal_id: str, answer: str, memory, note: str = "") -> dict:
-    """The author answers 'error or real change?'. An error withdraws the proposal; a real change goes to the owner."""
+def answer_clarification(journal_id: str, answer: str, memory, note: str = "", by: str | None = None,
+                         ceo: bool = False) -> dict:
+    """The author answers 'error or real change?'. An error withdraws the proposal; a real change goes to the CEO.
+    Only the author of the proposal may answer (the CEO may answer from the console); `by` is kept in the journal."""
     rows = journal(memory)
     entry = next((r for r in rows if r["journal_id"] == journal_id), None)
     if entry is None:
@@ -445,10 +454,15 @@ def answer_clarification(journal_id: str, answer: str, memory, note: str = "") -
         raise ValueError(f"{journal_id} is {entry['status']}, not awaiting the author")
     if answer not in {"error", "change"}:
         raise ValueError("answer must be 'error' or 'change'")
+    if by is not None and not ceo and (by or "").strip().lower() != (entry.get("author") or "").strip().lower():
+        raise PermissionError(f"{journal_id} waits for its author, {entry.get('author')}; {by or 'this person'} "
+                              "cannot answer for them.")
     if answer == "error":
-        entry.update({"status": "resolved:withdrawn_by_author", "author_note": note})
+        entry.update({"status": "resolved:withdrawn_by_author", "author_note": note, "answered_by": by,
+                      "answered_at": _now()})
     else:
-        entry.update({"status": "pending", "decision": "escalate", "author_note": note,
+        entry.update({"status": "pending", "decision": "escalate", "author_note": note, "answered_by": by,
+                      "answered_at": _now(),
                       "reason": f"Author confirms a real change. {entry.get('reason') or ''}".strip()})
     _journal_write(memory, rows)
     return entry
