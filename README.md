@@ -136,6 +136,7 @@ Two codebases were merged on 27 October: Steward (Ryan Dalier-Dulys with Claude)
 ## Known limits
 
 - The watch layer relies on the client AI following the MCP server instructions; MCP cannot read a conversation by itself. The guard in code screens every excerpt before the model sees it, so an injected instruction is quarantined even if the model would have obeyed it; what the client AI does with its own context before calling Steward is outside Steward's reach.
+- A verdict depends on the kind the client passes (`remember(kind=...)`, the Simulate form): a commitment entered as a fact is stored as shared knowledge without a limit check. The tool description tells the client AI that a spend, a price, a date or a choice is a decision; `observe` classifies in code from the wording.
 - The console is a trusted local surface: no login, loopback only, the CEO of the directory as operator; "Simulate an AI" takes the author from the form on purpose (a demo device that plays another member's AI, through the same arbitration).
 - Identity is declared in each client's configuration (`OSEF_MEMBER`); the AI tool comes from MCP `clientInfo`. Production would use OAuth.
 - The finance source is served by the Steward app: when only an MCP server process runs, Zetaris cannot read it, and contexts and signals say so (`warnings`) instead of failing.

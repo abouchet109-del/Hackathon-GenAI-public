@@ -167,7 +167,9 @@ def observe(excerpt: str, source: str = "conversation", title: str = "", ctx: Co
 @server.tool(annotations=WRITE)
 def remember(content: str, kind: str = "fact", topic: str = "", ctx: Context = None) -> dict:
     """Explicitly propose one item to the company's shared memory.
-    kind: decision | fact | task | preference. topic: optional (see the watchlist); the Steward infers it otherwise."""
+    kind: decision | fact | task | preference. A commitment the user makes (a spend, a price, a date, a choice) is a
+    decision and is checked against limits and policies; what the user reports or noticed is a fact.
+    topic: optional (see the watchlist); the Steward infers it otherwise."""
     member, ai = _me(ctx)
     res = steward().remember(content, author=member, ai_tool=ai, kind=kind, topic=topic or None)
     if res.get("decision"):
