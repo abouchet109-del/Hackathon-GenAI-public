@@ -177,8 +177,8 @@ Mis à jour par chaque session à chaque tâche terminée (heure de Paris). Éta
 |---|---|---|---|---|
 | 0 | Contrats entre composants | Faite | 27/10 17:31 | `agent/contracts.py` (76d3b58) |
 | 0 | 1. Corpus Atlas et résultats attendus | Faite | 27/10 17:40 | Variantes S2 et S3, attendus S1 à S9 (8501863) ; relecture de l'équipe à confirmer |
-| 0 | 2. Enregistrement dans Zetaris | En cours | 27/10 17:50 | Vérifications préalables passées ; création de la base et de la première table en attente de l'accord de l'équipe |
-| 0 | 3. Client Zetaris | En cours | 27/10 17:50 | Code en cours dans la session de l'incrément 0, pas encore commité |
+| 0 | 2. Enregistrement dans Zetaris | Faite | 27/10 17:49 | Sources Atlas enregistrées, script `scripts/register_zetaris.py` (167c618) |
+| 0 | 3. Client Zetaris | Faite | 27/10 17:49 | `agent/zetaris.py`, cache dans `data/cache/zetaris/` (167c618) ; 60 tests au vert à 17:58 |
 | 0 | 4. Nemotron imposé et journalisé | À faire | — | — |
 | 0 | 5. Appel LLM commun | À faire | — | — |
 | 1 | 6, 10, 12, 13, 21, 22, 23 | À faire | — | — |

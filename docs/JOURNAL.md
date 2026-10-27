@@ -15,6 +15,12 @@ Format d'une entrée :
 
 ---
 
+## 27/10 17:49 — Incrément 0, tâches 2 et 3 (session dédiée)
+- Fait : sources Atlas enregistrées dans Zetaris (script idempotent), client Zetaris avec cache pour `SAMPLE_MODE`.
+- Tâches du plan : n° 2 et 3 (incrément 0), faites.
+- Commits : 167c618. Vérifié : 60 tests au vert (suite relancée à 17:58).
+- Reste : n° 4 et 5 (Nemotron, appel LLM commun).
+
 ## 27/10 17:55 — Instructions de Claude et suivi du projet
 - Fait : `CLAUDE.md` réécrit (synchronisation au démarrage, boucle comprendre, planifier, tester, faire, vérifier, relire, livrer ; principes de code et des systèmes agentiques ; relecture avant commit ; git en parallèle ; protocole de fin de session) ; ce journal ; section 7 « Suivi » dans `docs/PLAN.md`. Un `AGENTS.md` créé à 17:48 (e7d38b5) a été fusionné dans `CLAUDE.md` puis supprimé, à la demande de l'équipe.
 - Commits : e7d38b5, puis le commit de ce journal.
