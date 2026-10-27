@@ -1,34 +1,219 @@
 {
-  "updated": "2026-10-27T18:45:00+01:00",
-  "statuses": ["not_started", "failing", "passing"],
-  "requirements": [
-    {"id": "R01", "requirement": "A fresh clone runs the offline test suite in SAMPLE_MODE", "command": "python -m pytest -q", "expected": "all tests passed", "status": "passing", "note": "43 passed before the merge; 112+ expected after"},
-    {"id": "R02", "requirement": "The full scenario runs from the CLI without Zetaris or Nightshift", "command": "python run.py steward-demo", "expected": "exit 0, 8 steps printed, stack line says sample-sqlite / local-fallback / offline", "status": "passing"},
-    {"id": "R03", "requirement": "The 13 MCP tools of the v2 spec, the watchlist resource and the role_procedures prompt answer a real MCP client", "command": "python scripts/mcp_smoke.py", "expected": "PASS and the 13 names listed", "status": "failing", "note": "clarifications is not a tool yet (folded into whats_new); 15 tools present"},
-    {"id": "R04", "requirement": "Meterless H-MEM conformance suite passes on the vendored reference", "command": "cd hmem-service && npm run conformance", "expected": "13/13 checks passed", "status": "passing"},
-    {"id": "R05", "requirement": "Supersedes chains with provenance: a replaced decision is kept, down-ranked, and visible in why()", "command": "python -m pytest -q tests/test_steward.py -k supersede", "expected": "passed", "status": "passing"},
-    {"id": "R06", "requirement": "whats_new uses a per-person cursor", "command": "python -m pytest -q tests/test_steward.py -k whats_new", "expected": "passed", "status": "passing"},
-    {"id": "R07", "requirement": "Source weight = role x domain, interns cannot decide", "command": "python -m pytest -q tests/test_steward.py -k trust", "expected": "passed", "status": "passing"},
-    {"id": "R08", "requirement": "A lower-weight contradiction asks its author (error or real change) before escalating", "command": "python -m pytest -q tests/test_steward.py -k clarif", "expected": "passed", "status": "passing"},
-    {"id": "R09", "requirement": "my_context stays within about 1,500 tokens and cites every line", "command": "python -m pytest -q tests/test_steward.py -k context", "expected": "passed", "status": "passing"},
-    {"id": "R10", "requirement": "Weak signals go to the CEO and the people concerned with a suggested meeting; late and obsolete work and blocking tasks are flagged", "command": "python -m pytest -q tests/test_coordination_bridge.py", "expected": "passed", "status": "passing"},
-    {"id": "R11", "requirement": "Onboarding questionnaire as an MCP tool and as a console page", "command": "python -m pytest -q tests/test_steward.py -k onboard", "expected": "passed", "status": "passing"},
-    {"id": "R12", "requirement": "Console screens: shared truth, CEO queue with policies, clarifications, weak signals, topic history, onboarding, traces", "command": "STEWARD_SPACE=review python run.py serve  # then open /console", "expected": "every screen renders (ui-reviewer screenshots)", "status": "failing", "note": "no trace viewer screen yet; topic history is a dialog"},
-    {"id": "R13", "requirement": "POST /run and GET /health answer", "command": "python -m pytest -q tests/test_server.py", "expected": "passed", "status": "not_started"},
-    {"id": "R14", "requirement": "Zetaris: three sources registered and the USL brikk_usl compiled; Steward reads through it", "command": "python scripts/zetaris/run_steward_sql.py && ZETARIS_USE_USL=true python run.py steward-brief", "expected": "19+ statements succeed; brief reads members through lightning.metastore.osef.brikk_usl", "status": "not_started", "note": "needs a machine with Zetaris: Ryan's Mac (not reachable at 18:12) or the team's PC"},
-    {"id": "R15", "requirement": "Nightshift with Nemotron: a trace line shows a nvidia/nemotron-* model served through Nightshift", "command": "python scripts/configure_nightshift.py && python run.py steward-demo && grep -l nemotron logs/trace-*.jsonl", "expected": "at least one trace file", "status": "not_started", "note": "needs a machine with Nightshift and the NVIDIA key"},
-    {"id": "R16", "requirement": "Ablation with Nemotron, one pass, numbers in the README", "command": "DOMAIN=project_memory python run.py ablation", "expected": "logs/ablation-*.md with a non-offline model", "status": "not_started"},
-    {"id": "R17", "requirement": "docker compose up starts app, H-MEM and the Brikk sources", "command": "docker compose config --quiet && docker compose up -d", "expected": "services healthy", "status": "not_started", "note": "no Docker in the build container; validated on the Mac on 27/10 00:5x for brikk-db/drive only"},
-    {"id": "R18", "requirement": "Three example inputs and their real outputs", "command": "python scripts/make_examples.py --check", "expected": "3 inputs, 3 outputs, outputs equal a fresh run", "status": "not_started"},
-    {"id": "R19", "requirement": "JSONL traces from real executions are committed", "command": "ls logs/samples/*.jsonl", "expected": "at least one file; every line has a model field", "status": "not_started"},
-    {"id": "R20", "requirement": "Submission files present: metadata.json, .env.example, LICENSE, NOTICE, docs/SPONSORS.md, docs/PRIOR_WORK.md, CONTRIBUTING.md, CI", "command": "python -c \"import json;json.load(open('metadata.json'))\" && ls LICENSE NOTICE CONTRIBUTING.md docs/SPONSORS.md docs/PRIOR_WORK.md .github/workflows/tests.yml", "expected": "all present", "status": "failing", "note": "SPONSORS.md, PRIOR_WORK.md, CONTRIBUTING.md, CI missing; LICENSE pending Ryan"},
-    {"id": "R21", "requirement": "The seven review agents exist in .claude/agents", "command": "ls .claude/agents/*.md | wc -l", "expected": "7", "status": "passing"},
-    {"id": "R22", "requirement": "Brand rules applied on every visible surface", "command": "agent brand-consistency", "expected": "PASS or listed minors", "status": "not_started"},
-    {"id": "R23", "requirement": "No secret in the git history, .env ignored", "command": "git log -p | grep -c -E 'nvapi-[A-Za-z0-9]{8}|sk-live|rt-[A-Za-z0-9]{16}' ; grep -n '^.env' .gitignore", "expected": "0 matches; .env ignored", "status": "not_started"},
-    {"id": "R24", "requirement": "Every README, SPONSORS and metadata claim is backed by code or logs", "command": "agent claims-auditor", "expected": "PASS", "status": "not_started"},
-    {"id": "R25", "requirement": "docs/SUBMISSION.md ready to paste: name, one sentence, sponsor usage, prior work, video script with commands", "command": "test -s docs/SUBMISSION.md", "expected": "present and complete", "status": "not_started"},
-    {"id": "R26", "requirement": "unify pushed to the shared repository and main submittable at T2", "command": "git ls-remote https://github.com/abouchet109-del/Hackathon-GenAI-public unify main", "expected": "unify present; main contains the unified tree after Ryan's merge", "status": "not_started", "note": "push from this session refused; bundle handed to Ryan"},
-    {"id": "R27", "requirement": "The team's Atlas tests still pass in the unified tree", "command": "python -m pytest -q tests/ -k 'not steward'", "expected": "92 passed", "status": "not_started"},
-    {"id": "R28", "requirement": "Windows start script works on the team's PC", "command": "powershell -ExecutionPolicy Bypass -File scripts\\windows\\setup.ps1", "expected": "tests and MCP smoke pass; logs/setup-windows.log", "status": "not_started", "note": "untested: no Windows machine here"}
-  ]
+ "updated": "2026-10-27T19:50:00+01:00",
+ "statuses": [
+  "not_started",
+  "failing",
+  "passing"
+ ],
+ "requirements": [
+  {
+   "id": "R01",
+   "requirement": "A fresh clone runs the offline test suite in SAMPLE_MODE",
+   "command": "python -m pytest -q",
+   "expected": "all tests passed",
+   "status": "passing",
+   "note": "118 passed, 48 subtests (27/10 19:45)"
+  },
+  {
+   "id": "R02",
+   "requirement": "The full scenario runs from the CLI without Zetaris or Nightshift",
+   "command": "python run.py steward-demo",
+   "expected": "exit 0, 8 steps printed, stack line says sample-sqlite / local-fallback / offline",
+   "status": "passing"
+  },
+  {
+   "id": "R03",
+   "requirement": "The 13 MCP tools of the v2 spec, the watchlist resource and the role_procedures prompt answer a real MCP client",
+   "command": "python scripts/mcp_smoke.py",
+   "expected": "PASS and the 13 names listed",
+   "status": "passing",
+   "note": "16 tools; smoke prints 13/13 + 3/3, PASS"
+  },
+  {
+   "id": "R04",
+   "requirement": "Meterless H-MEM conformance suite passes on the vendored reference",
+   "command": "cd hmem-service && npm run conformance",
+   "expected": "13/13 checks passed",
+   "status": "passing"
+  },
+  {
+   "id": "R05",
+   "requirement": "Supersedes chains with provenance: a replaced decision is kept, down-ranked, and visible in why()",
+   "command": "python -m pytest -q tests/test_steward.py -k supersede",
+   "expected": "passed",
+   "status": "passing"
+  },
+  {
+   "id": "R06",
+   "requirement": "whats_new uses a per-person cursor",
+   "command": "python -m pytest -q tests/test_steward.py -k whats_new",
+   "expected": "passed",
+   "status": "passing"
+  },
+  {
+   "id": "R07",
+   "requirement": "Source weight = role x domain, interns cannot decide",
+   "command": "python -m pytest -q tests/test_steward.py -k trust",
+   "expected": "passed",
+   "status": "passing"
+  },
+  {
+   "id": "R08",
+   "requirement": "A lower-weight contradiction asks its author (error or real change) before escalating",
+   "command": "python -m pytest -q tests/test_steward.py -k clarif",
+   "expected": "passed",
+   "status": "passing"
+  },
+  {
+   "id": "R09",
+   "requirement": "my_context stays within about 1,500 tokens and cites every line",
+   "command": "python -m pytest -q tests/test_steward.py -k context",
+   "expected": "passed",
+   "status": "passing"
+  },
+  {
+   "id": "R10",
+   "requirement": "Weak signals go to the CEO and the people concerned with a suggested meeting; late and obsolete work and blocking tasks are flagged",
+   "command": "python -m pytest -q tests/test_coordination_bridge.py",
+   "expected": "passed",
+   "status": "passing"
+  },
+  {
+   "id": "R11",
+   "requirement": "Onboarding questionnaire as an MCP tool and as a console page",
+   "command": "python -m pytest -q tests/test_steward.py -k onboard",
+   "expected": "passed",
+   "status": "passing"
+  },
+  {
+   "id": "R12",
+   "requirement": "Console screens: shared truth, CEO queue with policies, clarifications, weak signals, topic history, onboarding, traces",
+   "command": "STEWARD_SPACE=review python run.py serve  # then open /console",
+   "expected": "every screen renders (ui-reviewer screenshots)",
+   "status": "failing",
+   "note": "no trace viewer screen; topic history is a dialog (cut 3 candidate)"
+  },
+  {
+   "id": "R13",
+   "requirement": "POST /run and GET /health answer",
+   "command": "python -m pytest -q tests/test_server.py",
+   "expected": "passed",
+   "status": "passing",
+   "note": "tests/test_server.py: 3 passed"
+  },
+  {
+   "id": "R14",
+   "requirement": "Zetaris: three sources registered and the USL brikk_usl compiled; Steward reads through it",
+   "command": "python scripts/zetaris/run_steward_sql.py && ZETARIS_USE_USL=true python run.py steward-brief",
+   "expected": "19+ statements succeed; brief reads members through lightning.metastore.osef.brikk_usl",
+   "status": "not_started",
+   "note": "needs a machine with Zetaris: Ryan's Mac (not reachable at 18:12) or the team's PC"
+  },
+  {
+   "id": "R15",
+   "requirement": "Nightshift with Nemotron: a trace line shows a nvidia/nemotron-* model served through Nightshift",
+   "command": "python scripts/configure_nightshift.py && python run.py steward-demo && grep -l nemotron logs/trace-*.jsonl",
+   "expected": "at least one trace file",
+   "status": "not_started",
+   "note": "needs a machine with Nightshift and the NVIDIA key"
+  },
+  {
+   "id": "R16",
+   "requirement": "Ablation with Nemotron, one pass, numbers in the README",
+   "command": "DOMAIN=project_memory python run.py ablation",
+   "expected": "logs/ablation-*.md with a non-offline model",
+   "status": "not_started"
+  },
+  {
+   "id": "R17",
+   "requirement": "docker compose up starts app, H-MEM and the Brikk sources",
+   "command": "docker compose config --quiet && docker compose up -d",
+   "expected": "services healthy",
+   "status": "not_started",
+   "note": "no Docker in the build container; validated on the Mac on 27/10 00:5x for brikk-db/drive only"
+  },
+  {
+   "id": "R18",
+   "requirement": "Three example inputs and their real outputs",
+   "command": "python scripts/make_examples.py --check",
+   "expected": "3 inputs, 3 outputs, outputs equal a fresh run",
+   "status": "passing",
+   "note": "3 inputs, 3 outputs, --check: outputs match a fresh run"
+  },
+  {
+   "id": "R19",
+   "requirement": "JSONL traces from real executions are committed",
+   "command": "ls logs/samples/*.jsonl",
+   "expected": "at least one file; every line has a model field",
+   "status": "passing",
+   "note": "11 files in logs/samples (offline run, model null, said so in README)"
+  },
+  {
+   "id": "R20",
+   "requirement": "Submission files present: metadata.json, .env.example, LICENSE, NOTICE, docs/SPONSORS.md, docs/PRIOR_WORK.md, CONTRIBUTING.md, CI",
+   "command": "python -c \"import json;json.load(open('metadata.json'))\" && ls LICENSE NOTICE CONTRIBUTING.md docs/SPONSORS.md docs/PRIOR_WORK.md .github/workflows/tests.yml",
+   "expected": "all present",
+   "status": "failing",
+   "note": "all present except the LICENSE copyright line (pending Ryan)"
+  },
+  {
+   "id": "R21",
+   "requirement": "The seven review agents exist in .claude/agents",
+   "command": "ls .claude/agents/*.md | wc -l",
+   "expected": "7",
+   "status": "passing"
+  },
+  {
+   "id": "R22",
+   "requirement": "Brand rules applied on every visible surface",
+   "command": "agent brand-consistency",
+   "expected": "PASS or listed minors",
+   "status": "not_started"
+  },
+  {
+   "id": "R23",
+   "requirement": "No secret in the git history, .env ignored",
+   "command": "git log -p | grep -c -E 'nvapi-[A-Za-z0-9]{8}|sk-live|rt-[A-Za-z0-9]{16}' ; grep -n '^.env' .gitignore",
+   "expected": "0 matches; .env ignored",
+   "status": "not_started"
+  },
+  {
+   "id": "R24",
+   "requirement": "Every README, SPONSORS and metadata claim is backed by code or logs",
+   "command": "agent claims-auditor",
+   "expected": "PASS",
+   "status": "not_started"
+  },
+  {
+   "id": "R25",
+   "requirement": "docs/SUBMISSION.md ready to paste: name, one sentence, sponsor usage, prior work, video script with commands",
+   "command": "test -s docs/SUBMISSION.md",
+   "expected": "present and complete",
+   "status": "not_started"
+  },
+  {
+   "id": "R26",
+   "requirement": "unify pushed to the shared repository and main submittable at T2",
+   "command": "git ls-remote https://github.com/abouchet109-del/Hackathon-GenAI-public unify main",
+   "expected": "unify present; main contains the unified tree after Ryan's merge",
+   "status": "not_started",
+   "note": "push from this session refused; bundle handed to Ryan"
+  },
+  {
+   "id": "R27",
+   "requirement": "The team's Atlas tests still pass in the unified tree",
+   "command": "python -m pytest -q tests/ -k 'not steward'",
+   "expected": "92 passed",
+   "status": "passing",
+   "note": "92 passed inside the unified tree"
+  },
+  {
+   "id": "R28",
+   "requirement": "Windows start script works on the team's PC",
+   "command": "powershell -ExecutionPolicy Bypass -File scripts\\windows\\setup.ps1",
+   "expected": "tests and MCP smoke pass; logs/setup-windows.log",
+   "status": "not_started",
+   "note": "untested: no Windows machine here"
+  }
+ ]
 }

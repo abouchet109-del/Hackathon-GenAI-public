@@ -13,3 +13,14 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 
 ## Next action
 - Write `docs/ARCHITECTURE.md`, launch `architect-reviewer`, write `docs/PLAN.md` and `tests.json`, then build `unify` (git merge of both histories, `agent/` -> `atlas/`).
+
+## 18:45 Phase 2 and 3, architecture and plan
+- `docs/ARCHITECTURE.md`, `docs/PLAN.md`, `tests.json`, `.claude/agents/` (7) written. Architect review round 1 at 18:55: FAIL (1 blocker, 5 majors): all fixed in `57c2a56`; answers in the document's review log.
+
+## 19:00 Phase 4, build on `unify` (clone of the shared repo, /home/claude/abouchet109-del/hackathon-genai-public)
+- `35c18ee` merge of both histories; `d81f26f` agent/ -> atlas/, docs -> docs/atlas/, bridge imports atlas; `57c2a56` review fixes + examples + traces + server tests; `bbc39a3` Zetaris source 3 as a jsDelivr REST table; `f482b03` CI, CONTRIBUTING, PRIOR_WORK, SPONSORS, metadata; `1ba1ba8` README, CLAUDE.md, smoke test. 118 tests pass; demo, MCP smoke and examples check pass.
+- Not done yet: MCP text mode (design rules section 12), trace viewer in the console, SUBMISSION.md, the bundle for Ryan, LICENSE line (Ryan), the real-stack run (team or Mac).
+- Ryan has not answered the 18:20 message yet (team alignment, license).
+
+## Next action
+- Launch architect round 2, claims-auditor and qa-runner; implement MCP text mode; then brand/ui/ux reviews; bundle for Ryan before 21:30.
