@@ -25,7 +25,8 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 - [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Ajouter les tâches et objectifs de chaque membre et un projet passé (« Orion »).
 
 ### En cours
-- Architecture : brouillon du 27/10 dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Deuxième revue intégrée (27/10) : briques 4 et 5, orchestrateur, trois couches Zetaris / World Model / H-MEM (D12, D13). Restent : sources Zetaris définitives, flux de données, seuils et limites, vue manager, tests.
+- Architecture : brouillon du 27/10 dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Deuxième revue intégrée (27/10) : briques 4 et 5, orchestrateur, trois couches Zetaris / World Model / H-MEM (D12, D13). Restent : sources Zetaris définitives, flux de données, seuils et limites, tests, périmètre minimal.
+- **27/10, 17:00 — Brique 7 (remontées et vue manager)** : document et notes de l'équipe intégrés dans [architecture.md](architecture.md) (propositions R, S, T ; D14 acquise). Trois modes (point périodique, exception, à la demande), règles R1 à R7 en code, interface par l'IA du manager via un skill et MCP. Cœur estimé à environ 3 h de construction : il faut réduire la brique 5 pour le faire tenir.
 - À coder (repéré à la revue) : contradiction entre membres (S6) et blocages par tickets (règle 5) dans `agent/progress.py` ; signaux de coordination à la place des réunions du cas 4.
 
 ### Question ouverte apparue

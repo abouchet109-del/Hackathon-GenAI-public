@@ -38,8 +38,8 @@ Tout ne peut pas être construit avant la clôture. Proposition de répartition,
 |---|---|---|
 | 1, 2, 3, 4, 10 | Oui : c'est le cœur | — |
 | 5 Réunion | Oui, version simple : règles explicites et ordre du jour | Planification dans les agendas |
-| 6 Vue manager | Oui, une page en lecture seule | Portefeuille de projets, filtres, droits |
-| 7 Remontées | Oui, déclenchées par les changements d'état pendant le run | Envoi par mail ou Slack, fréquence réglable |
+| 6 Vue manager | Oui : le manager passe par son IA (skill manager et serveur MCP) ; point périodique et rapports à la demande (brique 7 de l'architecture) | Page HTML, portefeuille de projets, filtres, droits authentifiés |
+| 7 Remontées | Oui : règles R1, R2 et R4 en code, à chaque changement d'état ; point périodique lancé par une commande | Planification automatique du point, envoi par mail ou Slack, ajustement des tolérances par les retours |
 | 8 Mémoire projet | Oui | — |
 | 9 Mémoire organisation | Si le temps le permet : un enseignement d'un projet passé rappelé dans la démo | Mémoire de tous les projets, recherche transverse |
 
@@ -202,7 +202,7 @@ Zetaris ne lit pas un fichier local : il lit une URL (API REST en GET) ou un fic
 | 0:20–1:10 | Léa lance la vérification ; l'analyste interroge Zetaris ; le contrôleur vérifie les décisions, le blocage QA et l'avancement |
 | 1:10–1:35 | Le diff du brief apparaît, avec la source de chaque changement |
 | 1:35–2:15 | La coordination : Hugo (Cursor) déclare retirer le SSO pendant que le brief le réintroduit ; conflit détecté, les deux prévenus |
-| 2:15–2:50 | La vue manager : Marc voit l'état du projet, la remontée automatique (lancement à risque) et la réunion recommandée (Hugo, Inès, Sarah), avec le précédent du projet Orion |
+| 2:15–2:50 | La vue manager : Marc ouvre son IA ; le skill manager récupère le point du jour, avec en tête la remontée P1 (lancement à risque : fin projetée de la recette CSV après le 10 novembre) et la réunion recommandée (Hugo, Inès, Sarah), avec le précédent du projet Orion |
 | 2:50–3:20 | Une nouvelle décision autorisée reporte au 12 novembre ; un second client MCP récupère la nouvelle date et ses sources |
 | 3:20–3:50 | Les preuves : requêtes Zetaris, conformité des engines, modèle Nemotron par requête, traces des agents ; les limites |
 
@@ -232,8 +232,8 @@ Il faut nommer les clients réellement utilisés. Deux panneaux de notre propre 
 7. Qu'est-ce qui vit dans Zetaris, dans le World Model, dans H-MEM ?
 8. Un ou deux engines ? Le guide conseille un seul engine dans une fonctionnalité qui marche, avant d'en ajouter un second.
 9. Quels outils MCP ? Départ proposé : récupérer le contexte, consulter les preuves, proposer une mise à jour, déclarer son avancement.
-10. Les remontées au manager : déclenchées par quels événements, et sous quelle forme ?
-11. Vue manager : quelle forme minimale ?
+10. ~~Les remontées au manager : déclenchées par quels événements, et sous quelle forme ?~~ Tranché : brique 7 de l'architecture (règles R1 à R7, niveaux P1 à P3, point périodique).
+11. ~~Vue manager : quelle forme minimale ?~~ Tranché : l'IA du manager, avec un skill et le serveur MCP ; une page HTML si le temps le permet.
 12. Qu'est-ce qui reste dans la démo, qu'est-ce qui passe en feuille de route ?
 
 ---

@@ -38,7 +38,7 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 | Meterless Nightshift | **Fonctionne** (27/10) : runtime en ligne sur le port 8088, réponse reçue via `meterless/auto` |
 | Modèle Nemotron | Répond via la route `MODEL_*` (test de fumée) ; le choix explicite de Nemotron dans Nightshift reste à vérifier |
 | Cas d'usage Atlas | Défini |
-| Architecture | **Brouillon complété** (27/10) : deux revues intégrées ; briques 1, 2, 4 et 5, orchestrateur, couches Zetaris / World Model / H-MEM, schéma fonctionnel |
+| Architecture | **Brouillon complété** (27/10) : trois revues intégrées ; briques 1, 2, 4, 5 et 7, orchestrateur, couches Zetaris / World Model / H-MEM, schéma fonctionnel |
 | Fondations déterministes | **Faites et testées** (27/10) : format des décisions, classement en quatre cas, boîtes d'alertes |
 | Engine H-MEM | Implémentation de référence installée, **suite de conformité officielle au vert (13/13)** ; intégration à l'application à décider (D11) |
 | Engine World Model | Retenu pour l'état courant du projet (D12) ; intégration à faire, repli possible sur un état JSON |
@@ -58,7 +58,8 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 - **Brique 2 — Avancement par membre** : l'IA de chaque collaborateur remonte un rapport structuré par l'outil MCP `report_progress` (un skill dit quand et quoi déclarer) ; ce rapport est aussi une source de la brique 1. Un algorithme, sans LLM, classe chaque tâche : tout va bien, retard, travail obsolète, contradiction entre membres, ou signal de coordination.
 - **Brique 4 — Correction des livrables** : les affirmations d'un livrable sont comparées en code à l'état du projet ; un rédacteur corrige seulement les passages périmés ; un validateur vérifie que chaque changement cite sa source. Résultat : un diff proposé, jamais appliqué automatiquement.
 - **Brique 5 — Recommandation de réunion** : un tri en code note des réunions candidates à partir de déclencheurs tirés de la littérature (Gersick, Thompson, Vroom & Yetton…) moins leurs coûts, et choisit entre réunion et message ; au-dessus du seuil, un analyste en lecture seule juge en s'appuyant sur les précédents gardés dans H-MEM ; le verdict humain est enregistré et sert aux fois suivantes.
-- **Agent manager et orchestrateur** : l'orchestrateur, en code, enchaîne un run complet ; l'agent manager répond à la requête du manager (`POST /run`) ; des règles en code décident des remontées automatiques.
+- **Brique 7 — Remontées et vue manager** : trois modes. Un point périodique part même quand tout va bien (tenue du planning, changements, avancement par membre). Les exceptions sont décidées par des règles en code (tolérance de délai dépassée en prévision, décision hors délégation, changement d'une date ou du périmètre…), avec un niveau de priorité et leurs preuves. Le manager peut aussi poser ses questions. Il passe par son IA, avec un skill qui appelle le serveur MCP.
+- **Agent manager et orchestrateur** : l'orchestrateur, en code, enchaîne un run complet ; l'agent manager rédige le point périodique et répond aux questions du manager (`POST /run` ou MCP) ; un contrôle en code vérifie qu'aucune remontée urgente n'est omise.
 
 ## Structure du repo
 ```text
