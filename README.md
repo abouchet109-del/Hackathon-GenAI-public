@@ -129,6 +129,7 @@ Two codebases were merged on 27 October: Steward (Ryan Dalier-Dulys with Claude)
 - Traces: `logs/trace-<run_id>.jsonl`, one line per agent action (agent, action, target, model, confidence, retries, status, `cached`).
 - Evaluation: `logs/ablation-<timestamp>.md`. Offline, on 34 labelled cases: without memory, 56 % accuracy and 3 unsafe errors (contradictions let into memory); with H-MEM, 100 %, and the CEO is asked 3 times less often (9 % of cases instead of 26 %). The rules and the cases were written together, so the offline 100 % measures consistency. The number that measures the model is the Nemotron run: UNKNOWN at the time of writing (not run on a machine with Nightshift yet).
 - Conformance: `cd hmem-service && npm run conformance`, 13/13 on 27 October (`logs/samples/hmem-conformance.txt`).
+- CI on this repository (`.github/workflows/tests.yml`): run [40568677619](https://github.com/abouchet109-del/Hackathon-GenAI-public/actions/runs/40568677619) of 27 October 19:23 UTC on branch `unify`: pytest in SAMPLE_MODE on ubuntu-latest and windows-latest, and the H-MEM conformance job, all green.
 
 ## Known limits
 
@@ -139,7 +140,7 @@ Two codebases were merged on 27 October: Steward (Ryan Dalier-Dulys with Claude)
 - The Zetaris registration for Brikk (`register_steward.sql`: JDBC datasource, REST view, catalogue table, USL) follows the official recipes and the team's live registration of the Atlas corpus, but had not been run against a live Zetaris at the time of writing; Postgres copies of every table are the fallback.
 - No trace with a Nemotron model has been produced yet from this code; the team verified the ids and the receipt through Nightshift with `atlas/structured.py`.
 - The H-MEM reference embeds text with a deterministic hash: recall relies on keywords, tags and entities more than on meaning.
-- The Windows setup script (`scripts/windows/setup.ps1`) is untested.
+- The Windows setup script (`scripts/windows/setup.ps1`) is untested; the test suite itself passes on windows-latest in CI.
 
 ## License
 

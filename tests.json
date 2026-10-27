@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T20:24:02+01:00",
+  "updated": "2026-10-27T20:27:06+01:00",
   "statuses": {
     "passing": 23,
     "failing": 0,
@@ -35,7 +35,7 @@
       "command": "cd hmem-service && bash setup.sh && npm run conformance",
       "expected": "13/13 checks passed",
       "status": "passing",
-      "note": "13/13 on 27/10 18:12 UTC, output committed as logs/samples/hmem-conformance.txt (vendor/ is not tracked)"
+      "note": "13/13 on 27/10 18:12 UTC, output committed as logs/samples/hmem-conformance.txt (vendor/ is not tracked) | also green in CI run 40568677619 (job 'Meterless H-MEM conformance', 27/10 19:23 UTC)"
     },
     {
       "id": "R05",
@@ -221,7 +221,7 @@
       "command": "powershell -ExecutionPolicy Bypass -File scripts\\windows\\setup.ps1",
       "expected": "tests and MCP smoke pass; logs/setup-windows.log",
       "status": "not_started",
-      "note": "untested: no Windows machine here"
+      "note": "setup.ps1 still untested on the team's PC; the suite passes on windows-latest in CI run 40568677619 (pytest in SAMPLE_MODE, 27/10 19:23 UTC)"
     }
   ]
 }
