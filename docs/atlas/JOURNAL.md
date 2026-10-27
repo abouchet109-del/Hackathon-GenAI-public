@@ -51,7 +51,7 @@ Format d'une entrée :
 - Reste : n° 4 et 5 (Nemotron, appel LLM commun).
 
 ## 27/10 17:55 — Instructions de Claude et suivi du projet
-- Fait : `CLAUDE.md` réécrit (synchronisation au démarrage, boucle comprendre, planifier, tester, faire, vérifier, relire, livrer ; principes de code et des systèmes agentiques ; relecture avant commit ; git en parallèle ; protocole de fin de session) ; ce journal ; section 7 « Suivi » dans `docs/PLAN.md`. Un `AGENTS.md` créé à 17:48 (e7d38b5) a été fusionné dans `CLAUDE.md` puis supprimé, à la demande de l'équipe.
+- Fait : `CLAUDE.md` réécrit (synchronisation au démarrage, boucle comprendre, planifier, tester, faire, vérifier, relire, livrer ; principes de code et des systèmes agentiques ; relecture avant commit ; git en parallèle ; protocole de fin de session) ; ce journal ; section 7 « Suivi » dans `docs/atlas/PLAN.md`. Un `AGENTS.md` créé à 17:48 (e7d38b5) a été fusionné dans `CLAUDE.md` puis supprimé, à la demande de l'équipe.
 - Commits : e7d38b5, puis le commit de ce journal.
 
 ## 27/10 17:31–17:40 — Incrément 0, tâches 1 et 2 (session dédiée)
@@ -61,7 +61,7 @@ Format d'une entrée :
 - Reste : n° 2 (enregistrement dans Zetaris, en attente de l'accord de l'équipe pour créer la base et la première table), n° 3 à 5.
 
 ## 27/10 17:17–17:27 — Brique 7 et plan de construction
-- Fait : brique 7 (remontées au manager, interface par l'IA du manager via un skill et MCP, D14) dans `docs/architecture.md` ; plan de construction `docs/PLAN.md` (inventaire, estimations probable et maximale, incréments, méthode).
+- Fait : brique 7 (remontées au manager, interface par l'IA du manager via un skill et MCP, D14) dans `docs/architecture.md` ; plan de construction `docs/atlas/PLAN.md` (inventaire, estimations probable et maximale, incréments, méthode).
 - Commits : 2c84fcd, b836289.
 
 ## 27/10 11:40–11:55 — Deuxième revue de l'architecture (équipe)

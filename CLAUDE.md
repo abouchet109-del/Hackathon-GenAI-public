@@ -4,7 +4,7 @@ Steward, team OSEF, Open Agent Hackathon 2026. Submission closes 27 October 2026
 
 ## Start of a session
 1. `git pull --ff-only`, then `git status`. If the pull fails (conflict, diverged history), stop and ask: never force.
-2. Read `PROGRESS.md` (where we are, next action), `tests.json` (what passes), `docs/DECISIONS.md` (decided, not to reopen without a new reason), then `docs/ARCHITECTURE.md` and `docs/PLAN.md` as the task needs. The team's earlier documents are in `docs/atlas/`.
+2. Read `PROGRESS.md` (where we are, next action), `tests.json` (what passes), `docs/DECISIONS.md` (decided, not to reopen without a new reason), then `docs/ARCHITECTURE.md` and `docs/team/PLAN.md` as the task needs. The team's earlier documents are in `docs/atlas/`.
 3. Check the starting point: `SAMPLE_MODE=true python -m pytest -q` must be green before touching code. If not, say so first.
 
 ## Rules
@@ -15,7 +15,7 @@ Steward, team OSEF, Open Agent Hackathon 2026. Submission closes 27 October 2026
 - Every call to Zetaris or Nightshift has a timeout and an explicit fallback; `SAMPLE_MODE=true` runs the real logic on cached data and says so.
 
 ## Working loop, for each task
-1. Understand: the task in `docs/PLAN.md`, its acceptance command, the code it touches. One sentence on what must be true at the end.
+1. Understand: the task in `docs/team/PLAN.md`, its acceptance command, the code it touches. One sentence on what must be true at the end.
 2. Plan the steps, files, tests, risks and the fallback. For a task over 30 minutes or one that touches a rule, a prompt or a contract, show the plan first.
 3. Write the failing test first when possible.
 4. Make the smallest change that passes it.

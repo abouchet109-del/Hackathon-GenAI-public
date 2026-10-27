@@ -153,7 +153,7 @@ Les schémas des objets échangés : information candidate, proposition de mise 
 ### Une conversation ou plusieurs ?
 - **Une nouvelle conversation par incrément** (ou par grosse tâche), une fois l'incrément précédent poussé et `docs/STATUS.md` à jour. Une conversation trop longue est résumée automatiquement et perd des détails ; une conversation neuve repart de `CLAUDE.md`, `docs/STATUS.md` et de ce plan, qui sont à jour.
 - **Pas une conversation par petit sous-élément** : chacune repart de zéro et relit le contexte. Le bon grain est « un incrément » ou « une tâche de la section 2 d'au moins 30 minutes ».
-- **Message de départ type** : « Lis `CLAUDE.md`, `docs/STATUS.md` et `docs/PLAN.md`. On fait l'incrément N, tâches X à Y. Planifie, puis construis et teste tâche par tâche ; commit et push à chaque tâche au vert. »
+- **Message de départ type** : « Lis `CLAUDE.md`, `docs/STATUS.md` et `docs/atlas/PLAN.md`. On fait l'incrément N, tâches X à Y. Planifie, puis construis et teste tâche par tâche ; commit et push à chaque tâche au vert. »
 - **En parallèle** : seulement après l'incrément 0 (contrats figés), et seulement pour des tâches qui touchent des fichiers différents, chacune dans sa propre session et son propre worktree. Bons candidats : état JSON (n° 6), règles de la brique 7 (n° 18), serveur H-MEM (n° 8). Une session principale fait l'intégration et fusionne.
 - **Une conversation « architecte »** peut rester ouverte pour les décisions et les arbitrages, sans y coder.
 

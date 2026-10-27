@@ -6,16 +6,16 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 - Mac linked at 18:12, dropped at 18:18, back at 18:20 (it drops often). Teammates' repo fetched: 27 commits, last 18:09; their tests: 92 passed, 48 subtests (run here in SAMPLE_MODE). Steward: 43 passed, mcp_smoke PASS, H-MEM conformance 13/13, steward-demo runs.
 - Push to the shared repo refused for this session (GitHub App not installed on `abouchet109-del`): `unify` will be handed to Ryan as a git bundle to push from his Mac.
 - Contradiction surfaced to Ryan at 18:20 (one message): the team plans an Atlas submission (freeze 22:30), Ryan's prompt plans Steward in the same repo. Waiting for "envoyé" and "ok licence". Work continues on what does not depend on him.
-- `docs/INVENTORY.md` written.
+- `docs/team/INVENTORY.md` written.
 
 ## 18:27 Phase 1, skills
-- 5 skills vendored from obra/superpowers @ 2ce8aa1 into `.claude/skills/`; `docs/SKILLS.md` written. `impeccable`, `emil-design-eng`, `webapp-testing` do not exist in the trusted sources: skipped.
+- 5 skills vendored from obra/superpowers @ 2ce8aa1 into `.claude/skills/`; `docs/team/SKILLS.md` written. `impeccable`, `emil-design-eng`, `webapp-testing` do not exist in the trusted sources: skipped.
 
 ## Next action
-- Write `docs/ARCHITECTURE.md`, launch `architect-reviewer`, write `docs/PLAN.md` and `tests.json`, then build `unify` (git merge of both histories, `agent/` -> `atlas/`).
+- Write `docs/ARCHITECTURE.md`, launch `architect-reviewer`, write `docs/team/PLAN.md` and `tests.json`, then build `unify` (git merge of both histories, `agent/` -> `atlas/`).
 
 ## 18:45 Phase 2 and 3, architecture and plan
-- `docs/ARCHITECTURE.md`, `docs/PLAN.md`, `tests.json`, `.claude/agents/` (7) written. Architect review round 1 at 18:55: FAIL (1 blocker, 5 majors): all fixed in `57c2a56`; answers in the document's review log.
+- `docs/ARCHITECTURE.md`, `docs/team/PLAN.md`, `tests.json`, `.claude/agents/` (7) written. Architect review round 1 at 18:55: FAIL (1 blocker, 5 majors): all fixed in `57c2a56`; answers in the document's review log.
 
 ## 19:00 Phase 4, build on `unify` (clone of the shared repo, /home/claude/abouchet109-del/hackathon-genai-public)
 - `35c18ee` merge of both histories; `d81f26f` agent/ -> atlas/, docs -> docs/atlas/, bridge imports atlas; `57c2a56` review fixes + examples + traces + server tests; `bbc39a3` Zetaris source 3 as a jsDelivr REST table; `f482b03` CI, CONTRIBUTING, PRIOR_WORK, SPONSORS, metadata; `1ba1ba8` README, CLAUDE.md, smoke test. 118 tests pass; demo, MCP smoke and examples check pass.
@@ -35,7 +35,7 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 - Session B/C (Ryan's plan of 19:20): not seen yet (`~/steward-lanes/` absent); Project docs `contexte/04` and `06` rewritten for them.
 
 ## 20:35 unify is on GitHub
-- Push path found: branch `transport` (created from Ryan's GitHub session in Chrome) + `unify.bundle` uploaded through the web UI + `.github/workflows/import-bundle.yml` on that branch, which fetches the bundle and pushes `refs/heads/unify` (fast-forward). First run failed (an App token cannot create workflow files), fixed by carrying the CI workflow at `docs/ci-tests.yml` and restoring `.github/workflows/tests.yml` on `unify` from Ryan's session (`30f1a30`). `unify` = `d61d06d` on GitHub at 20:33.
+- Push path found: branch `transport` (created from Ryan's GitHub session in Chrome) + `unify.bundle` uploaded through the web UI + `.github/workflows/import-bundle.yml` on that branch, which fetches the bundle and pushes `refs/heads/unify` (fast-forward). First run failed (an App token cannot create workflow files), fixed by carrying the CI workflow at `docs/team/ci-tests.yml` and restoring `.github/workflows/tests.yml` on `unify` from Ryan's session (`30f1a30`). `unify` = `d61d06d` on GitHub at 20:33.
 - CI run 40568677619 on `unify`: pytest in SAMPLE_MODE on ubuntu-latest and windows-latest, H-MEM conformance: all green.
 - `main` untouched; Ryan's go awaited for the merge (diff summary sent 20:20).
 
@@ -58,7 +58,7 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 ## 23:10 Feature freeze
 - No code change since `c21ab2f` (the `remember` tool description) and `a277f3a` (the Kind hint); everything after is documentation. State of the product: `main` = `20cd3b9` (merged, CI green), `unify` = `b131d4b` + this entry.
 - Not done, and why: the real-stack run (Zetaris registration of Brikk, a Nemotron trace, the real ablation) never happened on a machine this session could drive; the Mac script still waits for the Zetaris key, the team's PC is the plan (`docs/INSTALL.md` 1b). README keeps `UNKNOWN` where a figure would need that run. Sessions B and C never shared a folder with this session: nothing imported from `for-repo/`.
-- Left for Ryan, never deleted by this session: branch `transport`, `docs/ci-tests.yml`, `docs/atlas/README.md.orig`.
+- Left for Ryan, never deleted by this session: branch `transport`, `docs/team/ci-tests.yml`, `docs/atlas/README.md.orig`.
 
 ## Next action
 - Docs only. If a real run appears (Mac `logs/steward-demo-real.json`, or Adam's logs): read it, copy a Nemotron trace into `logs/samples/`, replace the README's `UNKNOWN`, update R14-R16 (a figure read from a log is a documentation change). Final report by 23:45, vault note, and one merge click by Ryan for the docs.

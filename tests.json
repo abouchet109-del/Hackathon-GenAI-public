@@ -160,7 +160,7 @@
       "command": "python -c \"import json;json.load(open('metadata.json'))\" && ls LICENSE NOTICE CONTRIBUTING.md docs/SPONSORS.md docs/PRIOR_WORK.md .github/workflows/tests.yml",
       "expected": "all present",
       "status": "passing",
-      "note": "all present on main 20cd3b9: .github/workflows/tests.yml restored at 30f1a30 from Ryan's GitHub session (a GitHub App token cannot push workflow files); docs/ci-tests.yml is now a duplicate to delete with Ryan's word; LICENSE and NOTICE carry the three names after Ryan's 'ok licence'; metadata.json parses"
+      "note": "all present on main 20cd3b9: .github/workflows/tests.yml restored at 30f1a30 from Ryan's GitHub session (a GitHub App token cannot push workflow files); docs/team/ci-tests.yml is now a duplicate to delete with Ryan's word; LICENSE and NOTICE carry the three names after Ryan's 'ok licence'; metadata.json parses"
     },
     {
       "id": "R21",

@@ -15,4 +15,4 @@ Fill in this order. Texts to paste: `docs/SUBMISSION.md` (name, one sentence, de
 - [ ] **metadata.json** is in the repository root (it is).
 - [ ] **Secrets**: `.env` is not in the repository (checked); the NVIDIA key lives only in Nightshift.
 - [ ] **Submit**, then open the submission page once more to check that every link opens in a private window.
-- [ ] After the event: delete the `transport` branch (bundle + import workflow) and, if wanted, `docs/ci-tests.yml` (a copy of the CI workflow carried by the transport push).
+- [ ] After the event: delete the `transport` branch (bundle + import workflow) and, if wanted, `docs/team/ci-tests.yml` (a copy of the CI workflow carried by the transport push).

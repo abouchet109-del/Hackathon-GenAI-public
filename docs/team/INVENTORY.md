@@ -28,7 +28,7 @@ Not in the spec but present: the `admin` domain pack (second pack on the same ha
 
 ## Source B: Atlas (Adam Semlali, Alexandre Bouchet), `github.com/abouchet109-del/Hackathon-GenAI-public`
 
-Git: 27 commits on `main`, 26/10 23:21 to 27/10 18:09, authors `belufr` (22) and `abouchet109-del` (5). Which of Adam or Alexandre is `belufr`: UNKNOWN. Python 3 (pydantic, requests, unittest). Built with Claude sessions following `CLAUDE.md` and `docs/PLAN.md`; their own plan: code freeze 22:30, submission 00:15.
+Git: 27 commits on `main`, 26/10 23:21 to 27/10 18:09, authors `belufr` (22) and `abouchet109-del` (5). Which of Adam or Alexandre is `belufr`: UNKNOWN. Python 3 (pydantic, requests, unittest). Built with Claude sessions following `CLAUDE.md` and `docs/team/PLAN.md`; their own plan: code freeze 22:30, submission 00:15.
 
 | Module | What it does | Runs? | Tests | Spec v2 |
 | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Git: 27 commits on `main`, 26/10 23:21 to 27/10 18:09, authors `belufr` (22) and
 | `scripts/register_zetaris.py` | Registers 9 REST tables in a Lightning database `ATLAS`, each on a jsDelivr URL pinned on a commit of the public repo; idempotent, `--verify-only`, `--repin` | **live, 27/10 17:49** | — | a proven way to register a file source without S3 |
 | `agent/contracts.py`, `agent/sources.py`, `agent/state.py`, `agent/hmem.py` | Pydantic contracts between bricks; corpus loaders; versioned project state behind a `StateStore` interface; H-MEM client interface with a tested local fallback (no TypeScript service yet) | yes (offline) | contracts 5, corpus 9, state 7, hmem 9 | partial overlap with Steward's harness and H-MEM service |
 | `data/sample/*.json`, `data/expected/`, `data/scenarios/`, `evaluation/expected.py` | Synthetic Atlas corpus (project "Atlas", 5 people, past project "Orion"), expected results S1-S9 | yes | corpus tests | a second demo company; Steward's is Brikk |
-| `docs/architecture.md`, `docs/PLAN.md`, `docs/DECISIONS.md` (D1-D14), `docs/STATUS.md`, `docs/JOURNAL.md`, `docs/use-case-atlas.md`, `docs/architecture-notes/*.jpg` | Use case, bricks 1, 2, 4, 5, 7, three layers (Zetaris / World Model / H-MEM), decisions, plan with estimates | — | — | vision: prosecutor/judge, CEO/manager agent, weak signals, meetings |
+| `docs/architecture.md`, `docs/team/PLAN.md`, `docs/DECISIONS.md` (D1-D14), `docs/STATUS.md`, `docs/JOURNAL.md`, `docs/use-case-atlas.md`, `docs/architecture-notes/*.jpg` | Use case, bricks 1, 2, 4, 5, 7, three layers (Zetaris / World Model / H-MEM), decisions, plan with estimates | — | — | vision: prosecutor/judge, CEO/manager agent, weak signals, meetings |
 | `docs/hackathon/`, `docs/strategie/` | Copies of the rules and the jury grid, internal strategy | — | — | not for the product |
 | `smoke_test.py`, `scripts/hmem-conformance.ps1` | Stack check (Zetaris REST with key, Nightshift, Nemotron); H-MEM conformance on Windows: 13/13 | live on their PC | — | ops |
 | `tests/` | 92 tests + 48 subtests | `SAMPLE_MODE=true python -m pytest -q`: **92 passed, 48 subtests passed** (run here, 18:20) | — | — |
