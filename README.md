@@ -131,7 +131,7 @@ Two codebases were merged on 27 October: Steward (Ryan Dalier-Dulys with Claude)
 - Traces: `logs/trace-<run_id>.jsonl`, one line per agent action (agent, action, target, model, confidence, retries, status, `cached`).
 - Evaluation: `logs/ablation-<timestamp>.md`. Offline, on 34 labelled cases: without memory, 56 % accuracy and 3 unsafe errors (contradictions let into memory); with H-MEM, 100 %, and the CEO is asked 3 times less often (9 % of cases instead of 26 %). The rules and the cases were written together, so the offline 100 % measures consistency. The number that measures the model is the Nemotron run: UNKNOWN at the time of writing (not run on a machine with Nightshift yet).
 - Conformance: `cd hmem-service && npm run conformance`, 13/13 on 27 October (`logs/samples/hmem-conformance.txt`).
-- CI on this repository (`.github/workflows/tests.yml`): run [40568677619](https://github.com/abouchet109-del/Hackathon-GenAI-public/actions/runs/40568677619) of 27 October 19:23 UTC on branch `unify`: pytest in SAMPLE_MODE on ubuntu-latest and windows-latest, and the H-MEM conformance job, all green.
+- CI on this repository (`.github/workflows/tests.yml`): run [40568677619](https://github.com/abouchet109-del/Hackathon-GenAI-public/actions/runs/40568677619) of 27 October 19:23 UTC on branch `unify`, then run [40584948164](https://github.com/abouchet109-del/Hackathon-GenAI-public/actions/runs/40584948164) of 27 October 21:14 UTC on `main` after the merge of pull request #2: pytest in SAMPLE_MODE on ubuntu-latest and windows-latest, and the H-MEM conformance job, all green.
 
 ## Known limits
 

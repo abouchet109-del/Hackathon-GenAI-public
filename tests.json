@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T21:45:00+01:00",
+  "updated": "2026-10-27T22:25:00+01:00",
   "statuses": {
     "passing": 23,
     "failing": 0,
@@ -159,7 +159,7 @@
       "command": "python -c \"import json;json.load(open('metadata.json'))\" && ls LICENSE NOTICE CONTRIBUTING.md docs/SPONSORS.md docs/PRIOR_WORK.md .github/workflows/tests.yml",
       "expected": "all present",
       "status": "passing",
-      "note": "all present on unify d9a1707: .github/workflows/tests.yml restored at 30f1a30 from Ryan's GitHub session (a GitHub App token cannot push workflow files); docs/ci-tests.yml is now a duplicate to delete with Ryan's word; LICENSE and NOTICE carry the three names after Ryan's 'ok licence'; metadata.json parses"
+      "note": "all present on main 20cd3b9: .github/workflows/tests.yml restored at 30f1a30 from Ryan's GitHub session (a GitHub App token cannot push workflow files); docs/ci-tests.yml is now a duplicate to delete with Ryan's word; LICENSE and NOTICE carry the three names after Ryan's 'ok licence'; metadata.json parses"
     },
     {
       "id": "R21",
@@ -206,7 +206,7 @@
       "command": "git ls-remote https://github.com/abouchet109-del/Hackathon-GenAI-public unify main",
       "expected": "unify present; main contains the unified tree after Ryan's merge",
       "status": "passing",
-      "note": "unify = d9a1707 on GitHub at 21:28 (bundles imported through the transport branch workflow, last run 40578219363); main untouched, waiting for Ryan's go (PR form ready in his Chrome tab)"
+      "note": "unify pushed through the transport branch workflow (last import 04e7f05 at 21:56); Ryan merged pull request #2 unify -> main at 22:13 Paris: main = 20cd3b9, CI run 40584948164 on main green (pytest ubuntu + windows, H-MEM conformance)"
     },
     {
       "id": "R27",
