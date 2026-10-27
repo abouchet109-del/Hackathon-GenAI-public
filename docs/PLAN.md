@@ -157,9 +157,34 @@ Les schémas des objets échangés : information candidate, proposition de mise 
 - **En parallèle** : seulement après l'incrément 0 (contrats figés), et seulement pour des tâches qui touchent des fichiers différents, chacune dans sa propre session et son propre worktree. Bons candidats : état JSON (n° 6), règles de la brique 7 (n° 18), serveur H-MEM (n° 8). Une session principale fait l'intégration et fusionne.
 - **Une conversation « architecte »** peut rester ouverte pour les décisions et les arbitrages, sans y coder.
 
+### Fin de session
+Chaque session met à jour `docs/JOURNAL.md`, la section 7 ci-dessous, `docs/STATUS.md` et le README, pousse, puis fait le bilan à l'humain : ce qui est fini, où en est le plan, ce qui reste, quelle session lancer ensuite (section 8 de `CLAUDE.md`).
+
 ### Points de contrôle
 | Heure | Question |
 |---|---|
 | 19:45 | L'incrément 0 est-il fini ? Sinon, on prend les replis (Zetaris, Nemotron) et on passe à la suite |
 | 22:00 | Les incréments 1 et 2 sont-ils finis (projet soumissible) ? Sinon, tout le reste est coupé |
 | 22:30 | Gel du code, quoi qu'il arrive |
+
+---
+
+## 7. Suivi
+
+Mis à jour par chaque session à chaque tâche terminée (heure de Paris). États : à faire, en cours, faite, repli, coupée. Le récit des sessions est dans [JOURNAL.md](JOURNAL.md).
+
+| Incrément | Tâche (n° de la section 2) | État | Mis à jour | Note |
+|---|---|---|---|---|
+| 0 | Contrats entre composants | Faite | 27/10 17:31 | `agent/contracts.py` (76d3b58) |
+| 0 | 1. Corpus Atlas et résultats attendus | Faite | 27/10 17:40 | Variantes S2 et S3, attendus S1 à S9 (8501863) ; relecture de l'équipe à confirmer |
+| 0 | 2. Enregistrement dans Zetaris | En cours | 27/10 17:50 | Vérifications préalables passées ; création de la base et de la première table en attente de l'accord de l'équipe |
+| 0 | 3. Client Zetaris | En cours | 27/10 17:50 | Code en cours dans la session de l'incrément 0, pas encore commité |
+| 0 | 4. Nemotron imposé et journalisé | À faire | — | — |
+| 0 | 5. Appel LLM commun | À faire | — | — |
+| 1 | 6, 10, 12, 13, 21, 22, 23 | À faire | — | — |
+| 2 | 8. H-MEM | À faire | — | À construire en parallèle de l'incrément 1 |
+| 3 | 18, 19 | À faire | — | — |
+| 4 | 24, 26, 27 | À faire | — | — |
+| 5 | 15 | À faire | — | — |
+| 6 | 14, 17, 9, 28, 29 | À faire | — | — |
+| Soumission | 30 à 33 | À faire | — | — |
