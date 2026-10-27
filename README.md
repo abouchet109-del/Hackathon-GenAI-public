@@ -34,12 +34,21 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 | Étape | État |
 |---|---|
 | Environnement (Zetaris en local, provider Meterless Runtime testé contre un faux runtime) | Fait |
-| Clé API Zetaris | Renseignée, connexion pas encore testée |
-| Meterless Nightshift | **Bloqué** : ne fonctionne pas encore sur la machine |
+| Zetaris | Connexion vérifiée le 27/10 : SQL via l'API REST avec la clé de l'équipe |
+| Meterless Nightshift | **Fonctionne** (27/10) : runtime en ligne sur le port 8088, réponse reçue via `meterless/auto` |
+| Modèle Nemotron | Répond via la route `MODEL_*` (test de fumée) ; le choix explicite de Nemotron dans Nightshift reste à vérifier |
 | Cas d'usage Atlas | Défini |
 | Architecture | **Brouillon en cours** (27/10) |
+| Fondations déterministes | **Faites et testées** (27/10) : format des décisions, classement en quatre cas, boîtes d'alertes |
+| Engine H-MEM | Implémentation de référence installée, **suite de conformité officielle au vert (13/13)** ; intégration à l'application à décider |
 | Données Atlas pour Zetaris | À créer |
-| Agents, MCP, vue manager | Pas commencés |
+| Agents LLM, MCP, vue manager | Pas commencés (attendent l'architecture finale) |
+
+**Fondations déjà codées** (toutes couvertes par des tests unitaires, 36 tests au vert) :
+- `agent/decisions.py` : l'enregistrement d'une décision (sujet, attribut, valeur, statut, auteur, source, date, confiance, décision remplacée) et les règles qui disent quelle décision est en vigueur. Deux décisions approuvées incompatibles sont un conflit à arbitrer, jamais « la dernière gagne ».
+- `agent/progress.py` : le classement de l'avancement de chaque membre en quatre cas (tout va bien, retard, travail rendu obsolète par une décision, réunion nécessaire).
+- `agent/alerts.py` : les boîtes d'alertes par membre, déposées par l'algorithme de notification et récupérées une seule fois via MCP.
+- `scripts/hmem-conformance.ps1` : récupère le repo Meterless et lance la suite de conformité H-MEM.
 
 **Track : 03 — Reasoning Architecture.**
 
@@ -95,6 +104,12 @@ Remplir `.env` avec ses propres valeurs (jamais de clé dans le repo), puis :
 
 ```bash
 .venv/Scripts/python -m agent.llm status
+```
+
+Suite de conformité H-MEM (Node.js requis) :
+
+```bash
+powershell -File scripts/hmem-conformance.ps1
 ```
 
 Les instructions complètes (sources Zetaris, `SAMPLE_MODE`, point d'entrée de l'agent) seront ajoutées au fil de la construction.

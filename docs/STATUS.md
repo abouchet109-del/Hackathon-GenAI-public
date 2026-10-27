@@ -2,29 +2,40 @@
 
 Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, prochaine étape).
 
-## État au 26 octobre 2026
+## État au 27 octobre 2026
 
 ### Fait
-- Environnement : Zetaris installé en local (test de fumée passé le 23/10) ; provider Meterless Runtime codé et testé contre un faux runtime (`agent/llm.py`).
-- Choix du use case : Atlas (voir [use-case-atlas.md](use-case-atlas.md)).
-- Organisation du repo et documentation de reprise.
-- Repo GitHub public : https://github.com/abouchet109-del/Hackathon-GenAI-public (branche `main`).
+- Environnement : Zetaris installé en local ; provider Meterless Runtime codé et testé contre un faux runtime (`agent/llm.py`).
+- Choix du use case : Atlas (voir [use-case-atlas.md](use-case-atlas.md)). Track 03.
+- Organisation du repo et documentation de reprise. Repo GitHub public : https://github.com/abouchet109-del/Hackathon-GenAI-public (branche `main`).
+- **27/10 — Connexions vérifiées** (`smoke_test.py`, `python -m agent.llm`) :
+  - Zetaris : interface web et SQL via l'API REST, avec la clé de l'équipe ;
+  - Nightshift : runtime en ligne sur le port 8088, réponse reçue via `meterless/auto` ;
+  - Nemotron : répond via la route `MODEL_*`.
+- **27/10 — Fondations déterministes**, 36 tests unitaires au vert (`python -m unittest -v`) :
+  - `agent/decisions.py` : enregistrement d'une décision, décision en vigueur, détection des conflits ;
+  - `agent/progress.py` : classement de l'avancement en quatre cas (ok, retard, obsolète, réunion nécessaire) ;
+  - `agent/alerts.py` : boîtes d'alertes par membre, récupérées une seule fois.
+- **27/10 — H-MEM** : implémentation de référence installée dans `external/meterless`, suite de conformité officielle au vert (13/13) via `scripts/hmem-conformance.ps1`.
 
-### Bloquants (à faire par l'équipe, Claude ne peut pas créer de comptes ni saisir de clés)
-- [ ] Installer et lancer Meterless Nightshift (le port 8088 ne répondait pas le 26/10).
-- [ ] Ajouter la clé NVIDIA (build.nvidia.com) dans l'onglet Providers de Nightshift.
-- [x] Clé API Zetaris renseignée dans `.env` (27/10 ; connexion pas encore testée).
-- [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Dans les deux cas, il faut ajouter les tâches et objectifs de chaque membre et un projet passé (« Orion »). Sans données, Zetaris n'a rien à servir.
+### Bloquants
+- [x] Nightshift installé et lancé (27/10).
+- [x] Clé API Zetaris renseignée et vérifiée (27/10).
+- [ ] Clé NVIDIA dans l'onglet Providers de Nightshift : à confirmer. Nightshift n'expose que des modes de routage (`meterless/auto`, `fast`, `deep`…), pas d'identifiant Nemotron : il faut vérifier comment imposer Nemotron et journaliser le modèle réellement utilisé (prix NVIDIA).
+- [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Ajouter les tâches et objectifs de chaque membre et un projet passé (« Orion »).
 
 ### En cours
-- Architecture : brouillon du 27/10 (briques « suivi des décisions » et « avancement par membre », agent manager, propositions A à G sauf E) dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Track 03 retenu. Restent : sources Zetaris, flux de données, déclenchements et limites, vue manager, garde-fous, tests, coupes.
+- Architecture : brouillon du 27/10 dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Restent : sources Zetaris, flux de données, déclenchements et limites, vue manager, garde-fous, tests, coupes.
+
+### Question ouverte apparue
+- **Intégrer H-MEM à l'application** (voir [DECISIONS.md](DECISIONS.md), D11). H-MEM est une spécification avec une implémentation de référence en TypeScript, alors que l'application est en Python.
 
 ### Prochaines étapes
-1. Architecture : terminer [architecture.md](architecture.md), puis revue avec Claude.
-2. Tests bloquants (deux heures au plus) : une requête Zetaris sur les sources Atlas, un appel Nemotron via Nightshift avec le modèle journalisé, l'implémentation de référence de H-MEM et sa suite de conformité, un client MCP connecté.
+1. Architecture : terminer [architecture.md](architecture.md), trancher D11, puis revue avec Claude.
+2. Données Atlas et enregistrement dans Zetaris.
 3. Parcours complet minimal sur le scénario S1, avec traces.
-4. Scénarios S2 à S6 et les 14 cas de test.
-5. Second client MCP, détection des travaux contradictoires, vue manager.
+4. Agents LLM (extracteur, mise à jour, contrôleur, analyse, manager), skill et serveur MCP.
+5. Scénarios suivants, vue manager.
 6. README final, `.env.example`, `SAMPLE_MODE`, test depuis un clone propre.
 7. Vidéo, deck, explication des sponsors, soumission.
 
