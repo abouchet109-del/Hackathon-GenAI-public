@@ -10,6 +10,7 @@ Journal des décisions prises. Une décision ne se rediscute pas sans une raison
 | D4 | 26/10/2026 | **Zetaris sert les sources en lecture** ; l'état du projet et les mémoires vivent dans les engines Meterless | Aucune écriture dans Zetaris n'est vérifiée | Acquise |
 | D5 | 26/10/2026 | Le **repo GitHub est public** dès maintenant | Zetaris doit lire les données par URL (jsDelivr) ; le règlement exige un repo public | Acquise |
 | D6 | 26/10/2026 | Capacités 1 à 4, 8 et 10 dans la démo ; réunion, vue manager et remontées en version simple ; mémoire de l'organisation si le temps le permet | Délai : clôture le 27/10 à 23:45 UTC | Proposée, à confirmer dans l'architecture |
-| D7 | — | Track 01 ou 03 | À trancher dans l'architecture | Ouverte |
+| D7 | 27/10/2026 | **Track 03 — Reasoning Architecture** | L'utilisateur principal est le manager ; le système transforme données et mémoire en décisions et en actions (alertes, corrections, réunions) | Acquise |
 | D8 | — | Un engine (World Model) ou deux (World Model + H-MEM) | À trancher après le test de l'implémentation de référence | Remplacée par D9 |
+| D10 | 27/10/2026 | Propositions A, B, C, D et F intégrées au brouillon d'architecture ; E (sources Zetaris) reportée | Revue du brouillon ; l'équipe définira les sources Zetaris plus tard | Acquise (brouillon) |
 | D9 | 27/10/2026 | **H-MEM** porte les mémoires du projet (décisions, rôles, avancement par membre) ; World Model seulement si l'architecture finale en a besoin | Brouillon d'architecture de l'équipe ; H-MEM a un template de démarrage | Proposée, à confirmer à la revue |

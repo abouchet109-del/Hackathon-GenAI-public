@@ -17,7 +17,7 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 - [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Dans les deux cas, il faut ajouter les tâches et objectifs de chaque membre et un projet passé (« Orion »). Sans données, Zetaris n'a rien à servir.
 
 ### En cours
-- Architecture : brouillon du 27/10 (briques « suivi des décisions » et « avancement par membre ») dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Restent : Zetaris, MCP, réunions et vue manager, flux de contrôle détaillé, garde-fous, tests, coupes.
+- Architecture : brouillon du 27/10 (briques « suivi des décisions » et « avancement par membre », agent manager, propositions A à G sauf E) dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Track 03 retenu. Restent : sources Zetaris, flux de données, déclenchements et limites, vue manager, garde-fous, tests, coupes.
 
 ### Prochaines étapes
 1. Architecture : terminer [architecture.md](architecture.md), puis revue avec Claude.

@@ -41,9 +41,12 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 | Données Atlas pour Zetaris | À créer |
 | Agents, MCP, vue manager | Pas commencés |
 
-**Brouillon d'architecture du 27/10** ([docs/architecture.md](docs/architecture.md), notes manuscrites dans [docs/architecture-notes/](docs/architecture-notes/)) : deux briques sont définies.
-- **Suivi des décisions** : un agent rédige les comptes rendus de réunion, un agent relit le canal commun et n'en garde que les décisions, un agent les rapproche des décisions déjà prises et décide ce qui fait foi, puis un algorithme prévient les personnes concernées. Les décisions sont gardées dans H-MEM.
-- **Avancement par membre** : un skill installé sur l'IA de chaque collaborateur remonte son avancement ; un agent, en lecture seule, le compare aux tâches et objectifs ; un algorithme classe chaque situation (tout va bien, retard, travail rendu obsolète par une décision) et agit en conséquence. Un agent dédié remontera l'information au manager.
+**Track : 03 — Reasoning Architecture.**
+
+**Brouillon d'architecture du 27/10** ([docs/architecture.md](docs/architecture.md), notes manuscrites dans [docs/architecture-notes/](docs/architecture-notes/)). C'est un brouillon de travail, loin de l'architecture finale. Il définit :
+- **Suivi des décisions** : un extracteur tire les décisions des réunions et du canal commun ; un agent les rapproche des décisions déjà prises et propose ce qui fait foi ; un contrôleur vérifie preuves, habilitations et conflits, demande une révision ou escalade au manager ; un algorithme dépose une alerte chez chaque personne concernée. Les décisions sont gardées dans H-MEM.
+- **Avancement par membre** : un skill installé sur l'IA de chaque collaborateur remonte son avancement via MCP et récupère ses alertes ; un agent, en lecture seule, le compare aux tâches et objectifs ; un algorithme classe chaque situation en quatre cas (tout va bien, retard, travail rendu obsolète, réunion nécessaire).
+- **Agent manager** : répond à la requête du manager (`POST /run`), rédige les recommandations de réunion et les remontées automatiques.
 
 ## Structure du repo
 ```text

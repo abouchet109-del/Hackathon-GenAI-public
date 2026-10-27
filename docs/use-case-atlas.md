@@ -2,9 +2,7 @@
 
 Use case retenu pour l'Open Agent Hackathon 2026 (décision du 26 octobre 2026, architecture à valider). Origine : proposition d'une autre analyse (ChatGPT), complétée avec la vision de l'équipe : une mémoire projet autonome qui suit l'avancement de chacun, coordonne l'équipe, recommande les réunions utiles, remonte automatiquement l'information au manager et capitalise d'un projet à l'autre.
 
-**Track : à trancher dans l'architecture** (voir section 10).
-- **01 — Solving Fragmented Intelligence** si la démo est centrée sur le rapprochement de sources qui se contredisent.
-- **03 — Reasoning Architecture** si elle est centrée sur les décisions que la mémoire déclenche (arbitrage, réunion, correction, alerte au manager). Les ajouts du 26 octobre rapprochent le cas de ce track.
+**Track retenu : 03 — Reasoning Architecture** (décision du 27 octobre). La démo est centrée sur les décisions que la mémoire déclenche : arbitrage, correction, alerte, réunion, rapport au manager. Le track 01 (rapprochement de sources qui se contredisent) a été écarté.
 
 ---
 
@@ -225,7 +223,7 @@ Il faut nommer les clients réellement utilisés. Deux panneaux de notre propre 
 ## 10. Questions ouvertes pour l'architecture
 
 À trancher dans [architecture.md](architecture.md) :
-1. **Track 01 ou 03 ?** Le récit de la démo en dépend.
+1. ~~Track 01 ou 03 ?~~ Tranché : track 03.
 2. Combien d'agents LLM, et lesquels ? Départ proposé : un analyste, un contrôleur, et un orchestrateur en code qui applique les droits et les versions. Faut-il un agent de synthèse pour le manager, ou est-ce le rôle du contrôleur ?
 3. Qui décide de l'enchaînement : le code ou le modèle ? À quels endroits ?
 4. Comment l'avancement est-il capté : tâches dans Zetaris, déclarations via MCP, ou les deux ?

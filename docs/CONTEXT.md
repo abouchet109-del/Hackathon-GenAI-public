@@ -24,7 +24,7 @@ Chacun a déjà son IA (ChatGPT, Claude…) avec sa mémoire et son contexte ; l
 ## Le cas d'usage retenu
 **Atlas** : une équipe prépare le lancement d'un portail client fictif ; ses sources se contredisent (date, périmètre, état de préparation), une tâche bloquante prend du retard, et ses membres travaillent avec des IA différentes. Détail : [use-case-atlas.md](use-case-atlas.md), avec la répartition entre ce qui est démontré et ce qui relève de la feuille de route.
 
-Track : à trancher dans l'architecture, entre 01 — Solving Fragmented Intelligence (démo centrée sur le rapprochement des sources) et 03 — Reasoning Architecture (démo centrée sur les décisions que la mémoire déclenche).
+Track retenu : **03 — Reasoning Architecture** (démo centrée sur les décisions et les actions que la mémoire déclenche). Architecture en cours : [architecture.md](architecture.md).
 
 Historique du choix : une première évaluation recommandait d'autres use cases (allégations alimentaires, puis vulnérabilités CISA KEV, voir [strategie/evaluation-use-case.md](strategie/evaluation-use-case.md)). Atlas a été retenu le 26 octobre parce qu'il démontre directement le produit que l'équipe veut construire.
 
