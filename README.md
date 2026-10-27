@@ -24,7 +24,7 @@ SAMPLE_MODE=true .venv/bin/python run.py serve                          # consol
 
 `SAMPLE_MODE=true` runs the same agents and the same SQL on SQLite copies of the governance data, a local memory with the same `supersedes` semantics, and the deterministic path instead of the model; a recorded model answer is replayed (traced as `cached: true`) only when the exact prompt was seen on a machine with Nightshift, and this repository ships no such recording, so the committed traces say `model: null`, `cached: false`. The console header, `/health` and every trace say which stack is running (`sample-sqlite`, `local-fallback`, `offline`). Nothing is a stored final answer.
 
-Tests, from the same clone: `.venv/bin/python -m pytest -q` (190 tests, 9 skipped without the team's engine services; `tests/conftest.py` sets `SAMPLE_MODE` so the suite never touches a real stack: 32 on Steward in `test_steward`, `test_harness`, `test_server`, `test_review_round2`, `test_coordination_bridge`, `test_llm_receipt`; 158 on the Atlas modules) and `.venv/bin/python scripts/mcp_smoke.py` (a real MCP client over stdio: the 13 tools of the specification plus 3, the resource and the prompt).
+Tests, from the same clone: `.venv/bin/python -m pytest -q` (197 tests, 9 skipped without the team's engine services; `tests/conftest.py` sets `SAMPLE_MODE` so the suite never touches a real stack: 39 on Steward in `test_steward`, `test_harness`, `test_server`, `test_review_round2`, `test_verify_sources`, `test_coordination_bridge`, `test_llm_receipt`; 158 on the Atlas modules) and `.venv/bin/python scripts/mcp_smoke.py` (a real MCP client over stdio: the 13 tools of the specification plus 3, the resource and the prompt).
 
 ## The real stack
 
@@ -58,7 +58,7 @@ Mac: `bash scripts/install-zetaris.sh` then `bash scripts/after-zetaris.sh` do a
 | `python run.py serve` | Console at `/console` (shared truth with topic history, escalations with policies, clarifications, weak signals, context preview, onboarding, simulate an AI with its trace); `POST /run` (one arbitration, the harness contract); `GET /finance/budgets`; `GET /health`. The console has no login: it binds `127.0.0.1` and acts as the CEO of the directory (`STEWARD_CONSOLE_USER` to change) |
 | `python run.py mcp` | The MCP server `steward` over stdio: `onboard`, `observe`, `remember`, `my_context`, `whats_new`, `clarifications`, `answer_clarification`, `recall`, `why`, `project_brief`, `my_contributions`, `escalations`, `resolve_escalation` (the specification), plus `my_tasks`, `report_progress`, `my_alerts`; resource `osef://watchlist`; prompt `role_procedures` |
 | `python scripts/make_examples.py --check` | Re-runs the three examples of `input_examples/` and compares with `output_examples/` |
-| `python -m pytest -q` | 190 offline tests, 9 skipped without the team's engine services (SAMPLE_MODE is set by the suite itself) |
+| `python -m pytest -q` | 197 offline tests, 9 skipped without the team's engine services (SAMPLE_MODE is set by the suite itself) |
 | `cd hmem-service && bash setup.sh && npm run conformance` | The official Meterless H-MEM conformance suite, 13 checks (needs Node and network for the vendoring; the committed run is `logs/samples/hmem-conformance.txt`) |
 | `python scripts/mcp_smoke.py` | Starts the MCP server the way Claude Desktop does and calls the tools |
 
@@ -119,7 +119,7 @@ data/           the Atlas corpus and caches (tracked); runtime state (ignored)
 hmem-service/   the H-MEM service around the vendored Meterless reference
 scripts/        Zetaris registration, Nightshift lanes, Mac and Windows setup, examples, video kit
 docs/           ARCHITECTURE, SPONSORS, INVENTORY, PLAN, DECISIONS, TEAM-AND-MERGE, SUBMISSION, PRIOR_WORK, mcp/, atlas/ (the team's documents)
-tests/          190 tests; input_examples/ output_examples/ logs/samples/ (traces, the conformance run)
+tests/          197 tests; input_examples/ output_examples/ logs/samples/ (traces, the conformance run)
 ```
 
 Two codebases were merged on 27 October: Steward (Ryan Dalier-Dulys with Claude) and Atlas (Adam Semlali, Alexandre Bouchet). Who built what, and what the merge keeps from each side: [docs/TEAM-AND-MERGE.md](docs/TEAM-AND-MERGE.md) and [docs/INVENTORY.md](docs/INVENTORY.md). The Atlas modules `decisions`, `progress` and `alerts` run inside Steward; `atlas/structured.py`, `state.py`, `hmem.py`, `world_model.py`, `contracts.py`, `sources.py`, and the team's agents of 27 October evening (`extractor.py`, `updater.py`, `controller.py`, `writer.py`, `manager.py`, `orchestrator.py` with its own HTTP entry `python -m atlas.api --port 8080`, versioned prompts in `atlas/prompts/`, and a replay cache of their Nemotron runs in `data/cache/llm/`) are the team's tested pipeline components (schema-validated model calls with the Nemotron receipt, a versioned project state on the World Model engine, an H-MEM client, the Atlas corpus loaders); they are not called by Steward's runtime yet. The team's own services around the Meterless references live in `services/` (`ATLAS_HMEM_URL`, `WORLD_MODEL_URL`), next to Steward's `hmem-service/` (`HMEM_URL`): two wrappers of the same reference engine, to be unified after the event.
