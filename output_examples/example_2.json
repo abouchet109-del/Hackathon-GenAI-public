@@ -1,0 +1,105 @@
+{
+  "run_id": "example_2",
+  "status": "success",
+  "profile": "full",
+  "stack": {
+    "data": "sample-sqlite",
+    "memory": "meterless-hmem",
+    "llm": "offline (replay + deterministic fallback)",
+    "sample_mode": true,
+    "domain": "admin"
+  },
+  "output": {
+    "decision": "block_scam",
+    "confidence": 0.9,
+    "summary": "Credential or payment phishing pattern",
+    "prepared_action": "Do not click, pay or reply. Mark as phishing and delete.",
+    "needs_owner_approval": false,
+    "citations": [
+      "R04"
+    ],
+    "evidence": {
+      "facts": {
+        "item_id": "c09",
+        "sender": "remboursement@caf-remboursement.info",
+        "sender_domain": "caf-remboursement.info",
+        "subject": "CAF refund waiting for you",
+        "amount_eur": null,
+        "due_date": null,
+        "price_increase_pct": null,
+        "link_domains": [
+          "caf-remboursement.info"
+        ],
+        "asks_credentials": true,
+        "mentions_payment": true,
+        "requests_action": false,
+        "mentions_documents": false,
+        "received_at": "2026-10-20",
+        "sender_known": true,
+        "sender_verified": false,
+        "organisation": "Unknown",
+        "item_type": "unknown",
+        "link_on_unverified_domain": true
+      },
+      "rules": [
+        {
+          "rule_id": "R04",
+          "item_type": "any",
+          "condition": "asks for a password, card number or bank login, OR payment link on an unverified domain",
+          "decision": "block_scam",
+          "rationale": "Credential or payment phishing pattern"
+        }
+      ],
+      "memories": [
+        {
+          "id": "mem-4",
+          "content": "Owner preference: CAF document requests are top priority; prepare them as soon as they arrive."
+        }
+      ],
+      "guard_flags": [],
+      "zetaris_queries": [
+        "SELECT sender_domain, organisation, category, verified FROM osef.senders WHERE sender_domain = 'caf-remboursement.info'",
+        "SELECT key, value FROM osef.profile",
+        "SELECT rule_id, item_type, condition, decision, rationale FROM osef.rules WHERE item_type IN ('unknown', 'any')"
+      ]
+    },
+    "critic": {
+      "passed": true,
+      "total": 9,
+      "scores": null,
+      "problems": [],
+      "model": null,
+      "via": "rules-only"
+    },
+    "escalation_reason": null
+  },
+  "agents": [
+    {
+      "name": "Intake",
+      "role": "Structures the item and screens it for prompt injection"
+    },
+    {
+      "name": "Researcher",
+      "role": "Reads senders, rules and profile through Zetaris and evaluates the rules"
+    },
+    {
+      "name": "MemoryKeeper",
+      "role": "Recalls the owner's past corrections from Meterless H-MEM"
+    },
+    {
+      "name": "Decider",
+      "role": "Proposes a decision with citations (Nemotron via Nightshift, deep lane)"
+    },
+    {
+      "name": "Critic",
+      "role": "Hard checks plus a 9-point rubric; sends weak proposals back (judge lane)"
+    },
+    {
+      "name": "Reporter",
+      "role": "Returns the decision, the prepared action and the evidence"
+    }
+  ],
+  "trace_id": "trace-example_2",
+  "log_file": "logs/trace-example_2.jsonl",
+  "execution_time_seconds": 0.0
+}

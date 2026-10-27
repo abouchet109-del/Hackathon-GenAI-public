@@ -1,0 +1,5 @@
+level,own_domain_weight,other_domain_weight,description
+ceo,1.0,1.0,The CEO is a source of truth on every topic
+lead,0.9,0.4,A department lead is authoritative on the topics their department owns
+member,0.6,0.25,A team member is reliable on their own department's topics
+intern,0.3,0.1,An intern's statements are kept but weigh little until confirmed

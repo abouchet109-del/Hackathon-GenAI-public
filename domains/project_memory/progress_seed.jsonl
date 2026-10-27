@@ -1,0 +1,7 @@
+{"member": "Léa Martin", "task_id": "t01", "progress": 0.6, "reported_at": "2026-10-26T17:00:00", "assumptions": {}, "note": "Sending works; retries on bounced emails still failing in QA."}
+{"member": "Karim Diallo", "task_id": "t02", "progress": 0.4, "reported_at": "2026-10-26T18:00:00", "assumptions": {}, "note": "Screens done, waiting for the reminder API."}
+{"member": "Julie Caron", "task_id": "t03", "progress": 0.8, "reported_at": "2026-10-27T09:00:00", "assumptions": {"launch_date": "2026-12-01", "pricing": "29 EUR"}, "note": "Brief says launch on 1 December at 29 EUR."}
+{"member": "Inès Roux", "task_id": "t04", "progress": 0.5, "reported_at": "2026-10-27T09:30:00", "assumptions": {"launch_date": "2026-12-01"}, "note": "Countdown on the landing page targets 1 December."}
+{"member": "Sami Haddad", "task_id": "t05", "progress": 0.5, "reported_at": "2026-10-27T10:00:00", "assumptions": {}, "note": ""}
+{"member": "Yanis Moreau", "task_id": "t06", "progress": 0.3, "reported_at": "2026-10-27T10:00:00", "assumptions": {}, "note": ""}
+{"member": "Paul Lefèvre", "task_id": "t07", "progress": 0.7, "reported_at": "2026-10-27T11:00:00", "assumptions": {"pricing": "29 EUR"}, "note": ""}

@@ -1,0 +1,14 @@
+member_id,name,department,role,ai_tool,level
+m01,Claire Morel,executive,CEO,Claude,ceo
+m02,Hugo Lambert,product,Head of Product,ChatGPT,lead
+m03,Sami Haddad,tech,CTO,Cursor,lead
+m04,Léa Martin,tech,Backend developer,Cursor,member
+m05,Inès Roux,marketing,Head of Marketing,ChatGPT,lead
+m06,Tom Girard,marketing,Growth marketer,Gemini,member
+m07,Nadia Benali,finance,CFO,Claude,lead
+m08,Paul Lefèvre,sales,Head of Sales,Mistral Le Chat,lead
+m09,Julie Caron,sales,Account executive,ChatGPT,member
+m10,Yanis Moreau,ops,Head of Customer Success,Gemini,lead
+m11,Emma Petit,product,Product designer,Claude,member
+m12,Karim Diallo,tech,Frontend developer,GitHub Copilot,member
+m13,Lucas Bernard,marketing,Marketing intern,ChatGPT,intern

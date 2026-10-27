@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "osef-steward": {
+      "command": "/Users/ryandalier-dulys/open-agent-hack/.venv/bin/python",
+      "args": ["/Users/ryandalier-dulys/open-agent-hack/run.py", "mcp"],
+      "env": {
+        "OSEF_MEMBER": "Claire Morel",
+        "OSEF_AI_TOOL": "Claude",
+        "STEWARD_SPACE": "project",
+        "HMEM_URL": "http://127.0.0.1:8787"
+      }
+    }
+  }
+}

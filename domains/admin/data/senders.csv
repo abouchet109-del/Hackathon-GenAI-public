@@ -1,0 +1,15 @@
+sender_domain,organisation,category,verified
+caf.fr,CAF (housing aid office),housing_aid,yes
+impots.gouv.fr,Tax administration,tax_notice,yes
+free.fr,Free (mobile and internet),invoice,yes
+edf.fr,EDF (electricity),invoice,yes
+telecom-sudparis.eu,Telecom SudParis,school_admin,yes
+crous-paris.fr,CROUS (student housing),invoice,yes
+maif.fr,MAIF (insurance),insurance_renewal,yes
+sncf-connect.com,SNCF Connect,marketing,yes
+boursorama.com,Boursorama (bank),bank_notice,yes
+doctolib.fr,Doctolib,appointment,yes
+caf-remboursement.info,Unknown,unknown,no
+impots-gouv-secure.com,Unknown,unknown,no
+edf-facture.net,Unknown,unknown,no
+colis-livraison-fr.com,Unknown,unknown,no

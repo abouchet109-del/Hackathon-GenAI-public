@@ -1,0 +1,8 @@
+task_id,member,topic,title,due,depends_on
+t01,Léa Martin,roadmap,Payment reminder emails (backend),2026-10-24,
+t02,Karim Diallo,roadmap,Reminders screen in the app,2026-10-31,t01
+t03,Julie Caron,customers,Launch brief for the pilot customers,2026-10-30,t01
+t04,Inès Roux,launch_date,Launch campaign landing page,2026-11-06,
+t05,Sami Haddad,tech_stack,Production hosting and backups,2026-11-20,
+t06,Yanis Moreau,support_policy,Support playbook for the launch,2026-11-15,
+t07,Paul Lefèvre,pricing,Price sheet for the sales team,2026-11-03,

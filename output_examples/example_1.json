@@ -1,0 +1,104 @@
+{
+  "run_id": "example_1",
+  "status": "success",
+  "profile": "full",
+  "stack": {
+    "data": "sample-sqlite",
+    "memory": "meterless-hmem",
+    "llm": "offline (replay + deterministic fallback)",
+    "sample_mode": true,
+    "domain": "admin"
+  },
+  "output": {
+    "decision": "pay",
+    "confidence": 0.8,
+    "summary": "Owner correction applies: Owner correction: always pay EDF electricity invoices up to 120 EUR without asking me.",
+    "prepared_action": "Prepare a payment of 86.4 EUR to EDF (electricity) before 2026-11-04 (owner confirms).",
+    "needs_owner_approval": true,
+    "citations": [
+      "mem-1",
+      "R02"
+    ],
+    "evidence": {
+      "facts": {
+        "item_id": "c03",
+        "sender": "factures@edf.fr",
+        "sender_domain": "edf.fr",
+        "subject": "EDF electricity invoice (winter)",
+        "amount_eur": 86.4,
+        "due_date": "2026-11-04",
+        "price_increase_pct": null,
+        "link_domains": [],
+        "asks_credentials": false,
+        "mentions_payment": false,
+        "requests_action": false,
+        "mentions_documents": false,
+        "received_at": "2026-10-20",
+        "sender_known": true,
+        "sender_verified": true,
+        "organisation": "EDF (electricity)",
+        "item_type": "invoice",
+        "link_on_unverified_domain": false
+      },
+      "rules": [
+        {
+          "rule_id": "R02",
+          "item_type": "invoice",
+          "condition": "sender verified AND amount > auto-pay limit",
+          "decision": "escalate",
+          "rationale": "Amount above the owner's auto-pay limit needs approval"
+        }
+      ],
+      "memories": [
+        {
+          "id": "mem-1",
+          "content": "Owner correction: always pay EDF electricity invoices up to 120 EUR without asking me."
+        }
+      ],
+      "guard_flags": [],
+      "zetaris_queries": [
+        "SELECT sender_domain, organisation, category, verified FROM osef.senders WHERE sender_domain = 'edf.fr'",
+        "SELECT key, value FROM osef.profile",
+        "SELECT rule_id, item_type, condition, decision, rationale FROM osef.rules WHERE item_type IN ('invoice', 'any')"
+      ]
+    },
+    "critic": {
+      "passed": true,
+      "total": 9,
+      "scores": null,
+      "problems": [],
+      "model": null,
+      "via": "rules-only"
+    },
+    "escalation_reason": null
+  },
+  "agents": [
+    {
+      "name": "Intake",
+      "role": "Structures the item and screens it for prompt injection"
+    },
+    {
+      "name": "Researcher",
+      "role": "Reads senders, rules and profile through Zetaris and evaluates the rules"
+    },
+    {
+      "name": "MemoryKeeper",
+      "role": "Recalls the owner's past corrections from Meterless H-MEM"
+    },
+    {
+      "name": "Decider",
+      "role": "Proposes a decision with citations (Nemotron via Nightshift, deep lane)"
+    },
+    {
+      "name": "Critic",
+      "role": "Hard checks plus a 9-point rubric; sends weak proposals back (judge lane)"
+    },
+    {
+      "name": "Reporter",
+      "role": "Returns the decision, the prepared action and the evidence"
+    }
+  ],
+  "trace_id": "trace-example_1",
+  "log_file": "logs/trace-example_1.jsonl",
+  "execution_time_seconds": 0.0
+}
