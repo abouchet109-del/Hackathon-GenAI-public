@@ -8,7 +8,7 @@ In a small company, everyone already works with their own AI: Claude, ChatGPT, C
 - **Truth.** Every proposed fact or decision is arbitrated before it becomes shared truth: store, supersede, reject, redact, clarify, escalate or quarantine. Sources are weighted by role x domain: the CEO is a source of truth everywhere, the CTO on tech, an intern barely. A contradiction is first checked with its author ("error or real change?"), then escalated to whoever has authority.
 - **Context.** Before answering, the AI receives the smallest useful company context for its owner's role and current task (about 1,500 tokens, every line cited), what changed since their last session, the formal procedures of their role, and the alerts that concern them.
 
-And the team stays coordinated: each person's AI reports progress on their tasks; Steward flags late work and work built on a value a newer decision changed, alerts the people concerned, and recommends the meetings that unblock them.
+And the team stays coordinated: each person's AI reports progress on their tasks; Steward marks late work and work built on a value a newer decision changed, alerts the people concerned, and recommends the meetings that unblock them.
 
 > We help small teams whose members each use a different AI decide what becomes the company's shared truth and who needs to know, using a role-and-domain-weighted arbitration over each person's AI conversations, governance data served by Zetaris and a versioned memory in Meterless H-MEM, and produce the right context for each person's role and task, alerts and clarification questions for the people concerned, and an escalation queue with weak signals for the CEO.
 

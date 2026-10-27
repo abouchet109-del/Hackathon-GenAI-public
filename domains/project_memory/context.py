@@ -191,16 +191,33 @@ def onboard(answers: dict, data, schema: str, memory) -> dict:
     if isinstance(followed, str):
         followed = [t.strip() for t in re.split(r"[;,]", followed) if t.strip()]
     profiles = _load(memory, "profiles")
+    warnings = []
+    unknown = [t for t in followed if t not in topics]
+    if unknown:
+        warnings.append(f"topics not on the watchlist, ignored: {', '.join(unknown)}; accepted: {', '.join(sorted(topics))}")
+    focus = answers.get("focus")
+    if focus and focus not in ONBOARDING[3]["options"]:
+        warnings.append(f"focus '{focus}' is not one of {', '.join(ONBOARDING[3]['options'])}; the role's default is kept")
+    level = str(answers.get("detail_level") or "")
+    if level and level not in {"1", "2", "3"}:
+        warnings.append(f"detail_level '{level}' is not 1, 2 or 3; the role's default is kept")
+    previous = profiles.get(name.lower(), {})
+    responsibilities = str(answers.get("responsibilities", "")).strip()[:300]
+    if not responsibilities and previous.get("responsibilities"):
+        warnings.append("responsibilities left empty: the previous sentence is kept")
+        responsibilities = previous["responsibilities"]
     profiles[name.lower()] = {
-        "responsibilities": str(answers.get("responsibilities", ""))[:300],
+        "responsibilities": responsibilities,
         "topics_followed": [t for t in followed if t in topics],
-        "focus": answers.get("focus") if answers.get("focus") in ONBOARDING[3]["options"] else None,
-        "detail_level": str(answers.get("detail_level")) if str(answers.get("detail_level")) in {"1", "2", "3"} else None,
+        "focus": focus if focus in ONBOARDING[3]["options"] else None,
+        "detail_level": level if level in {"1", "2", "3"} else None,
         "at": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
     profiles[name.lower()] = {k: v for k, v in profiles[name.lower()].items() if v not in (None, "", [])}
     _save(memory, "profiles", profiles)
-    return member_profile(name, data, schema, memory)
+    prof = member_profile(name, data, schema, memory)
+    prof["warnings"] = warnings
+    return prof
 
 
 # ---------- what each AI receives ----------
@@ -285,7 +302,8 @@ def compose_context(name: str, task: str, data, schema: str, memory, journal: li
     return {"context": text, "approx_tokens": len(text) // CHARS_PER_TOKEN, "budget_tokens": budget_tokens,
             "warnings": warnings,
             "memory_ids": ids, "task_topics": task_topics, "profile": {k: prof.get(k) for k in (
-                "name", "role", "department", "level", "focus", "detail_level", "topics_followed")}}
+                "name", "role", "department", "level", "focus", "detail_level", "topics_followed",
+                "responsibilities", "onboarded")}}
 
 
 def procedures_for(prof: dict, task: str | None, data, schema: str) -> list[dict]:
@@ -349,7 +367,8 @@ def whats_new(name: str, data, schema: str, memory, journal: list[dict], advance
     if advance:
         cursors[name.lower()] = time.time()
         _save(memory, "cursors", cursors)
-    return {"since": since or None, "changes": changes[-15:], "waiting_for_you": waiting, "signals": signals}
+    since_iso = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(since)) if since else None
+    return {"since": since_iso, "changes": changes[-15:], "waiting_for_you": waiting, "signals": signals}
 
 
 # ---------- the CEO agent ----------
@@ -386,7 +405,7 @@ def weak_signals(data, schema: str, memory, journal: list[dict]) -> list[dict]:
     pending = [e for e in journal if e["status"] == "pending"]
     if pending:
         signals.append({"kind": "decisions_waiting", "topic": "CEO queue", "severity": "low",
-                        "signal": f"{len(pending)} decision(s) wait for the CEO.", "concerned": [ceo],
+                        "signal": f"{len(pending)} {'decision waits' if len(pending) == 1 else 'decisions wait'} for the CEO.", "concerned": [ceo],
                         "suggested_meeting": None})
     for w in warnings:  # a source that is down is a signal too, never a silent gap
         signals.append({"kind": "source_unavailable", "topic": "finance source", "severity": "low", "signal": w,

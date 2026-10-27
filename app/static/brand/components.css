@@ -267,6 +267,10 @@ a.st-chip:hover { color: var(--st-text); border-color: var(--st-line-strong); }
 .st-trace__agent { color: var(--st-text); font-weight: 500; }
 .st-trace__msg b { color: var(--st-text); font-weight: 500; }
 
+.st-lockup__mark { fill: var(--st-mark); }
+.st-lockup__ink { stroke: var(--st-on-mark, var(--st-text)); }
+.st-input:focus-visible, .st-select:focus-visible, .st-textarea:focus-visible { outline: none; }
+
 /* ---------- Text-mode block (an MCP response, shown verbatim) ---------- */
 .st-textmode { margin: 0; padding: var(--st-space-4); background: var(--st-bg-sunken); border: var(--st-border) solid var(--st-line-2); border-radius: var(--st-radius-md); font-family: var(--font-mono); font-size: 13px; line-height: 20px; color: var(--st-text); white-space: pre; overflow-x: auto; font-variant-ligatures: none; }
 

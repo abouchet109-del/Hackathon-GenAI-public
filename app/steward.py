@@ -12,6 +12,7 @@ import dataclasses
 import importlib.util
 import json
 import os
+import time
 from collections import defaultdict
 
 from .adapters.memory import load_seed
@@ -26,12 +27,22 @@ def _tags(mem: dict) -> dict:
     return {t.split(":", 1)[0]: t.split(":", 1)[1] for t in mem.get("tags", []) if ":" in t}
 
 
+def _when(mem: dict) -> str | None:
+    """The record's own time, ISO 8601 (the fallback memory stores an epoch, H-MEM an ISO string)."""
+    ts = mem.get("timestamp") or mem.get("created_at") or mem.get("at")
+    if isinstance(ts, (int, float)):
+        return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(ts))
+    return str(ts) if ts else None
+
+
 def _public(mem: dict) -> dict:
     tags = _tags(mem)
     return {"id": mem["id"], "content": mem["content"], "topic": tags.get("topic"), "kind": tags.get("kind"),
             "author": tags.get("author"), "department": tags.get("department"), "ai": tags.get("ai"),
             "source": mem.get("source"), "supersedes": mem.get("supersedes"),
-            "superseded_by": mem.get("superseded_by"), "is_policy": "policy" in mem.get("tags", [])}
+            "superseded_by": mem.get("superseded_by"), "is_policy": "policy" in mem.get("tags", []),
+            "confidence": mem.get("confidence"), "at": _when(mem),
+            "max_amount": tags.get("max_amount"), "override": tags.get("override")}
 
 
 @contextlib.contextmanager
@@ -127,7 +138,8 @@ class Steward:
             return {"status": "error", "error": res.get("error"), "trace": res.get("log_file")}
         out = res["output"]
         return {"decision": out["decision"], "why": out["summary"], "citations": out["citations"],
-                "confidence": out.get("confidence"),
+                "confidence": out.get("confidence"), "content": content,
+                "current_record": (out.get("applied") or {}).get("current_record"),
                 "applied": out.get("applied"), "needs_ceo": out["decision"] == "escalate", "alerts_sent": alerts,
                 "critic_score": (out.get("critic") or {}).get("total"), "trace": res["log_file"],
                 "stack": res["stack"]}
@@ -160,11 +172,18 @@ class Steward:
             if m.get("superseded_by"):
                 continue
             row = _public(m)
-            (policies if row["is_policy"] else by_topic[row["topic"] or "general"]).append(
-                {k: row[k] for k in ("id", "content", "kind", "author", "ai")})
+            if row["is_policy"]:
+                policies.append(row)
+            else:
+                by_topic[row["topic"] or "general"].append(
+                    {k: row[k] for k in ("id", "content", "kind", "author", "ai", "confidence", "at")})
         pending = [e for e in self.logic.journal(self.memory) if e["status"] == "pending"]
-        return {"topics": dict(sorted(by_topic.items())), "ceo_policies": [{"id": p["id"], "content": p["content"]}
-                                                                         for p in policies],
+        return {"topics": dict(sorted(by_topic.items())),
+                "ceo_policies": [{"id": p["id"], "content": p["content"], "topic": p["topic"],
+                                  "department": p["department"], "max_amount": p["max_amount"],
+                                  "scope": f"{p['department'] or 'any department'} · {p['topic'] or 'any topic'}"
+                                           + (f" · up to {float(p['max_amount']):,.0f} EUR" if p["max_amount"] else ""),
+                                  "at": p["at"]} for p in policies],
                 "pending_escalations": len(pending)}
 
     def why(self, topic: str) -> dict:
@@ -177,9 +196,38 @@ class Steward:
         return {"topic": topic, "current": current, "history": history, "steward_journal": journal}
 
     def escalations(self) -> list[dict]:
-        return [{k: e.get(k) for k in ("journal_id", "at", "author", "department", "ai_tool", "topic", "kind",
-                                       "content", "reason", "citations")}
-                for e in self.logic.journal(self.memory) if e["status"] == "pending"]
+        """The CEO's queue. Each entry names what it conflicts with: the record it contradicts, the policy or
+        limit it exceeds, in words, so the ruling can be made from the card alone."""
+        records = {m["id"]: m for m in self.memory.list(None)}
+        limits = {r["topic"]: r["budget_limit_eur"] for r in self.data.run_sql(
+            f"SELECT topic, budget_limit_eur FROM {self.schema}.topics", ["topic", "budget_limit_eur"])}
+        out = []
+        for e in self.logic.journal(self.memory):
+            if e["status"] != "pending":
+                continue
+            row = {k: e.get(k) for k in ("journal_id", "at", "author", "department", "ai_tool", "topic", "kind",
+                                         "content", "reason", "citations", "confidence", "amount_eur")}
+            conflicts = []
+            about = records.get(e.get("about_memory") or "")
+            if about:
+                conflicts.append({"id": about["id"], "text": about["content"]})
+            seen = {c["id"] for c in conflicts}
+            for m in records.values():  # the standing policies that cover this topic and department
+                tags = _tags(m)
+                if "policy" not in m.get("tags", []) or m.get("superseded_by") or m["id"] in seen:
+                    continue
+                if tags.get("topic") != e.get("topic") or (tags.get("department") and
+                                                           tags["department"] != e.get("department")):
+                    continue
+                conflicts.append({"id": m["id"], "text": m["content"]})
+                seen.add(m["id"])
+            limit = limits.get(e.get("topic"))
+            if limit not in (None, "") and e.get("amount_eur") and float(e["amount_eur"]) > float(limit):
+                conflicts.append({"id": "S05", "text": f"topic limit {float(limit):,.0f} EUR; proposed "
+                                                       f"{float(e['amount_eur']):,.0f} EUR, {float(e['amount_eur']) - float(limit):,.0f} EUR above"})
+            row["conflicts"] = conflicts
+            out.append(row)
+        return out
 
     def resolve(self, journal_id: str, decision: str, policy: str | None = None, by: str | None = None) -> dict:
         """The CEO's ruling. The callers check that `by` is the CEO; here it is written to the journal."""
@@ -210,6 +258,7 @@ class Steward:
             outcomes.append({"extracted": it["content"], "kind": it.get("kind"), "topic": it.get("topic"),
                              "decision": res.get("decision"), "why": res.get("why"), "citations": res.get("citations"),
                              "journal_id": (res.get("applied") or {}).get("journal_id"),
+                             "current_record": res.get("current_record"),
                              "extracted_by": it.get("extracted_by"), "trace": res.get("trace")})
         return {"source": source, "title": title, "items_found": len(items), "outcomes": outcomes,
                 "source_flags": self.ctx.guard_source(text), "stack": self.describe(),
@@ -227,10 +276,18 @@ class Steward:
             return self.ctx.whats_new(name, self.data, self.schema, self.memory, self.logic.journal(self.memory), True)
 
     def clarifications(self, name: str | None = None) -> list[dict]:
-        return [{k: e.get(k) for k in ("journal_id", "at", "author", "ai_tool", "topic", "content", "question",
-                                       "about_memory")}
-                for e in self.logic.journal(self.memory)
-                if e["status"] == "awaiting_author" and (name is None or e.get("author") == name)]
+        """Open questions, each with the record it contradicts quoted (what the author must compare against)."""
+        records = {m["id"]: m for m in self.memory.list(None)}
+        out = []
+        for e in self.logic.journal(self.memory):
+            if e["status"] != "awaiting_author" or (name is not None and e.get("author") != name):
+                continue
+            row = {k: e.get(k) for k in ("journal_id", "at", "author", "ai_tool", "topic", "content", "question",
+                                         "about_memory")}
+            about = records.get(e.get("about_memory") or "")
+            row["current_record"] = about["content"] if about else None
+            out.append(row)
+        return out
 
     def answer_clarification(self, journal_id: str, answer: str, note: str = "", by: str | None = None,
                              ceo: bool = False) -> dict:

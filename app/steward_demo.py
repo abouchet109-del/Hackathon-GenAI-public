@@ -4,7 +4,7 @@ from __future__ import annotations
 import sys
 
 from .steward import Steward
-from .textmode import cli_line
+from .textmode import VERDICT_WORD, cli_line
 
 
 def _say(text: str = "") -> None:
@@ -12,7 +12,7 @@ def _say(text: str = "") -> None:
 
 
 def _verdict(step: str, res: dict) -> dict:
-    _say("   " + cli_line(res))
+    _say("   " + cli_line(res, res.get("content", "")))
     _say(f"   -> {res['why']}")
     if res.get("alerts_sent"):
         _say(f"   -> alert sent to {', '.join(res['alerts_sent'])} (their work relies on the old value)")
@@ -45,7 +45,7 @@ def run_demo(space: str = "steward-demo") -> dict:
                      "price is 19 EUR per user per month. I'll send Batir Plus the contract by 2026-10-30. "
                      "Also I prefer short answers in the morning.", "Julie Caron", "ChatGPT")
     for o in obs["outcomes"]:
-        _say(f"   '{o['extracted'][:70]}' -> {o['decision'].upper()}")
+        _say(f"   '{o['extracted'][:70]}' -> {VERDICT_WORD.get(o['decision'], str(o['decision']).upper())}")
     clar = next((o for o in obs["outcomes"] if o["decision"] == "clarify"), None)
     steps.append({"step": "observe", "outcomes": [(o["extracted"], o["decision"]) for o in obs["outcomes"]],
                   "raw_text_stored": obs["raw_text_stored"]})
@@ -63,7 +63,7 @@ def run_demo(space: str = "steward-demo") -> dict:
         "Book a booth at Batimat Paris for 11,500 EUR.", "Inès Roux", "ChatGPT", "decision", "marketing_spend",
         run_id="steward-demo-4")))
     queue = st.escalations()
-    _say(f"   The CEO (Claire, Claude) has {len(queue)} item(s) waiting. She approves the trade show and sets a policy.")
+    _say(f"   The CEO (Claire, Claude) has {len(queue)} {'item' if len(queue) == 1 else 'items'} waiting. She approves the trade show and sets a policy.")
     batimat = next(e for e in queue if "Batimat" in e["content"])
     res = st.resolve(batimat["journal_id"], "store",
                      policy="Marketing may commit up to 12,000 EUR per trade show without asking me.")
@@ -105,6 +105,6 @@ def run_demo(space: str = "steward-demo") -> dict:
         meet = s.get("suggested_meeting")
         _say(f"   [{s['severity']}] {s['signal']}" + (f"  -> meeting: {', '.join(meet['participants'])}" if meet else ""))
     brief = st.brief()
-    _say(f"\nShared truth: {sum(len(v) for v in brief['topics'].values())} active memories on {len(brief['topics'])} "
+    _say(f"\nShared truth: {sum(len(v) for v in brief['topics'].values())} records on {len(brief['topics'])} "
          f"topics, {len(brief['ceo_policies'])} CEO policy, {brief['pending_escalations']} item(s) for the CEO.")
     return {"steps": steps, "signals": signals, "brief": brief}

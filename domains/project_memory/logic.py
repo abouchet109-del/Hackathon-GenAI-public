@@ -397,13 +397,23 @@ def apply(decision: str, item: dict, facts: dict, memories: list[dict], memory, 
              "question": prepared_action("clarify", facts) if decision == "clarify" else None,
              "about_memory": next((r.get("about_memory") for r in output.get("evidence", {}).get("rules", [])
                                    if r.get("about_memory")), None),
+             "confidence": output.get("confidence"), "amount_eur": facts.get("amount_eur"),
              "status": {"escalate": "pending", "clarify": "awaiting_author"}.get(decision, "done"),
              "item": {**item, "content": mask_secrets(
                  str(item.get("content", "")))}}
     rows = journal(memory) + [entry]
     _journal_write(memory, rows)
+    about = next((m for m in memory.list(None) if m["id"] == entry.get("about_memory")), None) \
+        if entry.get("about_memory") else None
     return {"memory_id": entry["memory_id"], "supersedes": replaced, "journal_id": entry["journal_id"],
-            "status": entry["status"]}
+            "status": entry["status"], "about_memory": entry.get("about_memory"),
+            "current_record": about["content"] if about else None}
+
+
+ANSWER_WORDS = {"error": "error", "mistake": "error", "typo": "error", "withdraw": "error", "no": "error",
+                "an error": "error", "it was an error": "error", "wrong": "error",
+                "change": "change", "real change": "change", "a real change": "change", "its a real change": "change",
+                "yes": "change", "changed": "change", "real": "change", "confirm": "change", "confirmed": "change"}
 
 
 def _now() -> str:
@@ -435,9 +445,13 @@ def resolve(journal_id: str, decision: str, memory, policy: str | None = None, b
     if policy:
         content, tags = learn(entry["item"], decision, policy, department=entry.get("department"))
         policy_record = memory.add(content, tags, source="CEO", confidence=0.95, event="user_correction")
+    who = by or "the CEO"
+    ruled = {"store": f"Approved once by {who}", "supersede": f"Made the record by {who}, replacing {replaced or 'nothing'}",
+             "reject": f"Rejected by {who}"}[decision] + (f"; policy {policy_record['id']} raised." if policy_record else ".")
     entry.update({"status": f"resolved:{decision}", "memory_id": record["id"] if record else None,
                   "supersedes": replaced, "policy_id": policy_record["id"] if policy_record else None,
-                  "resolved_by": by, "resolved_at": _now()})
+                  "resolved_by": by, "resolved_at": _now(), "ruling": decision,
+                  "reason": f"{ruled} Before the ruling: {entry.get('reason') or ''}".strip()})
     _journal_write(memory, rows)
     return entry
 
@@ -452,8 +466,9 @@ def answer_clarification(journal_id: str, answer: str, memory, note: str = "", b
         raise KeyError(f"unknown clarification {journal_id}")
     if entry["status"] != "awaiting_author":
         raise ValueError(f"{journal_id} is {entry['status']}, not awaiting the author")
+    answer = ANSWER_WORDS.get(re.sub(r"[^a-z ]", "", (answer or "").strip().lower()), answer)
     if answer not in {"error", "change"}:
-        raise ValueError("answer must be 'error' or 'change'")
+        raise ValueError("answer must be 'error' (withdraw the proposal) or 'change' (a real change, sent to the CEO)")
     if by is not None and not ceo and (by or "").strip().lower() != (entry.get("author") or "").strip().lower():
         raise PermissionError(f"{journal_id} waits for its author, {entry.get('author')}; {by or 'this person'} "
                               "cannot answer for them.")
@@ -468,16 +483,34 @@ def answer_clarification(journal_id: str, answer: str, memory, note: str = "", b
     return entry
 
 
+DEPARTMENT_WORDS = {"marketing": "marketing", "sales": "sales", "tech": "tech", "engineering": "tech",
+                    "ops": "ops", "operations": "ops", "finance": "finance", "product": "product",
+                    "support": "support", "customer success": "support", "executive": "executive"}
+
+
+def policy_scope(note: str, fallback_topic: str, fallback_department: str | None) -> tuple[str, str | None]:
+    """The scope of a policy is read from its wording when it names a department or a topic ("Marketing may
+    commit up to 12,000 EUR per trade show" covers marketing / marketing_spend); otherwise it is the scope of the
+    escalation it answers. The scope is written into the policy's text so every screen shows it."""
+    low = " " + re.sub(r"[^a-z ]", " ", (note or "").lower()) + " "
+    department = next((d for word, d in DEPARTMENT_WORDS.items() if f" {word} " in low), fallback_department)
+    guessed = _guess_topic(note or "")
+    topic = guessed if guessed != "general" else fallback_topic
+    return topic, department
+
+
 def learn(item: dict, decision: str, note: str, department: str | None = None) -> tuple[str, list[str]]:
     """A CEO policy becomes a durable memory that changes the next arbitrations."""
     facts = intake(item)
     if department is None:
         member = _member_lookup(str(item.get("author_id") or item.get("author") or ""))
         department = member["department"] if member else None
-    tags = ["policy", f"topic:{facts['topic']}", f"override:{'store' if decision in {'store', 'supersede'} else decision}"]
+    topic, department = policy_scope(note, facts["topic"], department)
+    tags = ["policy", f"topic:{topic}", f"override:{'store' if decision in {'store', 'supersede'} else decision}"]
     if department:
         tags.append(f"department:{department}")
     ceiling = _amounts(note)
     if ceiling:
         tags.append(f"max_amount:{max(ceiling):g}")
-    return f"CEO policy: {note.strip()}", tags
+    scope = f"{department or 'any department'} · {topic}"
+    return f"CEO policy ({scope}): {note.strip()}", tags

@@ -29,7 +29,7 @@ except ImportError:  # MCP Python SDK 1.x
 from mcp.types import ToolAnnotations
 
 from .steward import Steward
-from .textmode import context_text, verdict_text, whats_new_text
+from .textmode import alerts_text, context_text, profile_text, verdict_text, whats_new_text
 
 
 def _hint(read_only: bool) -> ToolAnnotations:
@@ -150,7 +150,8 @@ def observe(excerpt: str, source: str = "conversation", title: str = "", ctx: Co
     dept = steward().profile(member).get("department")
     for o in res.get("outcomes", []):
         o["text"] = verdict_text({"decision": o.get("decision"), "why": o.get("why"), "citations": o.get("citations"),
-                                  "applied": {"journal_id": o.get("journal_id")}, "stack": res.get("stack")},
+                                  "applied": {"journal_id": o.get("journal_id")}, "stack": res.get("stack"),
+                                  "current_record": o.get("current_record")},
                                  content=o.get("extracted", ""), author=member, ai_tool=ai, department=dept,
                                  to="CEO" if o.get("decision") == "escalate" else None)
     res["text"] = "\n\n".join(o["text"] for o in res.get("outcomes", [])) or \
@@ -188,6 +189,9 @@ def answer_clarification(journal_id: str, answer: str, note: str = "", ctx: Cont
         res = steward().answer_clarification(journal_id, answer, note, by=member)
     except PermissionError as error:
         return {"error": str(error)}
+    except (KeyError, ValueError) as error:
+        return {"error": str(error).strip("'\""), "accepted": ["error", "change"],
+                "waiting": [c["journal_id"] for c in steward().clarifications(member)]}
     word = "withdrawn" if res.get("status", "").endswith("withdrawn_by_author") else "escalate"
     res["text"] = verdict_text({"decision": word, "why": res.get("reason") or "Withdrawn by its author as an error.",
                                 "applied": {"journal_id": journal_id}, "stack": steward().describe()},
@@ -203,8 +207,10 @@ def onboard(responsibilities: str, topics_followed: str, focus: str, detail_leve
     from the watchlist. focus: technical | managerial | commercial | operational | product. detail_level: 1, 2 or 3.
     It shapes the context this person receives; authority still comes from the team directory."""
     member, _ = _me(ctx)
-    return steward().onboard({"name": member, "responsibilities": responsibilities,
-                              "topics_followed": topics_followed, "focus": focus, "detail_level": detail_level})
+    res = steward().onboard({"name": member, "responsibilities": responsibilities,
+                             "topics_followed": topics_followed, "focus": focus, "detail_level": detail_level})
+    res["text"] = profile_text(res)
+    return res
 
 
 # ---------- CEO ----------
@@ -221,7 +227,7 @@ def my_tasks(ctx: Context = None) -> dict:
 def report_progress(task_id: str, progress: float, assumptions: dict | None = None, note: str = "",
                     ctx: Context = None) -> dict:
     """Report where one of this person's tasks stands. progress is 0 to 1. assumptions lists the company values
-    the work relies on, keyed by topic, e.g. {"launch_date": "2026-12-01", "pricing": "29 EUR"}: Steward flags
+    the work relies on, keyed by topic, e.g. {"launch_date": "2026-12-01", "pricing": "29 EUR"}: Steward marks
     the work as obsolete when a decision in force says otherwise."""
     member, _ = _me(ctx)
     return steward().report_progress(member, task_id, progress, assumptions, note)
@@ -232,7 +238,8 @@ def my_alerts(ctx: Context = None) -> dict:
     """Decisions that changed something this person works on, each returned once. Call it at the start of a
     session and tell the person before anything else."""
     member, _ = _me(ctx)
-    return {"alerts": steward().alerts(member)}
+    alerts = steward().alerts(member)
+    return {"alerts": alerts, "text": alerts_text(alerts, member)}
 
 
 @server.tool(annotations=READ)

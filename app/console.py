@@ -11,7 +11,9 @@ another member's AI, and its proposals go through the same arbitration as an MCP
 """
 from __future__ import annotations
 
+import json
 import os
+import re
 
 from fastapi import APIRouter, Body, HTTPException
 
@@ -137,6 +139,26 @@ def remember(payload: dict = Body(...)) -> dict:
         raise HTTPException(status_code=400, detail="content is required")
     return _guard(steward().remember, content, payload.get("author") or "unknown member",
                   payload.get("ai_tool") or "unknown AI", payload.get("kind") or "fact", payload.get("topic") or None)
+
+
+_RUN_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")
+
+
+@router.get("/trace/{run_id}")
+def trace(run_id: str) -> dict:
+    """One trace file, read-only, as the lines the harness wrote (logs/trace-<run_id>.jsonl)."""
+    if not _RUN_ID.match(run_id):
+        raise HTTPException(status_code=400, detail="run_id must be a file stem: letters, digits, . _ -")
+    path = steward().h.s.log_dir / f"trace-{run_id}.jsonl"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail=f"no trace {run_id}")
+    lines = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        try:
+            lines.append(json.loads(raw))
+        except ValueError:
+            continue
+    return {"run_id": run_id, "file": str(path.relative_to(steward().h.s.log_dir.parent)), "lines": lines}
 
 
 @router.get("/journal")
