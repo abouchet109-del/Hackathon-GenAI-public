@@ -1,0 +1,6 @@
+OSEF Steward
+Copyright (c) 2026 Ryan Dalier-Dulys. All rights reserved (see LICENSE).
+
+This product includes software developed by Meterless (H-MEM reference implementation and
+conformance vectors, https://github.com/Meterless/Meterless), licensed under the Apache License 2.0.
+Modifications: none to the vendored files; they are wrapped by hmem-service/server.ts.

@@ -1,0 +1,4 @@
+{"content": "Owner correction: always pay EDF electricity invoices up to 120 EUR without asking me.", "tags": ["override:pay", "sender:edf.fr", "max_amount:120"], "source": "user_correction", "confidence": 0.95}
+{"content": "Owner correction: accept MAIF insurance renewals with a price increase up to 15%; above that, ask me.", "tags": ["override:ignore", "sender:maif.fr", "max_increase:15"], "source": "user_correction", "confidence": 0.95}
+{"content": "Owner preference: never reply to SNCF Connect promotions or contests.", "tags": ["override:ignore", "sender:sncf-connect.com"], "source": "user_correction", "confidence": 0.9}
+{"content": "Owner preference: CAF document requests are top priority; prepare them as soon as they arrive.", "tags": ["priority:high", "sender:caf.fr"], "source": "user_correction", "confidence": 0.9}

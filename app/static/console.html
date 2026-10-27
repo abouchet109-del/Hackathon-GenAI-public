@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Steward · Brikk</title>
+<meta name="description" content="Steward console: keep the record straight.">
+<link rel="icon" href="/static/brand/logo/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/brand/fonts.css">
+<link rel="stylesheet" href="/static/brand/tokens.css">
+<link rel="stylesheet" href="/static/brand/components.css">
+<script>try { var t = localStorage.getItem("st-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<style>
+/* Console-only layout glue. Everything visual comes from the Steward kit above. */
+.st-page { max-width: 1400px; }
+.cx-tab[hidden] { display: none !important; }
+.cx-stackline { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--st-text-2); }
+.cx-stackline b { color: var(--st-text); font-weight: 550; }
+.cx-tagline { padding: 0 8px; color: var(--st-text-3); }
+.cx-nav-count[hidden] { display: none; }
+.cx-why { width: min(920px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
+.cx-why .st-dialog__body { max-height: calc(100vh - 140px); overflow: auto; }
+.cx-ctx { margin: 0; padding: var(--st-space-4); max-height: 560px; overflow: auto; white-space: pre-wrap; word-break: break-word;
+  font-family: var(--font-mono); font-size: 13px; line-height: 20px; color: var(--st-text);
+  background: var(--st-bg-sunken); border: var(--st-border) solid var(--st-line-2); border-radius: var(--st-radius-md); }
+.cx-meter { height: 6px; background: var(--st-bg-sunken); border: var(--st-border) solid var(--st-line); border-radius: var(--st-radius-full); overflow: hidden; }
+.cx-meter > span { display: block; height: 100%; background: var(--st-text-2); transition: width var(--st-dur-base) var(--st-ease-out); }
+.cx-formrow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto; gap: var(--st-space-4); align-items: end; }
+@media (max-width: 720px) { .cx-formrow { grid-template-columns: minmax(0, 1fr); } }
+.cx-chips { display: flex; flex-wrap: wrap; gap: var(--st-space-2); }
+.cx-quote { padding-left: var(--st-space-3); border-left: 2px solid var(--st-line-strong); color: var(--st-text); }
+.cx-verdict { display: flex; flex-direction: column; gap: var(--st-space-4); }
+.cx-verdict .st-stamp { align-self: flex-start; height: 28px; font-size: 13px; padding: 0 10px 0 8px; }
+.cx-verdict .st-stamp .st-icon { width: 16px; height: 16px; }
+.cx-policyform[hidden] { display: none; }
+.cx-records-compact .st-record { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+@media (max-width: 640px) { .cx-hide-sm { display: none !important; } }
+</style>
+</head>
+<body class="st">
+<div class="st-shell">
+  <aside class="st-sidebar" aria-label="Steward">
+    <a class="st-sidebar__logo" href="#truth" aria-label="Steward, shared truth"><svg class="st-lockup" xmlns="http://www.w3.org/2000/svg" viewBox="-43.64 -83.01 484.99 97.41" role="img" aria-label="Steward"><polygon points="-35.262,-53.347 43.643,-53.347 35.262,-15.253 -43.643,-15.253" style="fill:var(--st-brand-mark,#f5e43b)"/><path d="M15.805 -72.507A20.632 15.283 0 1 0 -0.000 -47.400A17.685 13.100 0 0 1 -0.000 -21.200A17.685 13.100 0 0 1 0.000 -47.400M0.000 -21.200A20.632 15.283 0 1 1 -15.805 3.907" fill="none" stroke="currentColor" stroke-width="10.080" stroke-linecap="round"/><clipPath id="stl"><polygon points="-35.262,-53.347 43.643,-53.347 35.262,-15.253 -43.643,-15.253"/></clipPath><path d="M15.805 -72.507A20.632 15.283 0 1 0 -0.000 -47.400A17.685 13.100 0 0 1 -0.000 -21.200A17.685 13.100 0 0 1 0.000 -47.400M0.000 -21.200A20.632 15.283 0 1 1 -15.805 3.907" fill="none" style="stroke:var(--st-on-mark,#121926)" stroke-width="10.080" stroke-linecap="round" clip-path="url(#stl)"/><path transform="translate(69.143 0)" d="M33.800000000000004 1.2000000000000002Q27.900000000000002 1.2000000000000002 22.6 -0.04999999999999993Q17.3 -1.3 13.25 -3.9Q9.200000000000001 -6.5 6.8500000000000005 -10.55Q4.5 -14.600000000000001 4.5 -20.1Q4.5 -20.700000000000003 4.550000000000001 -21.25Q4.6000000000000005 -21.8 4.6000000000000005 -22.1H18.5Q18.5 -21.900000000000002 18.450000000000003 -21.400000000000002Q18.400000000000002 -20.900000000000002 18.400000000000002 -20.5Q18.400000000000002 -17.2 20.25 -14.95Q22.1 -12.700000000000001 25.6 -11.5Q29.1 -10.3 33.800000000000004 -10.3Q36.9 -10.3 39.3 -10.65Q41.7 -11.0 43.5 -11.7Q45.300000000000004 -12.4 46.5 -13.4Q47.7 -14.4 48.25 -15.650000000000002Q48.800000000000004 -16.900000000000002 48.800000000000004 -18.400000000000002Q48.800000000000004 -21.200000000000003 47.0 -23.0Q45.2 -24.8 42.150000000000006 -26.05Q39.1 -27.3 35.3 -28.3Q31.5 -29.3 27.450000000000003 -30.4Q23.400000000000002 -31.5 19.6 -33.05Q15.8 -34.6 12.75 -36.8Q9.700000000000001 -39.0 7.9 -42.400000000000006Q6.1000000000000005 -45.800000000000004 6.1000000000000005 -50.5Q6.1000000000000005 -55.400000000000006 8.200000000000001 -59.10000000000001Q10.3 -62.800000000000004 14.100000000000001 -65.15Q17.900000000000002 -67.5 23.0 -68.65Q28.1 -69.8 34.0 -69.8Q39.6 -69.8 44.5 -68.65Q49.400000000000006 -67.5 53.150000000000006 -65.05Q56.900000000000006 -62.6 59.050000000000004 -58.8Q61.2 -55.0 61.2 -49.800000000000004V-48.6H47.400000000000006V-49.5Q47.400000000000006 -52.300000000000004 45.75 -54.25Q44.1 -56.2 41.1 -57.300000000000004Q38.1 -58.400000000000006 34.0 -58.400000000000006Q29.6 -58.400000000000006 26.55 -57.550000000000004Q23.5 -56.7 21.85 -55.150000000000006Q20.200000000000003 -53.6 20.200000000000003 -51.300000000000004Q20.200000000000003 -48.900000000000006 22.0 -47.25Q23.8 -45.6 26.85 -44.45Q29.900000000000002 -43.300000000000004 33.7 -42.300000000000004Q37.5 -41.300000000000004 41.55 -40.2Q45.6 -39.1 49.45 -37.6Q53.300000000000004 -36.1 56.300000000000004 -33.85Q59.300000000000004 -31.6 61.10000000000001 -28.3Q62.900000000000006 -25.0 62.900000000000006 -20.400000000000002Q62.900000000000006 -12.600000000000001 59.150000000000006 -7.8500000000000005Q55.400000000000006 -3.1 48.800000000000004 -0.95Q42.2 1.2000000000000002 33.800000000000004 1.2000000000000002ZM87.1 1.2000000000000002Q82.1 1.2000000000000002 79.15 -0.6499999999999999Q76.2 -2.5 74.95 -5.6000000000000005Q73.7 -8.700000000000001 73.7 -12.100000000000001V-42.2H67.3V-52.6H74.0L76.5 -67.5H86.7V-52.6H96.0V-42.2H86.7V-13.9Q86.7 -11.600000000000001 87.80000000000001 -10.400000000000002Q88.9 -9.200000000000001 91.2 -9.200000000000001H96.0V-0.4Q95.0 0.0 93.45 0.35000000000000003Q91.9 0.7000000000000001 90.2 0.9500000000000002Q88.5 1.2000000000000002 87.1 1.2000000000000002ZM126.80000000000001 1.2000000000000002Q118.30000000000001 1.2000000000000002 112.55000000000001 -1.75Q106.80000000000001 -4.7 103.9 -10.8Q101.00000000000001 -16.900000000000002 101.00000000000001 -26.3Q101.00000000000001 -35.800000000000004 103.9 -41.85000000000001Q106.80000000000001 -47.900000000000006 112.50000000000001 -50.85000000000001Q118.20000000000002 -53.800000000000004 126.70000000000002 -53.800000000000004Q134.5 -53.800000000000004 139.8 -50.95Q145.10000000000002 -48.1 147.8 -42.2Q150.5 -36.300000000000004 150.5 -26.8V-23.3H114.30000000000001Q114.50000000000001 -18.5 115.75000000000001 -15.25Q117.00000000000001 -12.0 119.70000000000002 -10.350000000000001Q122.4 -8.700000000000001 126.80000000000001 -8.700000000000001Q129.20000000000002 -8.700000000000001 131.15000000000003 -9.3Q133.10000000000002 -9.9 134.60000000000002 -11.15Q136.10000000000002 -12.4 136.90000000000003 -14.25Q137.70000000000002 -16.1 137.70000000000002 -18.5H150.5Q150.5 -13.5 148.75 -9.8Q147.0 -6.1000000000000005 143.8 -3.6500000000000004Q140.60000000000002 -1.2000000000000002 136.25 0.0Q131.9 1.2000000000000002 126.80000000000001 1.2000000000000002ZM114.50000000000001 -32.0H137.0Q137.0 -35.1 136.25 -37.35Q135.5 -39.6 134.2 -41.05Q132.9 -42.5 131.0 -43.150000000000006Q129.10000000000002 -43.800000000000004 126.70000000000002 -43.800000000000004Q122.9 -43.800000000000004 120.30000000000001 -42.5Q117.70000000000002 -41.2 116.35000000000002 -38.6Q115.00000000000001 -36.0 114.50000000000001 -32.0ZM169.3 0.0 153.20000000000002 -52.6H166.70000000000002L173.70000000000002 -25.400000000000002Q174.3 -23.3 174.70000000000002 -21.1Q175.10000000000002 -18.900000000000002 175.45000000000002 -17.200000000000003Q175.8 -15.5 176.0 -15.0H176.60000000000002Q177.0 -16.900000000000002 177.45 -19.050000000000004Q177.9 -21.200000000000003 178.25 -23.0Q178.60000000000002 -24.8 178.8 -25.6L185.3 -52.6H199.20000000000002L205.9 -25.5Q206.3 -24.1 206.70000000000002 -22.200000000000003Q207.10000000000002 -20.3 207.55 -18.35Q208.0 -16.400000000000002 208.20000000000002 -15.0H208.8Q209.10000000000002 -16.3 209.45000000000002 -18.1Q209.8 -19.900000000000002 210.25 -21.800000000000004Q210.70000000000002 -23.700000000000003 211.0 -25.3L217.9 -52.6H230.5L214.4 0.0H200.8L194.9 -24.3Q194.5 -26.200000000000003 193.95 -28.550000000000004Q193.4 -30.900000000000002 192.95 -33.300000000000004Q192.5 -35.7 192.20000000000002 -37.300000000000004H191.60000000000002Q191.60000000000002 -36.6 191.25 -34.75Q190.9 -32.9 190.35000000000002 -30.25Q189.8 -27.6 188.9 -24.3L182.9 0.0ZM248.90000000000003 1.2000000000000002Q246.50000000000003 1.2000000000000002 243.55 0.6500000000000001Q240.60000000000002 0.1 238.0 -1.45Q235.4 -3.0 233.75 -5.95Q232.10000000000002 -8.9 232.10000000000002 -13.600000000000001Q232.10000000000002 -19.1 234.5 -22.650000000000002Q236.9 -26.200000000000003 241.25 -28.25Q245.60000000000002 -30.3 251.75000000000003 -31.15Q257.90000000000003 -32.0 265.3 -32.0V-36.1Q265.3 -38.400000000000006 264.55 -40.150000000000006Q263.8 -41.900000000000006 261.95000000000005 -42.900000000000006Q260.1 -43.900000000000006 256.6 -43.900000000000006Q253.10000000000002 -43.900000000000006 251.05 -43.050000000000004Q249.00000000000003 -42.2 248.15000000000003 -40.95Q247.3 -39.7 247.3 -38.2V-36.9H234.60000000000002Q234.50000000000003 -37.4 234.50000000000003 -37.900000000000006Q234.50000000000003 -38.400000000000006 234.50000000000003 -39.0Q234.50000000000003 -43.6 237.25000000000003 -46.95Q240.00000000000003 -50.300000000000004 244.95000000000005 -52.050000000000004Q249.90000000000003 -53.800000000000004 256.5 -53.800000000000004Q263.70000000000005 -53.800000000000004 268.55000000000007 -51.85000000000001Q273.40000000000003 -49.900000000000006 275.85 -46.2Q278.3 -42.5 278.3 -37.1V-12.700000000000001Q278.3 -10.9 279.35 -10.05Q280.40000000000003 -9.200000000000001 281.8 -9.200000000000001H285.0V-0.4Q284.0 0.0 282.0 0.55Q280.0 1.1 277.1 1.1Q274.40000000000003 1.1 272.20000000000005 0.25Q270.0 -0.6000000000000001 268.55 -2.2Q267.1 -3.8000000000000003 266.5 -5.9H265.90000000000003Q264.20000000000005 -3.9000000000000004 261.80000000000007 -2.25Q259.40000000000003 -0.6000000000000001 256.20000000000005 0.30000000000000004Q253.00000000000003 1.2000000000000002 248.90000000000003 1.2000000000000002ZM253.10000000000002 -9.1Q255.90000000000003 -9.1 258.20000000000005 -9.95Q260.5 -10.8 262.05 -12.3Q263.6 -13.8 264.45000000000005 -16.0Q265.3 -18.2 265.3 -20.8V-23.400000000000002Q259.70000000000005 -23.400000000000002 255.15000000000003 -22.700000000000003Q250.60000000000002 -22.0 248.0 -20.15Q245.4 -18.3 245.4 -15.0Q245.4 -13.100000000000001 246.25 -11.8Q247.10000000000002 -10.5 248.85000000000002 -9.8Q250.60000000000002 -9.1 253.10000000000002 -9.1ZM290.4 0.0V-52.6H301.3L302.3 -44.400000000000006H303.0Q304.1 -46.900000000000006 305.6 -49.050000000000004Q307.1 -51.2 309.45000000000005 -52.5Q311.8 -53.800000000000004 315.1 -53.800000000000004Q316.7 -53.800000000000004 318.1 -53.5Q319.5 -53.2 320.2 -52.900000000000006V-40.800000000000004H316.2Q313.1 -40.800000000000004 310.70000000000005 -39.95Q308.3 -39.1 306.70000000000005 -37.35Q305.1 -35.6 304.3 -32.900000000000006Q303.5 -30.200000000000003 303.5 -26.700000000000003V0.0ZM343.5 1.2000000000000002Q337.1 1.2000000000000002 332.35 -1.7000000000000002Q327.6 -4.6000000000000005 325.05 -10.700000000000001Q322.5 -16.8 322.5 -26.400000000000002Q322.5 -35.9 325.1 -41.95Q327.70000000000005 -48.0 332.35 -50.900000000000006Q337.0 -53.800000000000004 342.90000000000003 -53.800000000000004Q346.40000000000003 -53.800000000000004 349.35 -53.050000000000004Q352.3 -52.300000000000004 354.6 -50.650000000000006Q356.90000000000003 -49.0 358.5 -46.7H359.1V-72.3H372.20000000000005V0.0H361.40000000000003L360.40000000000003 -7.1000000000000005H359.70000000000005Q357.1 -2.9000000000000004 352.85 -0.8500000000000001Q348.6 1.2000000000000002 343.5 1.2000000000000002ZM347.6 -9.8Q351.70000000000005 -9.8 354.20000000000005 -11.65Q356.70000000000005 -13.5 357.90000000000003 -16.950000000000003Q359.1 -20.400000000000002 359.1 -25.400000000000002V-26.900000000000002Q359.1 -30.700000000000003 358.45000000000005 -33.650000000000006Q357.8 -36.6 356.4 -38.650000000000006Q355.0 -40.7 352.8 -41.800000000000004Q350.6 -42.900000000000006 347.6 -42.900000000000006Q343.20000000000005 -42.900000000000006 340.65000000000003 -41.2Q338.1 -39.5 337.0 -36.0Q335.90000000000003 -32.5 335.90000000000003 -27.1V-25.3Q335.90000000000003 -20.1 337.0 -16.6Q338.1 -13.100000000000001 340.65000000000003 -11.450000000000001Q343.20000000000005 -9.8 347.6 -9.8Z" fill="currentColor"/></svg></a>
+    <nav class="st-nav" aria-label="Console">
+      <a class="st-nav__item" href="#truth" data-tab="truth"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-file-text"/></svg>Shared truth<span class="st-nav__count cx-nav-count" id="count-truth" hidden></span></a>
+      <a class="st-nav__item" href="#queue" data-tab="queue"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-v-escalated"/></svg>CEO queue<span class="st-nav__count st-nav__count--human cx-nav-count" id="count-queue" hidden></span></a>
+      <a class="st-nav__item" href="#clarify" data-tab="clarify"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-v-clarify"/></svg>Clarifications<span class="st-nav__count st-nav__count--human cx-nav-count" id="count-clarify" hidden></span></a>
+      <a class="st-nav__item" href="#context" data-tab="context"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-eye"/></svg>Context preview</a>
+      <span class="st-nav__label">Team</span>
+      <a class="st-nav__item" href="#onboarding" data-tab="onboarding"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-user-round-plus"/></svg>Onboarding</a>
+      <a class="st-nav__item" href="#simulate" data-tab="simulate"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-terminal"/></svg>Simulate an AI</a>
+    </nav>
+    <div class="st-spacer"></div>
+    <p class="cx-tagline st-t-caption cx-hide-sm">Keep the record straight.</p>
+    <div class="st-sidebar__status" id="side-status" aria-live="polite"><span class="st-status" data-state="sample">Loading stack…</span></div>
+  </aside>
+
+  <div class="st-main">
+    <header class="st-topbar">
+      <span class="st-project" aria-label="Project Brikk"><span class="st-project__tile" aria-hidden="true">B</span>Brikk</span>
+      <span class="cx-stackline st-t-caption cx-hide-sm" id="stack">Loading stack…</span>
+      <span class="st-spacer"></span>
+      <span class="st-status" data-state="sample" id="sample-flag" hidden>Sample data</span>
+      <button class="st-btn st-btn--ghost st-btn--icon" type="button" id="theme" aria-label="Switch light or dark"><svg class="st-icon" aria-hidden="true"><use id="theme-icon" href="/static/brand/icons/sprite.svg#i-moon"/></svg></button>
+      <span class="st-avatar st-avatar--lg" title="Claire Morel, CEO" aria-label="Signed in as Claire Morel, CEO">CM</span>
+    </header>
+
+    <main class="st-page" id="main">
+      <div class="st-banner" id="sample-banner" hidden><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-info"/></svg><span><b>Sample data.</b> Brikk is a fictional 12-person company used to demonstrate Steward. Every record on this screen is synthetic.</span></div>
+
+      <!-- Shared truth -->
+      <section class="cx-tab st-stack st-stack--loose" id="tab-truth" aria-labelledby="h-truth">
+        <div class="st-page__head">
+          <div><h1 class="st-page__title" id="h-truth">Shared truth</h1>
+            <p class="st-page__sub" id="truth-sub">What every AI on the Brikk team reads as the company's current truth.</p></div>
+        </div>
+        <div class="st-split">
+          <section class="st-panel" aria-labelledby="h-records">
+            <div class="st-panel__head"><span class="st-panel__title" id="h-records">Current record</span><span class="st-panel__meta" id="records-meta"></span></div>
+            <ul class="st-records" id="records"></ul>
+          </section>
+          <div class="st-stack st-stack--loose">
+            <section class="st-panel" aria-labelledby="h-policies">
+              <div class="st-panel__head"><span class="st-panel__title" id="h-policies">CEO standing policies</span><span class="st-panel__meta" id="policies-meta"></span></div>
+              <div class="st-panel__body" id="policies"></div>
+            </section>
+            <section class="st-panel" aria-labelledby="h-latest">
+              <div class="st-panel__head"><span class="st-panel__title" id="h-latest">Latest verdicts</span><span class="st-panel__meta"><span class="st-chip">journal</span></span></div>
+              <ul class="st-records cx-records-compact" id="latest"></ul>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- CEO queue -->
+      <section class="cx-tab st-stack st-stack--loose" id="tab-queue" aria-labelledby="h-queue" hidden>
+        <div class="st-page__head">
+          <div><h1 class="st-page__title" id="h-queue">CEO queue</h1>
+            <p class="st-page__sub">Proposals Steward would not decide alone: above a budget limit, outside the author's authority, or a change the author confirmed. Raise the policy to turn your ruling into a rule for next time.</p></div>
+        </div>
+        <div class="st-split">
+          <div class="st-stack st-stack--loose" id="pending"></div>
+          <section class="st-panel" aria-labelledby="h-signals">
+            <div class="st-panel__head"><span class="st-panel__title" id="h-signals">Weak signals</span><span class="st-panel__meta" id="signals-meta"></span></div>
+            <div class="st-panel__body st-stack" id="signals"></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- Clarifications -->
+      <section class="cx-tab st-stack st-stack--loose" id="tab-clarify" aria-labelledby="h-clarify" hidden>
+        <div class="st-page__head">
+          <div><h1 class="st-page__title" id="h-clarify">Clarifications</h1>
+            <p class="st-page__sub">A lower-weight source contradicted the current record. Before overwriting or escalating, Steward asks the author through their own AI: error, or real change? For the demo you can answer on their behalf.</p></div>
+        </div>
+        <div class="st-stack st-stack--loose" id="clarifications" style="max-width: 920px"></div>
+      </section>
+
+      <!-- Context preview -->
+      <section class="cx-tab st-stack st-stack--loose" id="tab-context" aria-labelledby="h-context" hidden>
+        <div class="st-page__head">
+          <div><h1 class="st-page__title" id="h-context">Context preview</h1>
+            <p class="st-page__sub">Exactly what <span class="st-chip">my_context</span> returns to a person's AI: the smallest company context for their role and task, within a token budget.</p></div>
+        </div>
+        <form class="st-panel" id="ctx-form" aria-label="Compose a context">
+          <div class="st-panel__body">
+            <div class="cx-formrow">
+              <div class="st-field"><label class="st-label" for="ctx-member">Team member</label><select class="st-select" id="ctx-member"></select></div>
+              <div class="st-field"><label class="st-label" for="ctx-task">Task, in their words</label><input class="st-input" type="text" id="ctx-task" value="a customer asks for a discount"></div>
+              <button class="st-btn st-btn--primary" type="submit" id="ctx-go"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-layers"/></svg>Compose context</button>
+            </div>
+          </div>
+        </form>
+        <div class="st-split">
+          <section class="st-panel" aria-labelledby="h-ctx">
+            <div class="st-panel__head"><span class="st-panel__title" id="h-ctx">What the AI receives</span><span class="st-panel__meta" id="ctx-meta"></span></div>
+            <div class="st-panel__body st-stack">
+              <div class="cx-meter" aria-hidden="true"><span id="ctx-bar" style="width:0"></span></div>
+              <div class="cx-chips" id="ctx-topics"></div>
+              <pre class="cx-ctx" id="ctx-text" aria-label="Composed context">Pick a member and a task.</pre>
+            </div>
+          </section>
+          <div class="st-stack st-stack--loose">
+            <section class="st-panel" aria-labelledby="h-prof">
+              <div class="st-panel__head"><span class="st-panel__title" id="h-prof">Profile</span></div>
+              <div class="st-panel__body" id="ctx-profile"><span class="st-muted">No member selected.</span></div>
+            </section>
+            <section class="st-panel" aria-labelledby="h-new">
+              <div class="st-panel__head"><span class="st-panel__title" id="h-new">What's new for this person</span></div>
+              <div class="st-panel__body st-stack" id="ctx-new"><span class="st-muted">No member selected.</span></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- Onboarding -->
+      <section class="cx-tab st-stack st-stack--loose" id="tab-onboarding" aria-labelledby="h-onb" hidden>
+        <div class="st-page__head">
+          <div><h1 class="st-page__title" id="h-onb">Onboarding</h1>
+            <p class="st-page__sub">The role questionnaire each person answers once. It shapes the context they receive; authority still comes from the team directory in Zetaris.</p></div>
+        </div>
+        <div class="st-split">
+          <form class="st-panel" id="onb-form" aria-labelledby="h-onbq">
+            <div class="st-panel__head"><span class="st-panel__title" id="h-onbq">Questionnaire</span></div>
+            <div class="st-panel__body st-stack st-stack--loose" id="onb-fields"></div>
+            <div class="st-panel__foot"><button class="st-btn st-btn--primary" type="submit"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-check"/></svg>Save my profile</button></div>
+          </form>
+          <section class="st-panel" aria-labelledby="h-onbr">
+            <div class="st-panel__head"><span class="st-panel__title" id="h-onbr">Resulting profile</span></div>
+            <div class="st-panel__body" id="onb-result"><span class="st-muted">Submit the questionnaire to see the profile.</span></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- Simulate an AI -->
+      <section class="cx-tab st-stack st-stack--loose" id="tab-simulate" aria-labelledby="h-sim" hidden>
+        <div class="st-page__head">
+          <div><h1 class="st-page__title" id="h-sim">Simulate an AI</h1>
+            <p class="st-page__sub">Send a proposal as if it came from a team member's own AI through MCP. It runs the full pipeline: guard, Zetaris governance, H-MEM recall, arbiter and judge.</p></div>
+        </div>
+        <div class="st-split">
+          <form class="st-panel" id="sim-form" aria-labelledby="h-simf">
+            <div class="st-panel__head"><span class="st-panel__title" id="h-simf">Proposal</span></div>
+            <div class="st-panel__body st-form-grid">
+              <div class="st-field"><label class="st-label" for="sim-member">Team member</label><select class="st-select" id="sim-member"></select></div>
+              <div class="st-field"><label class="st-label" for="sim-ai">AI tool</label>
+                <select class="st-select" id="sim-ai"><option>Claude</option><option>ChatGPT</option><option>Cursor</option><option>Gemini</option><option>Mistral Le Chat</option><option>GitHub Copilot</option></select></div>
+              <div class="st-field"><label class="st-label" for="sim-kind">Kind</label>
+                <select class="st-select" id="sim-kind"><option>decision</option><option selected>fact</option><option>task</option><option>preference</option></select></div>
+              <div class="st-field"><label class="st-label" for="sim-topic">Topic <span class="st-label__opt">optional</span></label>
+                <select class="st-select" id="sim-topic"><option value="">Let Steward infer it</option></select></div>
+              <div class="st-field st-span-all"><label class="st-label" for="sim-content">Content</label>
+                <textarea class="st-textarea" id="sim-content" rows="4">Book a booth at Batimat Paris for 11,500 EUR.</textarea>
+                <span class="st-hint">What the person's AI would send to Steward's <span class="st-chip">remember</span> tool.</span></div>
+            </div>
+            <div class="st-panel__foot"><button class="st-btn st-btn--primary" type="submit" id="sim-go"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-arrow-right"/></svg>Send to Steward</button></div>
+          </form>
+          <section class="st-panel" aria-labelledby="h-simv" aria-live="polite">
+            <div class="st-panel__head"><span class="st-panel__title" id="h-simv">Verdict</span><span class="st-panel__meta" id="sim-meta"></span></div>
+            <div class="st-panel__body" id="sim-result"><span class="st-muted">No proposal sent yet.</span></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<dialog class="st-dialog cx-why" id="why-dialog" aria-labelledby="why-title">
+  <div class="st-dialog__head"><h2 class="st-dialog__title" id="why-title">History</h2>
+    <button class="st-btn st-btn--ghost st-btn--icon" type="button" id="why-close" aria-label="Close"><svg class="st-icon" aria-hidden="true"><use href="/static/brand/icons/sprite.svg#i-x"/></svg></button></div>
+  <div class="st-dialog__body st-stack st-stack--loose" id="why-body"></div>
+</dialog>
+<div class="st-toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+const SPRITE = "/static/brand/icons/sprite.svg";
+const TABS = ["truth", "queue", "clarify", "context", "onboarding", "simulate"];
+const $ = (s) => document.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const ic = (id) => `<svg class="st-icon" aria-hidden="true"><use href="${SPRITE}#${id}"/></svg>`;
+const chip = (t, cls = "") => `<span class="st-chip ${cls}">${esc(t)}</span>`;
+const label = (t) => { const s = String(t || "").replace(/_/g, " "); return s.charAt(0).toUpperCase() + s.slice(1); };
+let members = [], memberBy = {}, topics = [], current = "truth", stackInfo = {};
+let recordsById = {}, journalByMemory = {};
+const policyDrafts = {}, noteDrafts = {};
+
+/* ---------- vocabulary: verdict stamps, marks, provenance ---------- */
+const VERDICT = {store: "stored", supersede: "superseded", reject: "rejected", redact: "redacted",
+                 clarify: "clarify", escalate: "escalated", quarantine: "quarantined"};
+function stamp(decision, small) {
+  const v = VERDICT[decision] || "rejected";
+  const word = VERDICT[decision] ? v.toUpperCase() : String(decision || "").toUpperCase();
+  return `<span class="st-stamp st-stamp--${v}${small ? " st-stamp--sm" : ""}">${ic("i-v-" + v)}${esc(word)}</span>`;
+}
+const policyStamp = (small) => `<span class="st-stamp st-stamp--policy${small ? " st-stamp--sm" : ""}">${ic("i-policy")}POLICY</span>`;
+/* Masked values never reach the page: the API already replaced them with "[kind removed]". */
+function masked(html) {
+  return html.replace(/\[([a-z_ ]{2,30}) removed\]/gi, (_, k) => {
+    const what = k.replace(/_/g, " ");
+    return `<span class="st-redact" style="--len:${Math.max(8, Math.min(16, what.length + 4))}" role="img" aria-label="Redacted: ${esc(what)}"></span>`;
+  });
+}
+const FIGURE = /(\d{4}-\d{2}-\d{2})|((?:\d[\d,.]*\d|\d)\s?(?:EUR|€|%))/g;
+/* Plain text → safe HTML. markCurrent highlights the figures of a value that is the current truth. */
+function rich(text, markCurrent) {
+  let h = masked(esc(text));
+  if (markCurrent) h = h.replace(FIGURE, (m) => `<ins class="st-mark"><span class="st-sr">current: </span>${m}</ins>`);
+  return h;
+}
+const struck = (text) => `<del class="st-strike"><span class="st-sr">replaced: </span>${masked(esc(text))}</del>`;
+const initials = (n) => String(n || "?").split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+function when(iso) {
+  if (!iso) return "";
+  const d = new Date(iso), mins = Math.round((Date.now() - d.getTime()) / 60000);
+  if (!isNaN(mins) && mins >= 0 && mins < 60) return mins < 1 ? "just now" : `${mins} min ago`;
+  if (!isNaN(mins) && mins >= 0 && mins < 24 * 60) return `${Math.round(mins / 60)} h ago`;
+  return isNaN(d) ? String(iso).replace("T", " ") : d.toLocaleString("en-GB", {day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"});
+}
+function prov(name, ai, at, dept) {
+  const m = memberBy[name], role = m ? m.role : label(dept || "");
+  return `<span class="st-prov"><span class="st-avatar" aria-hidden="true">${esc(initials(name))}</span>`
+    + `<span class="st-prov__who">${esc(name || "unknown member")}</span>`
+    + (role ? `<span class="st-prov__role">${esc(role)}</span>` : "")
+    + (ai ? `<span class="st-prov__via">via <b>${esc(ai)}</b></span>` : "")
+    + (at ? `<time class="st-prov__time" datetime="${esc(at)}">${esc(when(at))}</time>` : "") + `</span>`;
+}
+function conf(score, max) {
+  if (score == null) return `<span class="st-muted">—</span>`;
+  const v = Math.max(0, Math.min(1, score / max)), level = v >= 0.75 ? "high" : v >= 0.5 ? "medium" : "low";
+  return `<span class="st-conf" data-level="${level}" title="Judge score ${esc(score)} of ${max}"><span class="st-conf__num">${esc(score)}/${max}</span><span class="st-conf__bar" style="--v:${v.toFixed(2)}" aria-hidden="true"></span></span>`;
+}
+const empty = (title, text) => `<div class="st-empty"><span class="st-empty__title">${esc(title)}</span>${text ? `<span>${esc(text)}</span>` : ""}</div>`;
+
+/* ---------- plumbing ---------- */
+async function api(path, body) {
+  const opts = body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {};
+  const r = await fetch("/api" + path, opts);
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || r.statusText);
+  return data;
+}
+function toast(msg, err) {
+  const t = document.createElement("div");
+  t.className = "st-toast is-new"; t.setAttribute("role", err ? "alert" : "status");
+  t.innerHTML = `${ic(err ? "i-triangle-alert" : "i-circle-check")}<span class="st-toast__msg">${esc(msg)}</span>`
+    + `<button class="st-btn st-btn--ghost st-btn--icon st-btn--sm" type="button" aria-label="Dismiss">${ic("i-x")}</button>`;
+  t.querySelector("button").onclick = () => t.remove();
+  $("#toasts").appendChild(t);
+  setTimeout(() => t.remove(), err ? 6000 : 3600);
+}
+function setCount(id, n) { const el = $(id); el.textContent = n || ""; el.hidden = !n; }
+
+/* ---------- tabs (hash routing, sidebar navigation) ---------- */
+function show(tab) {
+  current = TABS.includes(tab) ? tab : "truth";
+  document.querySelectorAll(".st-nav__item").forEach((a) => {
+    if (a.dataset.tab === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  });
+  document.querySelectorAll(".cx-tab").forEach((s) => s.hidden = s.id !== "tab-" + current);
+  refresh();
+}
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+
+/* ---------- shared truth ---------- */
+async function loadTruth() {
+  const [b, journal] = await Promise.all([api("/brief"), api("/journal")]);
+  journalByMemory = {};
+  journal.slice().reverse().forEach((j) => { if (j.memory_id) journalByMemory[j.memory_id] = j; });
+  const entries = Object.entries(b.topics || {}).sort(([a], [c]) => a.localeCompare(c));
+  const all = entries.flatMap(([topic, items]) => items.map((m) => ({...m, topic})));
+  recordsById = Object.fromEntries(all.map((m) => [m.id, m]));
+  // Old values for records that replaced another one (kept as history, never deleted).
+  const replacedTopics = [...new Set(all.filter((m) => (journalByMemory[m.id] || {}).supersedes).map((m) => m.topic))];
+  const oldById = {};
+  await Promise.all(replacedTopics.map(async (t) => {
+    try { (await api("/why/" + encodeURIComponent(t))).history.forEach((h) => oldById[h.id] = h); } catch (e) { /* history is optional here */ }
+  }));
+  setCount("#count-truth", all.length);
+  const policies = b.ceo_policies || [];
+  $("#truth-sub").textContent = `What every AI on the Brikk team reads when it asks Steward: ${all.length} records on ${entries.length} topics`
+    + `${policies.length ? `, ${policies.length} standing ${policies.length > 1 ? "policies" : "policy"}` : ""}. Select a topic to see who changed what, from which AI.`;
+  $("#records-meta").innerHTML = chip(`${all.length} records`);
+  $("#records").innerHTML = all.map((m) => {
+    const j = journalByMemory[m.id] || {}, old = j.supersedes ? oldById[j.supersedes] : null;
+    return `<li class="st-record">
+      <div class="st-record__verdict">${stamp(j.decision || "store")}</div>
+      <div class="st-record__main">
+        <div class="st-record__title"><a class="st-link" href="#truth" data-topic="${esc(m.topic)}">${esc(label(m.topic))}</a></div>
+        <div class="st-record__value">${rich(m.content, true)}</div>
+        ${old ? `<div class="st-record__value st-t-caption">${struck(old.content)} <span class="st-muted">replaced by</span> ${chip(m.id)}</div>` : ""}
+        ${prov(m.author, m.ai, j.at, j.department)}
+      </div>
+      <div class="st-record__meta"><div class="st-row">${chip(m.id)}${chip(m.kind || "record")}</div></div>
+    </li>`;
+  }).join("") || `<li>${empty("The shared record is empty.", "Proposals from the team's AIs will appear here once Steward stores them.")}</li>`;
+  $("#policies-meta").innerHTML = chip(`${policies.length}`);
+  $("#policies").innerHTML = policies.length ? `<ol class="st-lineage">${policies.map((p) => `
+    <li class="st-lineage__item is-current"><span class="st-lineage__dot"></span><div class="st-lineage__body">
+      <div class="st-row">${policyStamp(true)}${chip(p.id, "st-chip--policy")}</div>
+      <span class="st-lineage__value">${rich(p.content, true)}</span>
+      ${p.author ? prov(p.author, p.ai) : ""}</div></li>`).join("")}</ol>`
+    : empty("No standing policy yet.", "When you resolve an escalation, Raise the policy turns your ruling into a rule for next time.");
+  $("#latest").innerHTML = journal.slice(0, 8).map((j) => `
+    <li class="st-record">
+      <div class="st-record__verdict">${stamp(j.decision, true)}</div>
+      <div class="st-record__main">
+        <div class="st-record__value">${rich(j.content, false)}</div>
+        <span class="st-t-caption st-muted">${esc(j.reason || "")}</span>
+        ${prov(j.author, j.ai_tool, j.at, j.department)}
+      </div>
+    </li>`).join("") || `<li>${empty("No verdict yet.", "Use Simulate an AI to send a first proposal.")}</li>`;
+}
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-topic]");
+  if (t) { e.preventDefault(); openWhy(t.dataset.topic); }
+});
+async function openWhy(topic) {
+  let w;
+  try { w = await api("/why/" + encodeURIComponent(topic)); } catch (err) { return toast(err.message, true); }
+  $("#why-title").textContent = "Why: " + label(topic);
+  const hist = (w.history || []).slice().reverse();
+  const versions = hist.map((h) => {
+    const isCurrent = !h.superseded_by;
+    return `<li class="st-lineage__item${isCurrent ? " is-current" : ""}"><span class="st-lineage__dot"></span><div class="st-lineage__body">
+      <div class="st-row"><span class="st-lineage__value">${isCurrent ? rich(h.content, true) : struck(h.content)}</span>${h.is_policy ? policyStamp(true) : ""}</div>
+      ${prov(h.author, h.ai, null, h.department)}
+      <span class="st-t-caption st-muted">${chip(h.id)} ${h.superseded_by ? `replaced by ${chip(h.superseded_by)}` : h.is_policy ? "CEO standing policy" : "current"}${h.supersedes ? ` · replaces ${chip(h.supersedes)}` : ""}</span>
+    </div></li>`;
+  }).join("");
+  const jr = (w.steward_journal || []).slice().reverse().map((j) => `
+    <li class="st-record">
+      <div class="st-record__verdict">${stamp(j.decision)}</div>
+      <div class="st-record__main">
+        <div class="st-record__value">${rich(j.content, false)}</div>
+        <span class="st-t-caption st-muted">${esc(j.reason || "")}</span>
+        ${prov(j.author, j.ai_tool, j.at)}
+      </div>
+      <div class="st-record__meta"><div class="st-row">${chip(j.journal_id)}</div><span class="st-t-caption st-muted">${esc(String(j.status || "").replace(/_/g, " "))}</span></div>
+    </li>`).join("");
+  $("#why-body").innerHTML = `
+    <section class="st-stack"><h3 class="st-t-h4">Versions <span class="st-muted st-t-caption">never deleted</span></h3>
+      ${versions ? `<ol class="st-lineage">${versions}</ol>` : empty("No record on this topic.")}</section>
+    <section class="st-stack"><h3 class="st-t-h4">Steward journal</h3>
+      ${jr ? `<div class="st-panel"><ul class="st-records">${jr}</ul></div>` : empty("No arbitration on this topic yet.")}</section>`;
+  $("#why-dialog").showModal();
+}
+$("#why-close").onclick = () => $("#why-dialog").close();
+
+/* ---------- CEO queue ---------- */
+async function loadQueue() {
+  const q = await api("/escalations");
+  setCount("#count-queue", q.pending.length);
+  $("#pending").innerHTML = q.pending.map((e) => {
+    const id = esc(e.journal_id), draft = policyDrafts[e.journal_id];
+    return `<section class="st-panel st-panel--human" aria-label="Escalation ${id}">
+      <div class="st-panel__head">${stamp("escalate")}<span class="st-panel__title">${esc(label(e.topic))}</span>
+        <span class="st-panel__meta">${chip(e.journal_id)} <time datetime="${esc(e.at)}">${esc(when(e.at))}</time></span></div>
+      <div class="st-panel__body st-stack st-stack--loose">
+        <dl class="st-facts">
+          <dt>Proposal</dt><dd>${rich(e.content, false)}</dd>
+          <dt>Why it waits</dt><dd>${esc(e.reason || "")}</dd>
+          <dt>Cites</dt><dd><span class="cx-chips">${(e.citations || []).map((c) => chip(c)).join("") || "—"}</span></dd>
+          <dt>Kind</dt><dd>${esc(label(e.kind))}</dd>
+          <dt>From</dt><dd>${prov(e.author, e.ai_tool, e.at, e.department)}</dd>
+        </dl>
+        <div class="st-field cx-policyform" id="polf-${id}"${draft == null ? " hidden" : ""}>
+          <label class="st-label" for="pol-${id}">Standing policy</label>
+          <input class="st-input" type="text" id="pol-${id}" data-draft="${id}" value="${esc(draft || "")}" placeholder="Marketing may commit up to 12,000 EUR per trade show without asking me.">
+          <span class="st-hint">Saved with your ruling. Steward applies it to the next proposals on this topic.</span>
+        </div>
+      </div>
+      <div class="st-panel__foot">
+        <button class="st-btn st-btn--primary" type="button" data-j="${id}" data-d="store">${ic("i-check")}Approve once</button>
+        <button class="st-btn" type="button" data-j="${id}" data-d="supersede">${ic("i-v-superseded")}Replace the current record</button>
+        <button class="st-btn" type="button" data-raise="${id}" aria-expanded="${draft != null}" aria-controls="polf-${id}">${ic("i-policy")}Raise the policy</button>
+        <button class="st-btn st-btn--ghost" type="button" data-j="${id}" data-d="reject">${ic("i-v-rejected")}Reject</button>
+      </div>
+    </section>`;
+  }).join("") || `<section class="st-panel st-panel--resolved"><div class="st-panel__body">${empty("Nothing waits for the CEO.", "Escalations appear here when a proposal is above a limit or outside its author's authority.")}</div></section>`;
+  document.querySelectorAll("#pending [data-raise]").forEach((b) => b.onclick = () => {
+    const f = document.getElementById("polf-" + b.dataset.raise), open = f.hidden;
+    f.hidden = !open; b.setAttribute("aria-expanded", open);
+    if (open) { policyDrafts[b.dataset.raise] = policyDrafts[b.dataset.raise] || ""; f.querySelector("input").focus(); }
+    else delete policyDrafts[b.dataset.raise];
+  });
+  document.querySelectorAll("#pending input[data-draft]").forEach((i) => i.oninput = () => policyDrafts[i.dataset.draft] = i.value);
+  document.querySelectorAll("#pending button[data-j]").forEach((b) => b.onclick = async () => {
+    const policy = policyDrafts[b.dataset.j] || "";
+    b.setAttribute("aria-busy", "true");
+    try {
+      const r = await api("/resolve", {journal_id: b.dataset.j, decision: b.dataset.d, policy});
+      delete policyDrafts[b.dataset.j];
+      toast(`Ruling saved: ${String(r.status || b.dataset.d).replace(/_/g, " ")}${r.policy_id ? ` · policy ${r.policy_id}` : ""}`);
+      refresh();
+    } catch (err) { toast(err.message, true); b.removeAttribute("aria-busy"); }
+  });
+  $("#signals-meta").innerHTML = chip(`${q.signals.length} open`);
+  $("#signals").innerHTML = q.signals.map((s, i) => `${i ? `<hr class="st-rule">` : ""}
+    <div class="st-stack st-stack--tight">
+      <div class="st-row"><b class="st-t-ui-strong">${esc(label(s.topic))}</b>${chip(s.severity)}${chip(String(s.kind || "").replace(/_/g, " "))}</div>
+      <span>${esc(s.signal)}</span>
+      <span class="st-t-caption st-muted">Concerns ${(s.concerned || []).map(esc).join(", ")}</span>
+      ${s.suggested_meeting ? `<div class="cx-quote st-stack st-stack--tight"><span class="st-row">${ic("i-calendar-plus")}<b class="st-t-ui-strong">Suggested meeting · ${esc(s.suggested_meeting.minutes)} min</b></span>
+        <span class="st-t-caption st-muted">With ${(s.suggested_meeting.participants || []).map(esc).join(", ")}</span><span>${esc(s.suggested_meeting.agenda)}</span></div>` : ""}
+    </div>`).join("") || empty("No weak signal.", "The CEO agent has nothing to flag across the team.");
+}
+
+/* ---------- clarifications ---------- */
+async function loadClarify() {
+  const [items, b] = await Promise.all([api("/clarifications"), api("/brief")]);
+  const byId = {};
+  Object.entries(b.topics || {}).forEach(([, list]) => list.forEach((m) => byId[m.id] = m));
+  setCount("#count-clarify", items.length);
+  $("#clarifications").innerHTML = items.map((c) => {
+    const id = esc(c.journal_id), cur = c.about_memory ? byId[c.about_memory] : null;
+    return `<section class="st-panel st-panel--human" aria-label="Clarification ${id}">
+      <div class="st-panel__head">${stamp("clarify")}<span class="st-panel__title">${esc(label(c.topic))}</span>
+        <span class="st-panel__meta">${chip(c.journal_id)} <time datetime="${esc(c.at)}">${esc(when(c.at))}</time></span></div>
+      <div class="st-panel__body st-stack st-stack--loose">
+        <dl class="st-facts">
+          <dt>Proposed</dt><dd>${rich(c.content, false)}</dd>
+          ${cur ? `<dt>Current record</dt><dd class="st-stack st-stack--tight"><span>${rich(cur.content, true)}</span><span class="st-row">${chip(cur.id)}${prov(cur.author, cur.ai)}</span></dd>`
+                : c.about_memory ? `<dt>Contradicts</dt><dd>${chip(c.about_memory)}</dd>` : ""}
+          <dt>From</dt><dd>${prov(c.author, c.ai_tool, c.at)}</dd>
+        </dl>
+        <p class="cx-quote">${esc(c.question || "")}</p>
+        <div class="st-field"><label class="st-label" for="note-${id}">Note from the author <span class="st-label__opt">optional</span></label>
+          <input class="st-input" type="text" id="note-${id}" data-note="${id}" value="${esc(noteDrafts[c.journal_id] || "")}" placeholder="Typo, I meant 35 EUR."></div>
+      </div>
+      <div class="st-panel__foot">
+        <button class="st-btn" type="button" data-j="${id}" data-a="error">${ic("i-x")}It was an error</button>
+        <button class="st-btn st-btn--primary" type="button" data-j="${id}" data-a="change">${ic("i-arrow-up-right")}It's a real change</button>
+      </div>
+    </section>`;
+  }).join("") || `<section class="st-panel st-panel--resolved"><div class="st-panel__body">${empty("No question waiting for an author.", "When a proposal contradicts the current record, Steward asks its author here before anything changes.")}</div></section>`;
+  document.querySelectorAll("#clarifications input[data-note]").forEach((i) => i.oninput = () => noteDrafts[i.dataset.note] = i.value);
+  document.querySelectorAll("#clarifications button[data-j]").forEach((b) => b.onclick = async () => {
+    b.setAttribute("aria-busy", "true");
+    try {
+      const r = await api("/answer", {journal_id: b.dataset.j, answer: b.dataset.a, note: noteDrafts[b.dataset.j] || ""});
+      delete noteDrafts[b.dataset.j];
+      toast(r.status === "pending" ? "Confirmed change: sent to the CEO queue" : "Withdrawn by the author");
+      refresh();
+    } catch (err) { toast(err.message, true); b.removeAttribute("aria-busy"); }
+  });
+}
+
+/* ---------- context preview ---------- */
+async function composeContext() {
+  const name = $("#ctx-member").value, task = $("#ctx-task").value;
+  if (!name) return;
+  $("#ctx-go").setAttribute("aria-busy", "true");
+  try {
+    const [c, n] = await Promise.all([api(`/context?name=${encodeURIComponent(name)}&task=${encodeURIComponent(task)}`),
+                                      api(`/whats_new?name=${encodeURIComponent(name)}`)]);
+    $("#ctx-text").textContent = c.context;
+    const pct = Math.min(100, Math.round(100 * c.approx_tokens / c.budget_tokens));
+    $("#ctx-bar").style.width = pct + "%";
+    $("#ctx-meta").innerHTML = `${chip(`≈ ${c.approx_tokens} / ${Number(c.budget_tokens).toLocaleString("en-GB")} tokens`)} ${chip(`${c.memory_ids.length} records`)}`;
+    $("#ctx-topics").innerHTML = `<span class="st-t-caption st-muted">Topics detected</span>${(c.task_topics || []).map((t) => chip(t)).join("") || `<span class="st-t-caption st-muted">none</span>`}`
+      + `<span class="st-t-caption st-muted">· Records</span>${(c.memory_ids || []).map((m) => chip(m)).join("")}`;
+    const p = c.profile || {};
+    $("#ctx-profile").innerHTML = `<dl class="st-facts">
+      <dt>Person</dt><dd>${prov(p.name, (memberBy[p.name] || {}).ai_tool)}</dd>
+      <dt>Directory</dt><dd>${esc(p.role || "")} · ${esc(label(p.department))} · level ${esc(p.level || "")}</dd>
+      <dt>Angle</dt><dd>${esc(label(p.focus))} · detail ${esc(p.detail_level)}/3</dd>
+      <dt>Follows</dt><dd><span class="cx-chips">${(p.topics_followed || []).map((t) => chip(t)).join("") || "—"}</span></dd></dl>`;
+    const changes = (n.changes || []).slice(-6).reverse();
+    $("#ctx-new").innerHTML = (changes.length ? `<ul class="st-records cx-records-compact">${changes.map((ch) => `
+        <li class="st-record"><div class="st-record__verdict">${stamp(ch.replaces || ch.superseded_since ? "supersede" : "store", true)}</div>
+          <div class="st-record__main">
+            <div class="st-record__value">${ch.superseded_since ? struck(ch.what) : rich(ch.what, true)}</div>
+            ${ch.replaces ? `<div class="st-t-caption">${struck(ch.replaces)}</div>` : ""}
+            <span class="st-row">${chip(ch.id)}${prov(ch.by, ch.ai)}</span>
+          </div></li>`).join("")}</ul>`
+      : empty("Nothing new since the last session."))
+      + ((n.waiting_for_you || []).length ? `<div class="cx-quote st-stack st-stack--tight"><b class="st-t-ui-strong">Waiting for this person</b>${n.waiting_for_you.map((w) => `<span>${rich(w.content, false)}</span>`).join("")}</div>` : "")
+      + ((n.signals || []).length ? `<div class="cx-quote st-stack st-stack--tight"><b class="st-t-ui-strong">Signals</b>${n.signals.map((s) => `<span>${esc(s.signal)}</span>`).join("")}</div>` : "");
+  } catch (err) { toast(err.message, true); }
+  $("#ctx-go").removeAttribute("aria-busy");
+}
+$("#ctx-form").onsubmit = (e) => { e.preventDefault(); composeContext(); };
+$("#ctx-member").onchange = composeContext;
+
+/* ---------- onboarding ---------- */
+let onbQuestions = [];
+function readAnswer(q) {
+  const el = document.getElementById("onb-" + q.id);
+  if (q.type === "multi") return [...el.querySelectorAll("input:checked")].map((i) => i.value);
+  if (q.type === "choice") { const r = el.querySelector("input:checked"); return r ? r.value : ""; }
+  return el.value;
+}
+async function buildOnboarding() {
+  onbQuestions = await api("/onboarding");
+  $("#onb-fields").innerHTML = onbQuestions.map((q) => {
+    const id = "onb-" + q.id;
+    if (q.id === "name") return `<div class="st-field st-field--narrow"><label class="st-label" for="${id}">${esc(q.question)}</label><select class="st-select" id="${id}">${
+      members.map((m) => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join("")}</select></div>`;
+    if (q.type === "multi") return `<fieldset class="st-field" style="border:0;padding:0;margin:0"><legend class="st-label" style="margin-bottom:6px">${esc(q.question)}</legend><div class="cx-chips" id="${id}">${
+      (q.options || []).map((o) => `<label class="st-toggle-chip"><input type="checkbox" value="${esc(o)}">${esc(label(o))}</label>`).join("")}</div></fieldset>`;
+    if (q.type === "choice") return `<fieldset class="st-field" style="border:0;padding:0;margin:0"><legend class="st-label" style="margin-bottom:6px">${esc(q.question)}</legend><div class="st-seg" id="${id}">${
+      (q.options || []).map((o, i) => `<input type="radio" name="${id}" id="${id}-${i}" value="${esc(o)}"${i === 0 ? " checked" : ""}><label for="${id}-${i}">${esc(label(o))}</label>`).join("")}</div></fieldset>`;
+    return `<div class="st-field"><label class="st-label" for="${id}">${esc(q.question)}</label><input class="st-input" type="text" id="${id}"></div>`;
+  }).join("");
+  const nameEl = document.getElementById("onb-name");
+  const prefill = async () => {  // start from the current profile, so the form shows what Steward already knows
+    try {
+      const p = (await api(`/context?name=${encodeURIComponent(nameEl.value)}&task=`)).profile || {};
+      [["onb-focus", p.focus], ["onb-detail_level", p.detail_level]].forEach(([gid, val]) => {
+        const r = document.querySelector(`#${gid} input[value="${CSS.escape(String(val ?? ""))}"]`); if (r) r.checked = true;
+      });
+      document.querySelectorAll("#onb-topics_followed input").forEach((i) => i.checked = (p.topics_followed || []).includes(i.value));
+    } catch (err) { /* keep the form as it is */ }
+  };
+  if (nameEl && nameEl.tagName === "SELECT") { nameEl.onchange = prefill; prefill(); }
+}
+$("#onb-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const answers = {};
+  onbQuestions.forEach((q) => answers[q.id] = readAnswer(q));
+  try {
+    const p = await api("/onboard", {answers});
+    $("#onb-result").innerHTML = `<div class="st-stack st-stack--loose"><dl class="st-facts">
+      <dt>Person</dt><dd>${prov(p.name, (memberBy[p.name] || {}).ai_tool)}</dd>
+      <dt>Directory</dt><dd>${esc(p.role)} · ${esc(label(p.department) || "—")} · level ${esc(p.level)}</dd>
+      <dt>Responsibilities</dt><dd>${esc(p.responsibilities || "—")}</dd>
+      <dt>Angle</dt><dd>${esc(label(p.focus))} · detail ${esc(p.detail_level)}/3</dd>
+      <dt>Follows</dt><dd><span class="cx-chips">${(p.topics_followed || []).map((t) => chip(t)).join("") || "—"}</span></dd></dl>
+      <p class="st-hint">The questionnaire shapes the context; it never grants authority.</p></div>`;
+    toast("Profile saved");
+  } catch (err) { toast(err.message, true); }
+};
+
+/* ---------- simulate ---------- */
+$("#sim-member").onchange = () => {
+  const m = memberBy[$("#sim-member").value];
+  if (m) $("#sim-ai").value = m.ai_tool;
+};
+$("#sim-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const btn = $("#sim-go"); btn.disabled = true; btn.setAttribute("aria-busy", "true");
+  try {
+    const r = await api("/remember", {content: $("#sim-content").value, author: $("#sim-member").value,
+      ai_tool: $("#sim-ai").value, kind: $("#sim-kind").value, topic: $("#sim-topic").value});
+    if (r.status === "error") throw new Error((r.error || {}).message || "run failed");
+    const a = r.applied || {};
+    $("#sim-meta").innerHTML = a.journal_id ? chip(a.journal_id) : "";
+    $("#sim-result").innerHTML = `<div class="cx-verdict">
+      ${stamp(r.decision).replace("st-stamp ", "st-stamp is-new ")}
+      <p class="st-t-lead">${esc(r.why)}</p>
+      <dl class="st-facts">
+        <dt>From</dt><dd>${prov($("#sim-member").value, $("#sim-ai").value)}</dd>
+        <dt>Cites</dt><dd><span class="cx-chips">${(r.citations || []).map((c) => chip(c)).join("") || "—"}</span></dd>
+        <dt>Judge</dt><dd>${conf(r.critic_score, 9)}</dd>
+        ${a.memory_id ? `<dt>Record</dt><dd class="st-row">${chip(a.memory_id)}${a.supersedes ? `<span class="st-muted">replaces</span>${chip(a.supersedes)}` : ""}</dd>` : ""}
+        ${a.journal_id ? `<dt>Journal</dt><dd class="st-row">${chip(a.journal_id)}<span class="st-muted">${esc(String(a.status || "").replace(/_/g, " "))}</span></dd>` : ""}
+        <dt>Trace</dt><dd>${chip(r.trace || "—")}</dd>
+        <dt>Model</dt><dd>${chip((r.stack || {}).llm || "—", "st-chip--model")}</dd>
+      </dl></div>`;
+    refreshCounts();
+  } catch (err) { toast(err.message, true); }
+  btn.disabled = false; btn.removeAttribute("aria-busy");
+};
+
+/* ---------- theme ---------- */
+function themeNow() {
+  const t = document.documentElement.getAttribute("data-theme");
+  return t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+function paintThemeIcon() { $("#theme-icon").setAttribute("href", `${SPRITE}#${themeNow() === "dark" ? "i-sun" : "i-moon"}`); }
+$("#theme").onclick = () => {
+  document.documentElement.setAttribute("data-theme", themeNow() === "dark" ? "light" : "dark");
+  try { localStorage.setItem("st-theme", document.documentElement.getAttribute("data-theme")); } catch (e) {}
+  paintThemeIcon();
+};
+paintThemeIcon();
+
+/* ---------- boot and refresh ---------- */
+async function refreshCounts() {
+  try {
+    const [q, c, b] = await Promise.all([api("/escalations"), api("/clarifications"), api("/brief")]);
+    setCount("#count-queue", q.pending.length); setCount("#count-clarify", c.length);
+    setCount("#count-truth", Object.values(b.topics || {}).reduce((s, v) => s + v.length, 0));
+  } catch (e) { /* the next refresh will retry */ }
+}
+async function refresh() {
+  try {
+    if (current === "truth") await loadTruth();
+    if (current === "queue") await loadQueue();
+    if (current === "clarify") await loadClarify();
+    refreshCounts();
+  } catch (err) { toast(err.message, true); }
+}
+function statusState(v) { return /fallback|offline|sample|replay/i.test(String(v)) ? "sample" : /down|error|unavailable/i.test(String(v)) ? "down" : ""; }
+async function boot() {
+  try {
+    stackInfo = await api("/stack");
+    $("#stack").innerHTML = `Data <b>${esc(stackInfo.data)}</b> · Memory <b>${esc(stackInfo.memory)}</b> · LLM <b>${esc(stackInfo.llm)}</b>`;
+    $("#stack").title = $("#stack").textContent;
+    $("#side-status").innerHTML = [["Data", stackInfo.data], ["Memory", stackInfo.memory], ["LLM", stackInfo.llm]].map(([k, v]) =>
+      `<span class="st-status" data-state="${statusState(v)}" title="${esc(k)}: ${esc(v)}">${esc(k)} · ${esc(String(v).split(" (")[0])}</span>`).join("");
+    const sample = !!stackInfo.sample_mode;
+    $("#sample-banner").hidden = !sample; $("#sample-flag").hidden = !sample;
+  } catch (err) {
+    $("#stack").textContent = "Stack unavailable: " + err.message;
+    $("#side-status").innerHTML = `<span class="st-status" data-state="down">Stack unavailable</span>`;
+  }
+  members = await api("/members");
+  memberBy = Object.fromEntries(members.map((m) => [m.name, m]));
+  topics = (await api("/watchlist")).map((t) => t.topic);
+  const opts = members.map((m) => `<option value="${esc(m.name)}">${esc(m.name)} · ${esc(m.role)}</option>`).join("");
+  $("#ctx-member").innerHTML = opts; $("#sim-member").innerHTML = opts;
+  $("#sim-member").value = "Inès Roux"; $("#sim-member").onchange();
+  $("#sim-topic").innerHTML += topics.map((t) => `<option value="${esc(t)}">${esc(label(t))}</option>`).join("");
+  $("#sim-kind").value = "decision"; $("#sim-topic").value = "marketing_spend";
+  if (memberBy["Paul Lefèvre"]) $("#ctx-member").value = "Paul Lefèvre";
+  await buildOnboarding();
+  const tab = (location.hash || "").slice(1);
+  show(TABS.includes(tab) ? tab : "truth");
+  if (tab === "context") composeContext();
+  setInterval(() => {
+    if (["truth", "queue", "clarify"].includes(current) && !$("#why-dialog").open
+        && !document.activeElement.matches("input, textarea, select")) refresh();
+  }, 5000);
+}
+boot();
+</script>
+</body>
+</html>

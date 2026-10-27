@@ -1,0 +1,66 @@
+# App + H-MEM engine + the Postgres database Zetaris federates.
+# Zetaris and Nightshift run on the host (see README), reached via host.docker.internal.
+services:
+  app:
+    build: .
+    ports: ["8000:8000"]
+    env_file: .env
+    environment:
+      ZETARIS_REST_URL: http://host.docker.internal:8888/api/v1.0
+      METERLESS_BASE_URL: http://host.docker.internal:8088/v1
+      HMEM_URL: http://hmem:8787
+    volumes: ["./logs:/app/logs", "./data:/app/data"]
+    depends_on: [hmem]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+
+  hmem:
+    build: ./hmem-service
+    ports: ["8787:8787"]
+    volumes: ["hmem-data:/data"]
+
+  # Synthetic operational data. Register it in Zetaris with scripts/zetaris/register_sources.sql
+  osef-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: osef
+      POSTGRES_USER: osef
+      POSTGRES_PASSWORD: osef_local_only   # local synthetic data only
+    ports: ["5433:5432"]
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - ./domains/admin/data:/seed:ro
+
+  # OSEF Steward, source 1/3: Brikk org chart, trust weights, topics, rules, profiles (Postgres datasource in Zetaris)
+  brikk-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: brikk
+      POSTGRES_USER: osef
+      POSTGRES_PASSWORD: osef_local_only   # local synthetic data only
+    ports: ["5434:5432"]
+    volumes:
+      - ./db/steward-init:/docker-entrypoint-initdb.d:ro
+      - ./domains/project_memory/data:/seed:ro
+
+  # OSEF Steward, source 3/3: the company drive (S3-compatible), holding the role procedures as a CSV file.
+  # Source 2/3 is the finance REST API served by the app itself: GET /finance/budgets
+  drive:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: osef
+      MINIO_ROOT_PASSWORD: osef_local_only
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["drive-data:/data"]
+
+  drive-init:
+    image: minio/mc:latest
+    depends_on: [drive]
+    entrypoint: >
+      /bin/sh -c "sleep 3 && mc alias set drive http://drive:9000 osef osef_local_only &&
+      mc mb -p drive/brikk-drive && mc cp /seed/procedures.csv drive/brikk-drive/procedures/procedures.csv"
+    volumes: ["./domains/project_memory/data:/seed:ro"]
+
+volumes:
+  hmem-data:
+  drive-data:

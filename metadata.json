@@ -1,0 +1,59 @@
+{
+  "project": "OSEF Steward",
+  "team": "OSEF",
+  "track": "Reasoning Architecture",
+  "one_liner": "A company context layer for every AI: it watches what matters in each person's AI conversations through MCP, arbitrates what becomes shared truth (sources weighted by role x domain, contradictions clarified then escalated), and serves each person the right context for their role and task.",
+  "sponsors": {
+    "zetaris": {
+      "role": "governance data over 3 sources (Postgres org chart and trust, finance REST API, S3 drive with procedures) and a Unified Semantic Layer",
+      "files": [
+        "scripts/zetaris/register_steward.sql",
+        "scripts/zetaris/run_steward_sql.py",
+        "domains/project_memory/logic.py",
+        "domains/project_memory/context.py"
+      ]
+    },
+    "meterless_engines": [
+      {
+        "engine": "H-MEM",
+        "role": "the company memory: versioned decisions (supersedes), provenance, trust-weighted confidence, CEO policies",
+        "files": [
+          "hmem-service/",
+          "app/adapters/memory.py"
+        ],
+        "test": "cd hmem-service && npm run conformance"
+      }
+    ],
+    "meterless_nightshift": {
+      "role": "primary AI provider",
+      "lanes": [
+        "fast (extraction)",
+        "deep (arbitration)",
+        "judge (critique)"
+      ],
+      "files": [
+        "app/llm.py"
+      ]
+    },
+    "nvidia": {
+      "role": "Nemotron models pinned on the three lanes, logged per call"
+    },
+    "cursor": {
+      "role": "development environment and one of the MCP clients in the demo"
+    }
+  },
+  "entry_points": {
+    "demo": "python run.py steward-demo",
+    "mcp": "python run.py mcp",
+    "http": "python run.py serve (console at /console)",
+    "cli": "python run.py run --input input_examples/example_1.json (admin pack)"
+  },
+  "sample_mode": "SAMPLE_MODE=true",
+  "data": "synthetic, fictional",
+  "pre_existing_components": [],
+  "domains": {
+    "project_memory": "OSEF Steward (main submission)",
+    "admin": "personal admin desk (second pack on the same harness)"
+  },
+  "license": "All rights reserved (LICENSE); vendored Meterless code Apache-2.0 (NOTICE)"
+}

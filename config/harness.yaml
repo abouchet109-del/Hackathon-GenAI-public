@@ -1,0 +1,8 @@
+# Harness profiles: which blocks are on. "full" is the product; the others exist to
+# measure what each block adds (python run.py ablation).
+profiles:
+  full:        {guard: true,  rules: true,  memory: true,  critic: true}
+  no_critic:   {guard: true,  rules: true,  memory: true,  critic: false}
+  no_memory:   {guard: true,  rules: true,  memory: false, critic: true}
+  rules_only:  {guard: false, rules: true,  memory: false, critic: false}
+  model_only:  {guard: false, rules: false, memory: false, critic: false}

@@ -1,0 +1,13 @@
+{
+  "run_id": "example_1",
+  "input": {
+    "id": "c03",
+    "received_at": "2026-10-20",
+    "from": "factures@edf.fr",
+    "subject": "EDF electricity invoice (winter)",
+    "body": "Your electricity invoice for October. Consumption rose with the cold. Amount due: 86.40 EUR. Due date: 2026-11-04."
+  },
+  "options": {
+    "profile": "full"
+  }
+}

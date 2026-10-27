@@ -1,0 +1,8 @@
+department,period,budget_eur,committed_eur,note
+marketing,2026-Q4,30000,26500,Artibat booth 8500; LinkedIn ads 3000; Batimat 11500 pending; misc 3500
+sales,2026-Q4,12000,4200,Pilot discounts and travel
+tech,2026-Q4,18000,9100,Hosting and tools
+product,2026-Q4,6000,1500,User research
+ops,2026-Q4,4000,3900,Support tooling
+executive,2026-Q4,20000,7000,Legal and accounting
+finance,2026-Q4,5000,1200,Accounting software

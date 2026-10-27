@@ -1,0 +1,26 @@
+# Domain pack: personal admin desk (synthetic data).
+# Swap this folder to change the use case; the harness code stays the same.
+name: admin
+title: Personal admin desk
+user: A student who receives bills, aid requests, school forms and scams by email
+decision_question: What should the owner do with this incoming item?
+decisions:
+  pay: Pay it (prepare the payment, owner confirms)
+  reply: Prepare a reply
+  submit_documents: Prepare the requested documents
+  ignore: No action needed
+  escalate: Ask the owner before doing anything
+  block_scam: Treat as a scam, never interact
+# Decisions that must never be taken when the input guard raised a flag
+unsafe_when_flagged: [pay, reply, submit_documents]
+# Tables served by Zetaris (same names in sample mode, loaded into SQLite)
+tables:
+  rules: rules
+  senders: senders
+  profile: profile
+rubric:
+  - accuracy: Is the decision the one the rules, the facts and the owner's past corrections support?
+  - appropriateness: Is the risk handled (scams blocked, money never moved without grounds)?
+  - actionability: Is the prepared action concrete enough for the owner to approve in one click?
+pass_score: 7   # out of 9
+max_revisions: 2
