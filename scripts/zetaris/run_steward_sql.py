@@ -6,6 +6,7 @@
 Needs ZETARIS_API_KEY (and ZETARIS_REST_URL / ZETARIS_ORG_ID if not default) in .env.
 """
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -15,6 +16,16 @@ sys.path.insert(0, str(ROOT))
 
 STARTS = re.compile(r"^(CREATE DATASOURCE|REGISTER|SELECT|CREATE LIGHTNING|CREATE SCHEMASTORE|CREATE NAMESPACE|"
                     r"COMPILE USL|ACTIVATE USL|CACHE TABLE|SHOW|DESCRIBE)\b", re.I)
+
+
+def last_commit_of(rel_path: str) -> str:
+    import subprocess
+    try:
+        out = subprocess.run(["git", "log", "-1", "--format=%H", "--", rel_path], cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout.strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        out = ""
+    return out or "main"
 
 
 def statements(path: Path) -> list[str]:
@@ -39,8 +50,14 @@ def main() -> int:
     ap.add_argument("--file", default=str(ROOT / "scripts" / "zetaris" / "register_steward.sql"))
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--from", dest="start", type=int, default=1)
+    ap.add_argument("--source-repo", default=os.getenv("ZETARIS_SOURCE_REPO", "abouchet109-del/Hackathon-GenAI-public"),
+                    help="GitHub repo that serves domains/project_memory/data/procedures.json (source 3)")
+    ap.add_argument("--commit", default=None, help="commit that holds the JSON (default: the last one that touched it)")
     args = ap.parse_args()
-    stmts = statements(Path(args.file))
+    commit = args.commit or last_commit_of("domains/project_memory/data/procedures.json")
+    stmts = [s.replace("{{SOURCE_REPO}}", args.source_repo).replace("{{COMMIT}}", commit)
+             for s in statements(Path(args.file))]
+    url = next((line.split('"')[1] for s in stmts for line in s.splitlines() if "cdn.jsdelivr.net" in line), None)
     if args.dry_run:
         for i, s in enumerate(stmts, 1):
             print(f"--- [{i}]\n{s}\n")
@@ -50,6 +67,18 @@ def main() -> int:
     if not SETTINGS.zetaris_api_key:
         print("ZETARIS_API_KEY is missing in .env", file=sys.stderr)
         return 2
+    if url and args.start <= 1:
+        import requests
+        try:
+            code = requests.get(url, timeout=20).status_code
+        except requests.RequestException as error:
+            code = str(error)
+        if code != 200:
+            print(f"Source 3 is not reachable yet ({code}): {url}\n"
+                  "Push the commit that holds procedures.json to the public repository first, or pass --commit.",
+                  file=sys.stderr)
+            return 2
+        print(f"source 3 reachable: {url}")
     client = ZetarisClient(SETTINGS)
     for i, s in enumerate(stmts, 1):
         if i < args.start:

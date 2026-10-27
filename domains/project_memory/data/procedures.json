@@ -1,0 +1,40 @@
+{
+ "source": "Brikk company catalogue (synthetic)",
+ "records": [
+  {
+   "procedure_id": "P01",
+   "department": "sales",
+   "level": "any",
+   "when_to_use": "grant a discount",
+   "steps": "1. Check customer_deals limit (5,000 EUR; Head of Sales up to 7,500 EUR by CEO policy). 2. Record the deal with remember(kind=decision, topic=customer_deals). 3. Above the limit the Steward escalates to the CEO: tell the customer the offer is pending."
+  },
+  {
+   "procedure_id": "P02",
+   "department": "tech",
+   "level": "any",
+   "when_to_use": "finish a task",
+   "steps": "1. Call remember(kind=task) with what is done and what is left. 2. If it moves a date, say which date: the Steward will ask the product lead."
+  },
+  {
+   "procedure_id": "P03",
+   "department": "marketing",
+   "level": "any",
+   "when_to_use": "commit spending",
+   "steps": "1. Check marketing_spend limit (10,000 EUR per commitment; trade shows up to 12,000 EUR by CEO policy). 2. remember(kind=decision, topic=marketing_spend) with the amount in EUR."
+  },
+  {
+   "procedure_id": "P04",
+   "department": "any",
+   "level": "intern",
+   "when_to_use": "state a figure",
+   "steps": "Interns can share facts and metrics; decisions go to their lead. Give the source of any figure."
+  },
+  {
+   "procedure_id": "P05",
+   "department": "executive",
+   "level": "ceo",
+   "when_to_use": "answer an escalation",
+   "steps": "Read escalations(), decide store/supersede/reject, and add a standing policy when the same question will come back."
+  }
+ ]
+}

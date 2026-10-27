@@ -31,17 +31,23 @@ FROM brikk_finance_rest.budgets_raw
 LATERAL VIEW explode(budgets) AS b
 SELECT department, budget_eur, committed_eur FROM brikk_api.finance
 
--- ===== Source 3/3: the company drive (S3-compatible MinIO), role procedures as a CSV =====
-CREATE LIGHTNING DATABASE BRIKK_DRIVE DESCRIBE BY "Brikk company drive"
-CREATE LIGHTNING FILESTORE TABLE procedures FROM BRIKK_DRIVE FORMAT CSV OPTIONS (
-  PATH "s3a://brikk-drive/procedures/procedures.csv",
-  s3Endpoint "http://host.docker.internal:9000",
-  useS3PathStyleAccess "true",
-  AWSACCESSKEYID "osef",
-  AWSSECRETACCESSKEY "osef_local_only",
-  header "true",
-  inferSchema "true"
-)
+-- ===== Source 3/3: the company catalogue (role procedures), a JSON file on the public repository =====
+-- Served by jsDelivr, pinned on a commit (run_steward_sql.py fills {{SOURCE_REPO}} and {{COMMIT}}): the same
+-- recipe the team verified live on 27/10 for the Atlas sources. A FILESTORE on S3-compatible storage is the
+-- alternative, in register_steward_minio.sql.
+CREATE LIGHTNING DATABASE BRIKK_CATALOGUE DESCRIBE BY "Brikk company catalogue"
+CREATE SCHEMASTORE CONTAINER brikk_drive
+CREATE LIGHTNING REST TABLE procedures_raw FROM BRIKK_CATALOGUE REQUEST(
+    endpoint "https://cdn.jsdelivr.net/gh/{{SOURCE_REPO}}@{{COMMIT}}/domains/project_memory/data/procedures.json",
+    method "get",
+    response_type "json",
+    http_encoding "URLENCODED"
+) HEADER (
+) BODY ()
+CREATE SCHEMASTORE VIEW procedures WITH CONTAINER brikk_drive AS
+SELECT p.procedure_id, p.department, p.level, p.when_to_use, p.steps
+FROM brikk_catalogue.procedures_raw
+LATERAL VIEW explode(records) AS p
 SELECT procedure_id, department, when_to_use FROM brikk_drive.procedures
 
 -- ===== Unified Semantic Layer over the three sources (optional: set ZETARIS_USE_USL=true) =====
