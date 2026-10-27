@@ -29,7 +29,8 @@ except ImportError:  # MCP Python SDK 1.x
 from mcp.types import ToolAnnotations
 
 from .steward import Steward
-from .textmode import alerts_text, context_text, profile_text, verdict_text, whats_new_text
+from .textmode import (alerts_text, brief_text, context_text, history_text, profile_text, recall_text,
+                       verdict_text, whats_new_text)
 
 
 def _hint(read_only: bool) -> ToolAnnotations:
@@ -116,19 +117,24 @@ def whats_new(ctx: Context = None) -> dict:
 @server.tool(annotations=READ)
 def recall(query: str, topic: str = "") -> dict:
     """Records of the shared truth relevant to a question, each with who proposed it and from which AI."""
-    return {"memories": steward().recall(query, topic=topic or None)}
+    memories = steward().recall(query, topic=topic or None)
+    return {"memories": memories, "text": recall_text(memories, query)}
 
 
 @server.tool(annotations=READ)
 def why(topic: str) -> dict:
     """History of a topic: the current decision, every replaced version (kept, never deleted) and Steward's journal."""
-    return steward().why(topic)
+    res = steward().why(topic)
+    res["text"] = history_text(res)
+    return res
 
 
 @server.tool(annotations=READ)
 def project_brief() -> dict:
     """The company's current shared truth, topic by topic, plus the CEO's standing policies."""
-    return steward().brief()
+    res = steward().brief()
+    res["text"] = brief_text(res)
+    return res
 
 
 @server.tool(annotations=READ)

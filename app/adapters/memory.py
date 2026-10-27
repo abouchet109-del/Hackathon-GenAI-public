@@ -18,7 +18,17 @@ from ..config import ROOT, SETTINGS
 
 
 def _tokens(text: str) -> set[str]:
-    return {t for t in re.findall(r"[a-z0-9.\-]+", text.lower()) if len(t) > 2}
+    """Lowercase words, lightly stemmed so 'price' meets 'pricing' and 'customer' meets 'customers'."""
+    out = set()
+    for t in re.findall(r"[a-z0-9.\-]+", text.lower()):
+        if len(t) <= 2:
+            continue
+        out.add(t)
+        for suffix in ("ing", "es", "s"):
+            if len(t) > len(suffix) + 3 and t.endswith(suffix):
+                out.add(t[:-len(suffix)])
+                break
+    return out
 
 
 class HMemClient:

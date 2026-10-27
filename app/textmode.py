@@ -106,6 +106,52 @@ def context_text(ctx: dict, name: str, task: str) -> str:
     return text
 
 
+def _prov(rec: dict) -> str:
+    bits = [rec.get("author") or rec.get("source") or "", rec.get("ai") or rec.get("ai_tool") or "", _when(rec.get("at"))]
+    return " · ".join(b for b in bits if b)
+
+
+def history_text(why: dict) -> str:
+    """why(topic): current value highlighted, replaced values struck through, oldest first, never collapsed."""
+    lines = [f"§ Steward · history · {why.get('topic', '')}"]
+    for h in why.get("history") or []:
+        if h.get("is_policy"):
+            lines += _line("Policy", f"[{h['id']}] {h['content']}")
+        elif h.get("superseded_by"):
+            lines += _line("Replaced", f"[{h['id']}] ~~{h['content']}~~ by {h['superseded_by']}")
+        else:
+            lines += _line("Current", f"[{h['id']}] **{h['content']}**" + (f" ({_prov(h)})" if _prov(h) else ""))
+    for j in why.get("steward_journal") or []:
+        word = VERDICT_WORD.get(j.get("decision"), str(j.get("decision") or "").upper())
+        lines += _line("Journal", f"{j.get('journal_id', '')} {word}: {j.get('reason') or ''} ({j.get('author') or ''}"
+                                  f"{', ' + j['ai_tool'] if j.get('ai_tool') else ''})")
+    if len(lines) == 1:
+        lines += _line("Current", "no record on this topic yet.")
+    return "\n".join(lines)
+
+
+def recall_text(memories: list[dict], query: str) -> str:
+    lines = [f"§ Steward · recall · {query[:60]}"]
+    for m in memories:
+        kind = "Policy" if m.get("is_policy") else (m.get("kind") or "record").capitalize()
+        lines += _line(kind, f"[{m['id']}] {m['content']}" + (f" ({_prov(m)})" if _prov(m) else ""))
+    if len(lines) == 1:
+        lines += _line("Record", "nothing in the shared truth matches; the answer is not company knowledge.")
+    return "\n".join(lines)
+
+
+def brief_text(brief: dict) -> str:
+    lines = ["§ Steward · shared truth · Brikk"]
+    for topic, records in (brief.get("topics") or {}).items():
+        for r in records:
+            lines += _line((r.get("kind") or "record").capitalize(), f"[{r['id']}] {topic}: {r['content']}")
+    for p in brief.get("ceo_policies") or []:
+        lines += _line("Policy", f"[{p['id']}] {p['content']}" + (f" (covers {p['scope']})" if p.get("scope") else ""))
+    n = brief.get("pending_escalations") or 0
+    lines += _line("Queue", f"{n} {'escalation waits' if n == 1 else 'escalations wait'} for the CEO.")
+    return "\n".join(lines)
+
+
 def alerts_text(alerts: list[dict], name: str) -> str:
     lines = [f"§ Steward · alerts for {name}"]
     for a in alerts:

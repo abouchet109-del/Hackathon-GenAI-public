@@ -222,6 +222,14 @@ def onboard(answers: dict, data, schema: str, memory) -> dict:
 
 # ---------- what each AI receives ----------
 
+def _labelled(label: str, value: str, width: int = 80, label_width: int = 12) -> str:
+    """One text-mode line: a 12-character label, the value wrapped under 80 columns, continuations indented."""
+    import textwrap
+    value = " ".join(str(value).split())
+    wrapped = textwrap.wrap(value, width - label_width) or [""]
+    return "\n".join([f"{label:<{label_width}}{wrapped[0]}"] + [" " * label_width + w for w in wrapped[1:]])
+
+
 def _line(mem: dict, detail: int) -> str:
     tags = logic._tags(mem)
     base = f"[{mem['id']}] {mem['content']}"
@@ -259,46 +267,51 @@ def compose_context(name: str, task: str, data, schema: str, memory, journal: li
         scored.append((score, m))
     scored.sort(key=lambda x: -x[0])
 
-    header = [f"§ Steward · context for {prof['name']}"
-              + (f" · {prof['role']} ({prof['department']})" if prof.get("known") else " · not in the team directory")
-              + (f" · task: {task[:60]}" if task else ""),
-              f"Angle: {prof['focus']}; detail level {prof['detail_level']}/3.",
-              "Use these facts as the company's current truth and cite their [ids]. If the user says something that "
-              "contradicts them, call remember: the Steward will check it."]
+    # Text mode (design rules, section 12): a header, then labelled lines aligned on 12 characters, each citing an id.
+    head = (f"§ Steward · context for {prof['name']}"
+            + (f" · {prof['role']} ({prof['department']})" if prof.get("known") else " · not in the team directory"))
+    task_part = f" · task: {task[:60]}" if task else ""
+    header = [head + task_part] if len(head + task_part) <= 80 else [head, _labelled("Task", task[:200])]
+    header += [_labelled("Angle", f"{prof['focus']}; detail level {prof['detail_level']}/3."),
+              _labelled("Use", "Cite these [ids] as the company's current truth. If the user contradicts one, call "
+                               "remember: Steward checks it.")]
     mine = [e for e in journal if e.get("author") == prof["name"] and e["status"] == "awaiting_author"]
-    if mine:
-        header.append("Waiting for this person (ask them): " + " | ".join(
-            f"{e['journal_id']}: '{e['content'][:90]}' contradicts the current {e['topic']} decision. Error or real change?"
-            for e in mine[:3]))
+    for e in mine[:3]:
+        header.append(_labelled("Open", f"{e['journal_id']}: '{e['content'][:90]}' contradicts the current "
+                                        f"{e['topic']} decision. Ask the user: error or real change?"))
     if prof["level"] == "ceo":
         pending = [e for e in journal if e["status"] == "pending"]
         if pending:
-            header.append(f"CEO queue: {len(pending)} escalation(s) waiting (call escalations).")
+            header.append(_labelled("Queue", f"{len(pending)} {'escalation waits' if len(pending) == 1 else 'escalations wait'}"
+                                             " for you (call escalations)."))
     procs = procedures_for(prof, task, data, schema)
     body, used, ids = [], sum(len(h) for h in header), []
     budget_chars = budget_tokens * CHARS_PER_TOKEN
     for p in procs:
-        line = f"Procedure {p['procedure_id']} ({p['trigger']}): {p['steps']}"
+        line = _labelled("Procedure", f"{p['procedure_id']} ({p['trigger']}): {p['steps']}")
         if used + len(line) < budget_chars * 0.3:
             body.append(line)
             used += len(line)
     if task_topics and any(t in {"marketing_spend", "marketing_budget", "customer_deals"} for t in task_topics):
         for f in finance(data, schema, warnings):
             if f["department"] in {prof.get("department"), "marketing"}:
-                line = (f"Budget {f['department']} {f['period']}: {f['committed_eur']:,.0f} of {f['budget_eur']:,.0f} EUR "
-                        f"committed ({f['ratio']:.0%}).")
+                line = _labelled("Budget", f"{f['department']} {f['period']}: {f['committed_eur']:,.0f} of "
+                                           f"{f['budget_eur']:,.0f} EUR committed ({f['ratio']:.0%}).")
                 body.append(line)
                 used += len(line)
     for score, m in scored:
         if score < 1.6 or (score < 2.0 and len(ids) >= 4):
             break  # the rest stays one call away (recall / why): no context overload
-        line = _line(m, prof["detail_level"])
+        tags = logic._tags(m)
+        kind = "Policy" if "policy" in m.get("tags", []) else (tags.get("kind") or "record").capitalize()
+        line = _labelled(kind, _line(m, prof["detail_level"]))
         if used + len(line) > budget_chars:
             break
         body.append(line)
         ids.append(m["id"])
         used += len(line)
-    text = "\n".join(header + [""] + body)
+    body.append(_labelled("Ask why", 'why("<topic>") for the full history of a topic; recall("<question>") for more.'))
+    text = "\n".join(header + body)
     return {"context": text, "approx_tokens": len(text) // CHARS_PER_TOKEN, "budget_tokens": budget_tokens,
             "warnings": warnings,
             "memory_ids": ids, "task_topics": task_topics, "profile": {k: prof.get(k) for k in (
