@@ -72,8 +72,8 @@ def run_ablation(profiles: list[str], repeats: int = 1, limit: int | None = None
               "memory_seeds": n_seeds, "results": rows, "details": details}
     out = SETTINGS.log_dir / f"ablation-{stamp}"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.with_suffix(".json").write_text(json.dumps(report, indent=1, ensure_ascii=False))
-    out.with_suffix(".md").write_text(to_markdown(report))
+    out.with_suffix(".json").write_text(json.dumps(report, indent=1, ensure_ascii=False), encoding="utf-8")
+    out.with_suffix(".md").write_text(to_markdown(report), encoding="utf-8")
     report["files"] = [str(out.with_suffix(".md").relative_to(ROOT)), str(out.with_suffix(".json").relative_to(ROOT))]
     return report
 

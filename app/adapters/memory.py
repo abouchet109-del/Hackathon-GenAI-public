@@ -79,12 +79,12 @@ class LocalMemory:
             return
         mtime = self.path.stat().st_mtime_ns
         if mtime != self._mtime:
-            self.records = json.loads(self.path.read_text() or "[]")
+            self.records = json.loads(self.path.read_text(encoding="utf-8") or "[]")
             self._mtime = mtime
 
     def _save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.records, indent=1, ensure_ascii=False))
+        self.path.write_text(json.dumps(self.records, indent=1, ensure_ascii=False), encoding="utf-8")
         self._mtime = self.path.stat().st_mtime_ns
 
     def health(self) -> bool:

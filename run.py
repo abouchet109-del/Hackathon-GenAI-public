@@ -21,6 +21,10 @@ import os
 import sys
 from pathlib import Path
 
+for _stream in (sys.stdout, sys.stderr):  # Windows consoles default to cp1252: keep names and EUR signs readable
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+
 from app.config import SETTINGS
 
 
@@ -97,7 +101,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "ablation":
         from app.evaluation import run_ablation
         report = run_ablation(args.profiles.split(","), repeats=args.repeats, limit=args.limit)
-        print(Path(report["files"][0]).read_text() if Path(report["files"][0]).exists() else report["results"])
+        print(Path(report["files"][0]).read_text(encoding="utf-8") if Path(report["files"][0]).exists() else report["results"])
         return 0
 
     if args.cmd == "demo-memory":

@@ -12,6 +12,8 @@ def _say(text: str = "") -> None:
 
 def _verdict(step: str, res: dict) -> dict:
     _say(f"   -> {res['decision'].upper()}: {res['why']}  citations={res['citations']}")
+    if res.get("alerts_sent"):
+        _say(f"   -> alert sent to {', '.join(res['alerts_sent'])} (their work relies on the old value)")
     return {"step": step, "decision": res["decision"], "citations": res["citations"], "trace": res["trace"]}
 
 

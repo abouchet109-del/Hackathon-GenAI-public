@@ -65,6 +65,8 @@ No Zetaris, Nightshift or keys? `SAMPLE_MODE=true` runs the same agents and the 
 
 Connect an AI: copy `docs/mcp/claude_desktop_config.json` into Claude Desktop's configuration, or `docs/mcp/cursor-mcp.json` into `.cursor/mcp.json`, and set `OSEF_MEMBER` to the person. `python scripts/mcp_smoke.py` starts the server the way a client does and calls the tools.
 
+Windows: `powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1` (see [docs/TEAM-AND-MERGE.md](docs/TEAM-AND-MERGE.md)).
+
 Docker: `docker compose up --build` starts the app (port 8000), the H-MEM engine and the three Brikk sources: Postgres, the finance API served by the app, and an S3-compatible drive. Register them in Zetaris with `python scripts/zetaris/run_steward_sql.py`.
 
 ## Commands
@@ -73,9 +75,9 @@ Docker: `docker compose up --build` starts the app (port 8000), the H-MEM engine
 | --- | --- |
 | `python run.py steward-demo` | The video scenario: onboarding, the same question for two roles, watch layer, clarification, CEO policy, replaced price, protection, weak signals |
 | `python run.py serve` | Console at `/console`, its API at `/api/*`, the finance API at `/finance/budgets`, plus `POST /run`, `POST /learn`, `GET /health` |
-| `python run.py mcp` | MCP server on stdio: `my_context`, `whats_new`, `observe`, `remember`, `answer_clarification`, `onboard`, `recall`, `why`, `project_brief`, `my_contributions`, `escalations`, `resolve_escalation`; resource `osef://watchlist`; prompt `role_procedures` |
+| `python run.py mcp` | MCP server on stdio: `my_context`, `whats_new`, `observe`, `remember`, `answer_clarification`, `onboard`, `recall`, `why`, `project_brief`, `my_contributions`, `my_tasks`, `report_progress`, `my_alerts`, `escalations`, `resolve_escalation`; resource `osef://watchlist`; prompt `role_procedures` |
 | `DOMAIN=project_memory python run.py ablation [--repeats 3]` | Accuracy, memory-dependent accuracy, unsafe errors, consistency, escalation rate per harness profile |
-| `python -m pytest -q` | 16 offline tests |
+| `python -m pytest -q` | 43 offline tests (23 of them from the Atlas modules) |
 | `cd hmem-service && npm run conformance` | Official Meterless H-MEM conformance suite (13 checks) |
 
 ## Sponsor technology
@@ -92,6 +94,12 @@ Docker: `docker compose up --build` starts the app (port 8000), the H-MEM engine
 
 - Traces: `logs/trace-<run_id>.jsonl`, one line per agent action (agent, action, target, model, confidence, retries, status, `cached`).
 - Ablation reports: `logs/ablation-<timestamp>.md`. Offline, on 34 labelled cases: without memory, 56% accuracy and 3 unsafe errors (contradictions let into memory); with H-MEM, 100%, and the CEO is asked 3 times less often. The rules and the cases were written together, so the offline 100% measures consistency. The run that measures the model is the one with Nightshift online. See [docs/STEWARD.md](docs/STEWARD.md).
+
+## Team and merge
+
+Team OSEF: Ryan Dalier-Dulys (Steward: arbitration, context, MCP, console, H-MEM, Zetaris), Adam Semlali and Alexandre Bouchet (Atlas: use case, architecture, decision register, progress per member, alert inboxes, live sponsor checks). The two codebases were merged on 27 October: see [docs/TEAM-AND-MERGE.md](docs/TEAM-AND-MERGE.md).
+
+Team coordination, from the Atlas modules (`app/coordination/`): each person's AI reports progress on their tasks (`report_progress`); Steward flags late work and work that relies on a value a newer decision changed, recommends the meetings that unblock people, and sends each affected person an alert (`my_alerts`) when a decision changes.
 
 ## A second domain pack, same harness
 
