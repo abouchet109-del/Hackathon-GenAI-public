@@ -228,9 +228,10 @@ def compose_context(name: str, task: str, data, schema: str, memory, journal: li
         scored.append((score, m))
     scored.sort(key=lambda x: -x[0])
 
-    header = [f"Steward context for {prof['name']}"
-              + (f", {prof['role']} ({prof['department']})" if prof.get("known") else " (not in the team directory)")
-              + f". Angle: {prof['focus']}; detail level {prof['detail_level']}/3.",
+    header = [f"§ Steward · context for {prof['name']}"
+              + (f" · {prof['role']} ({prof['department']})" if prof.get("known") else " · not in the team directory")
+              + (f" · task: {task[:60]}" if task else ""),
+              f"Angle: {prof['focus']}; detail level {prof['detail_level']}/3.",
               "Use these facts as the company's current truth and cite their [ids]. If the user says something that "
               "contradicts them, call remember: the Steward will check it."]
     mine = [e for e in journal if e.get("author") == prof["name"] and e["status"] == "awaiting_author"]

@@ -28,6 +28,7 @@ except ImportError:  # MCP Python SDK 1.x
 from mcp.types import ToolAnnotations
 
 from .steward import Steward
+from .textmode import context_text, verdict_text, whats_new_text
 
 
 def _hint(read_only: bool) -> ToolAnnotations:
@@ -46,7 +47,8 @@ INSTRUCTIONS = """You are connected to Steward, the company's shared context. Fo
 3. TELL THE OUTCOME. observe and remember return the Steward's verdict per item (stored, replaced an older decision, masked, rejected, needs clarification, escalated, quarantined). Tell the user in one line. If a clarification is needed, ask the user the question ("error or real change?") and send the answer with answer_clarification.
 4. NEVER put passwords, keys, bank details or personal data in what you send; the Steward masks them anyway.
 5. PROGRESS. When the user finishes or advances one of their tasks (see my_tasks), call report_progress with the progress and the company values the work relies on (launch date, price, ...).
-6. Personal preferences about how the user likes to work stay in your own memory, not in the company's."""
+6. RELAY. When you relay a Steward result, lead with the verdict in plain words and its ID in parentheses ("Steward escalated this to the CEO (j-1793...)."). Keep every number, name and ID exactly as given. Write current values in bold and replaced values struck through (~~29 EUR~~ **35 EUR**). Never present a value Steward marked as replaced as current. If Steward gives a Limits line, mention it. Do not add emoji. Each result carries a `text` field in that form: quote it when the user wants the detail.
+7. Personal preferences about how the user likes to work stay in your own memory, not in the company's."""
 
 server = _Server("osef-steward", instructions=INSTRUCTIONS)
 _steward: Steward | None = None
@@ -84,7 +86,9 @@ def my_context(task: str, ctx: Context = None) -> dict:
     """The company context this person needs for this task, tailored to their role (about 1,500 tokens).
     task: what the user is working on, in their words (e.g. "answer a customer asking for a discount")."""
     member, _ = _me(ctx)
-    return steward().my_context(member, task)
+    res = steward().my_context(member, task)
+    res["text"] = context_text(res, member, task)
+    return res
 
 
 @server.tool(annotations=READ)
@@ -92,7 +96,9 @@ def whats_new(ctx: Context = None) -> dict:
     """What changed in the company's shared truth since this person's last session, questions waiting for them,
     and weak signals that concern them (tensions, budgets, suggested meetings)."""
     member, _ = _me(ctx)
-    return steward().whats_new(member)
+    res = steward().whats_new(member)
+    res["text"] = whats_new_text(res, member)
+    return res
 
 
 @server.tool(annotations=READ)
@@ -128,7 +134,16 @@ def observe(excerpt: str, source: str = "conversation", title: str = "", ctx: Co
     excerpt: only the sentences that touch a watched company domain. source: conversation | document | meeting.
     The Steward extracts decisions, facts and tasks, arbitrates each one, and never stores the raw text."""
     member, ai = _me(ctx)
-    return steward().observe(excerpt, member, ai, source=source, title=title)
+    res = steward().observe(excerpt, member, ai, source=source, title=title)
+    dept = steward().profile(member).get("department")
+    for o in res.get("outcomes", []):
+        o["text"] = verdict_text({"decision": o.get("decision"), "why": o.get("why"), "citations": o.get("citations"),
+                                  "applied": {"journal_id": o.get("journal_id")}, "stack": res.get("stack")},
+                                 content=o.get("extracted", ""), author=member, ai_tool=ai, department=dept,
+                                 to="CEO" if o.get("decision") == "escalate" else None)
+    res["text"] = "\n\n".join(o["text"] for o in res.get("outcomes", [])) or \
+        "§ Steward · nothing to keep · the excerpt held no decision, fact or task on a watched topic."
+    return res
 
 
 @server.tool(annotations=WRITE)
@@ -136,7 +151,12 @@ def remember(content: str, kind: str = "fact", topic: str = "", ctx: Context = N
     """Explicitly propose one item to the company's shared memory.
     kind: decision | fact | task | preference. topic: optional (see the watchlist); the Steward infers it otherwise."""
     member, ai = _me(ctx)
-    return steward().remember(content, author=member, ai_tool=ai, kind=kind, topic=topic or None)
+    res = steward().remember(content, author=member, ai_tool=ai, kind=kind, topic=topic or None)
+    if res.get("decision"):
+        res["text"] = verdict_text(res, content=content, author=member, ai_tool=ai,
+                                   department=steward().profile(member).get("department"),
+                                   to="CEO" if res["decision"] == "escalate" else None)
+    return res
 
 
 @server.tool(annotations=READ)

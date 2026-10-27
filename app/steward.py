@@ -125,6 +125,7 @@ class Steward:
             return {"status": "error", "error": res.get("error"), "trace": res.get("log_file")}
         out = res["output"]
         return {"decision": out["decision"], "why": out["summary"], "citations": out["citations"],
+                "confidence": out.get("confidence"),
                 "applied": out.get("applied"), "needs_ceo": out["decision"] == "escalate", "alerts_sent": alerts,
                 "critic_score": (out.get("critic") or {}).get("total"), "trace": res["log_file"],
                 "stack": res["stack"]}
@@ -201,10 +202,11 @@ class Steward:
         for i, it in enumerate(items[:12]):
             res = self.remember(it["content"], author, ai_tool, it.get("kind", "fact"), it.get("topic") or None)
             outcomes.append({"extracted": it["content"], "kind": it.get("kind"), "topic": it.get("topic"),
-                             "decision": res.get("decision"), "why": res.get("why"),
+                             "decision": res.get("decision"), "why": res.get("why"), "citations": res.get("citations"),
                              "journal_id": (res.get("applied") or {}).get("journal_id"),
                              "extracted_by": it.get("extracted_by"), "trace": res.get("trace")})
         return {"source": source, "title": title, "items_found": len(items), "outcomes": outcomes,
+                "stack": self.describe(),
                 "stored": sum(o["decision"] in {"store", "supersede", "redact"} for o in outcomes),
                 "raw_text_stored": False}
 
