@@ -17,6 +17,8 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
   - `atlas/progress.py` : classement de l'avancement en quatre cas (ok, retard, obsolète, réunion nécessaire) ;
   - `atlas/alerts.py` : boîtes d'alertes par membre, récupérées une seule fois.
 - **27/10 — H-MEM** : implémentation de référence installée dans `external/meterless`, suite de conformité officielle au vert (13/13) via `scripts/hmem-conformance.ps1`.
+- **27/10, 18:10 — H-MEM intégré (n° 8, porte 2)** : service `services/hmem/` autour de la référence inchangée, client `agent/hmem.py` (décisions avec provenance et confiance, « pourquoi le 10 novembre ? » par le journal de confiance, retours helpful/wrong, rappel des enseignements) ; résolution automatique des conflits jamais appelée ; repli local en Python (`SAMPLE_MODE` ou service absent). Test d'intégration au vert, conformité 13/13. Enseignements d'Orion et Vega chargés par `scripts/load_org_memory.py` (n° 9 côté mémoire).
+- **27/10, 18:30 — World Model intégré (n° 7)** : service `services/world_model/`, adaptateur `agent/world_model.py` qui implémente `StateStore` (interface de `agent/state.py` inchangée) ; état relu depuis World Model identique à l'état JSON, réingestion sans événement, arêtes datées ; conformité 8/8 ; repli sur l'état JSON. Lancement : `python scripts/engine_service.py hmem|world_model` (README, section Engines).
 
 ### Bloquants
 - [x] Nightshift installé et lancé (27/10).
@@ -30,7 +32,8 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 - À coder (repéré à la revue) : contradiction entre membres (S6) et blocages par tickets (règle 5) dans `atlas/progress.py` ; signaux de coordination à la place des réunions du cas 4.
 
 ### Question ouverte apparue
-- **Intégrer H-MEM à l'application** (voir [DECISIONS.md](DECISIONS.md), D11). H-MEM est une spécification avec une implémentation de référence en TypeScript, alors que l'application est en Python.
+- ~~Intégrer H-MEM à l'application~~ : tranché par D11 bis (service TypeScript autour de la référence), fait le 27/10 à 18:10.
+- À brancher par l'orchestrateur (incrément 1) : `WorldModelStateStore("atlas")` à la place de `JsonStateStore`, et `load_org_lessons()` à chaque run en `SAMPLE_MODE` ; rappel d'Orion dans la brique 5 ou le brief pour que S9 passe de bout en bout.
 
 ### Prochaines étapes
 Détail, estimations et méthode : [PLAN.md](PLAN.md) (27/10, 17:20). Gel du code à 22:30, soumission vers 00:15 (heure de Paris).

@@ -1,0 +1,6 @@
+{
+  "name": "atlas-world-model-service",
+  "private": true,
+  "description": "Local HTTP service around the Meterless World Model reference implementation. No dependencies: tsx comes from the reference (scripts/engine_service.py).",
+  "type": "module"
+}

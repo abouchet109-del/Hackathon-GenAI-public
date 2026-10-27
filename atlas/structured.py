@@ -4,7 +4,9 @@ Every agent goes through call_json():
 - routes, in order: Nightshift (Meterless Runtime) with a Nemotron model
   imposed by its id, then the MODEL_* route (NVIDIA API) if configured, then
   the cache of earlier replies (data/cache/llm/); SAMPLE_MODE=true reads the
-  cache only;
+  cache only; LLM_CACHE_FIRST=true reads the cache first and calls a route only
+  for a prompt never answered (to record a cache that replays consistently:
+  the model is not deterministic, even at temperature 0);
 - a timeout on each request;
 - an invalid output (not JSON, or not matching the schema) is sent back once
   with the validation error; a second invalid output raises LLMOutputError;
@@ -90,19 +92,40 @@ def extract_json(text):
     return text[start:end + 1] if start != -1 and end > start else text
 
 
+def unwrap_schema_echo(text, schema):
+    """The object inside {"properties": {...}, ...}, a shape Nemotron sometimes
+    answers with when shown a schema (with "type" or "required" around it);
+    any other text is returned unchanged."""
+    if "properties" in schema.model_fields:
+        return text
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return text
+    if (isinstance(data, dict) and isinstance(data.get("properties"), dict)
+            and not set(data) & set(schema.model_fields)):
+        return json.dumps(data["properties"])
+    return text
+
+
 def schema_instructions(schema):
-    return ("Answer with one JSON object only, no text before or after it, "
-            "matching this JSON schema:\n" + json.dumps(schema.model_json_schema()))
+    # "an instance", because Nemotron otherwise tends to answer with the
+    # schema's own shape ({"properties": {...}}).
+    return ("Answer with one JSON object only, no text before or after it: an instance "
+            "of this JSON schema (the values themselves, not the schema):\n"
+            + json.dumps(schema.model_json_schema()))
 
 
 class LLMClient:
     def __init__(self, routes=None, timeout=DEFAULT_TIMEOUT, cache_dir=None, sample=None,
-                 tracer=None):
+                 tracer=None, cache_first=None):
         self.routes = routes if routes is not None else default_routes()
         self.timeout = timeout
         self.cache_dir = Path(cache_dir or DEFAULT_CACHE_DIR)
         self.sample = sample_mode() if sample is None else sample
         self.tracer = tracer or Tracer()
+        self.cache_first = (os.environ.get("LLM_CACHE_FIRST", "").strip().lower()
+                            in ("1", "true", "yes")) if cache_first is None else cache_first
 
     # --- cache --------------------------------------------------------------
 
@@ -143,6 +166,10 @@ class LLMClient:
     def complete(self, messages):
         """One reply, from the first route that answers, else from the cache."""
         failures = []
+        if self.cache_first and not self.sample:
+            cached = self._read_cache(messages)
+            if cached is not None:
+                return cached, failures
         if not self.sample:
             for route in self.routes:
                 try:
@@ -176,7 +203,8 @@ class LLMClient:
                 raise
             failures += route_failures
             try:
-                output = schema.model_validate_json(extract_json(reply.text))
+                output = schema.model_validate_json(
+                    unwrap_schema_echo(extract_json(reply.text), schema))
             except ValidationError as invalid:
                 error = invalid
                 messages = messages + [

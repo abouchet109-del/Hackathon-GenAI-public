@@ -182,7 +182,9 @@ Mis à jour par chaque session à chaque tâche terminée (heure de Paris). Éta
 | 0 | 4. Nemotron imposé et journalisé | Faite | 27/10 17:58 | Identifiant `nvidia/nemotron-3.5-lightning-30b-a3b` dans Nightshift ; modèle lu dans le reçu `meterless.routed_model` |
 | 0 | 5. Appel LLM commun | Faite | 27/10 17:58 | `agent/structured.py`, testé contre un faux runtime et par un appel réel |
 | 1 | 6, 10, 11, 12, 13, 21, 22, 23 | En cours | 27/10 18:05 | Session dédiée ; extracteur et agent de mise à jour séparés (D15) |
-| 2 | 8. H-MEM, puis 7. World Model | En cours | 27/10 18:05 | Session dédiée, en parallèle de l'incrément 1 ; H-MEM via un service TypeScript (D11) |
+| 2 | 8. H-MEM | Faite | 27/10 18:10 | Service `services/hmem/` autour de la référence inchangée, client `agent/hmem.py` avec repli local ; décision avec provenance, « pourquoi le 10 novembre ? » par le journal de confiance, test d'intégration au vert, conformité 13/13 (499df21, 0bd1728) ; environ 1 h, sous le maximum |
+| 2 | 9. Mémoire de l'organisation (Orion) | Faite (côté mémoire) | 27/10 18:10 | `scripts/load_org_memory.py` ; Orion-1 rappelé en premier depuis le vrai engine ; le rappel dans la brique 5 ou le brief reste à brancher pour que S9 passe de bout en bout |
+| 2 | 7. World Model | Faite | 27/10 18:30 | Service `services/world_model/`, adaptateur `agent/world_model.py` (interface de `agent/state.py` inchangée), repli sur l'état JSON ; conformité 8/8, état relu depuis World Model identique à l'état JSON (7aa6e21) ; environ 25 min, sous le maximum. L'orchestrateur choisit encore le store à utiliser |
 | 3 | 18, 19 | À faire | — | — |
 | 4 | 24, 26, 27 | À faire | — | — |
 | 5 | 15 | À faire | — | — |
