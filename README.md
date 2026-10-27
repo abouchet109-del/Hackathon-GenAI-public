@@ -22,8 +22,8 @@ Cas de démonstration : **Atlas**, le lancement d'un portail client fictif dont 
 | Technologie | Rôle |
 |---|---|
 | Zetaris | Couche de données : les sources du projet exposées comme des tables SQL |
-| Meterless H-MEM | Mémoires du projet : décisions et leur historique, rôles et avancement de chaque membre (choix du brouillon d'architecture) |
-| Meterless World Model (option) | État partagé entre agents, si l'architecture finale le retient |
+| Meterless World Model | État courant du projet : membres et rôles, tâches et dépendances, décisions en vigueur, blocages ; chaque changement crée une nouvelle version (D12) |
+| Meterless H-MEM | Mémoires à trois échelles : la journée, le projet en cours (historique des décisions, comptes rendus, verdicts sur les réunions) et l'organisation (enseignements des projets passés) (D12) |
 | Meterless Nightshift | Fournisseur IA principal |
 | NVIDIA Nemotron | Modèles des agents, via Nightshift |
 | MCP | Accès à l'état du projet depuis l'IA de chaque membre |
@@ -38,11 +38,12 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 | Meterless Nightshift | **Fonctionne** (27/10) : runtime en ligne sur le port 8088, réponse reçue via `meterless/auto` |
 | Modèle Nemotron | Répond via la route `MODEL_*` (test de fumée) ; le choix explicite de Nemotron dans Nightshift reste à vérifier |
 | Cas d'usage Atlas | Défini |
-| Architecture | **Brouillon en cours** (27/10) |
+| Architecture | **Brouillon complété** (27/10) : deux revues intégrées ; briques 1, 2, 4 et 5, orchestrateur, couches Zetaris / World Model / H-MEM, schéma fonctionnel |
 | Fondations déterministes | **Faites et testées** (27/10) : format des décisions, classement en quatre cas, boîtes d'alertes |
-| Engine H-MEM | Implémentation de référence installée, **suite de conformité officielle au vert (13/13)** ; intégration à l'application à décider |
+| Engine H-MEM | Implémentation de référence installée, **suite de conformité officielle au vert (13/13)** ; intégration à l'application à décider (D11) |
+| Engine World Model | Retenu pour l'état courant du projet (D12) ; intégration à faire, repli possible sur un état JSON |
 | Données Atlas pour Zetaris | À créer |
-| Agents LLM, MCP, vue manager | Pas commencés (attendent l'architecture finale) |
+| Agents LLM (6), orchestrateur, serveur MCP, `POST /run`, vue manager | Pas commencés |
 
 **Fondations déjà codées** (toutes couvertes par des tests unitaires, 36 tests au vert) :
 - `agent/decisions.py` : l'enregistrement d'une décision (sujet, attribut, valeur, statut, auteur, source, date, confiance, décision remplacée) et les règles qui disent quelle décision est en vigueur. Deux décisions approuvées incompatibles sont un conflit à arbitrer, jamais « la dernière gagne ».
@@ -52,10 +53,12 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 
 **Track : 03 — Reasoning Architecture.**
 
-**Brouillon d'architecture du 27/10** ([docs/architecture.md](docs/architecture.md), notes manuscrites dans [docs/architecture-notes/](docs/architecture-notes/)). C'est un brouillon de travail, loin de l'architecture finale. Il définit :
-- **Suivi des décisions** : un extracteur tire les décisions des réunions et du canal commun ; un agent les rapproche des décisions déjà prises et propose ce qui fait foi ; un contrôleur vérifie preuves, habilitations et conflits, demande une révision ou escalade au manager ; un algorithme dépose une alerte chez chaque personne concernée. Les décisions sont gardées dans H-MEM.
-- **Avancement par membre** : un skill installé sur l'IA de chaque collaborateur remonte son avancement via MCP et récupère ses alertes ; un agent, en lecture seule, le compare aux tâches et objectifs ; un algorithme classe chaque situation en quatre cas (tout va bien, retard, travail rendu obsolète, réunion nécessaire).
-- **Agent manager** : répond à la requête du manager (`POST /run`), rédige les recommandations de réunion et les remontées automatiques.
+**Architecture du 27/10** ([docs/architecture.md](docs/architecture.md), avec un schéma fonctionnel en tête ; notes manuscrites dans [docs/architecture-notes/](docs/architecture-notes/)). Brouillon complété par deux revues, pas encore l'architecture finale. Six agents LLM, chacun avec une seule mission ; tout le reste est en code. Principe directeur : **le LLM qualifie, le code tranche** (D13).
+- **Brique 1 — Contexte fiable** : un extracteur tire les informations des sources lues dans Zetaris ; l'agent de mise à jour les rattache au bon sujet et les qualifie ; des règles en code décident ce qui fait foi ; un contrôleur vérifie habilitations, conflits et preuves, demande une révision au plus ou escalade. Un seul écrivain met à jour l'état (World Model) et l'historique (H-MEM), puis un algorithme dépose une alerte chez chaque personne concernée.
+- **Brique 2 — Avancement par membre** : l'IA de chaque collaborateur remonte un rapport structuré par l'outil MCP `report_progress` (un skill dit quand et quoi déclarer) ; ce rapport est aussi une source de la brique 1. Un algorithme, sans LLM, classe chaque tâche : tout va bien, retard, travail obsolète, contradiction entre membres, ou signal de coordination.
+- **Brique 4 — Correction des livrables** : les affirmations d'un livrable sont comparées en code à l'état du projet ; un rédacteur corrige seulement les passages périmés ; un validateur vérifie que chaque changement cite sa source. Résultat : un diff proposé, jamais appliqué automatiquement.
+- **Brique 5 — Recommandation de réunion** : un tri en code note des réunions candidates à partir de déclencheurs tirés de la littérature (Gersick, Thompson, Vroom & Yetton…) moins leurs coûts, et choisit entre réunion et message ; au-dessus du seuil, un analyste en lecture seule juge en s'appuyant sur les précédents gardés dans H-MEM ; le verdict humain est enregistré et sert aux fois suivantes.
+- **Agent manager et orchestrateur** : l'orchestrateur, en code, enchaîne un run complet ; l'agent manager répond à la requête du manager (`POST /run`) ; des règles en code décident des remontées automatiques.
 
 ## Structure du repo
 ```text
