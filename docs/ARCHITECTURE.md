@@ -1,6 +1,6 @@
 # Steward architecture
 
-Steward is a company context layer for every AI a team already uses. It is the OSEF submission to the Open Agent Hackathon 2026, Track 03 (Reasoning Architecture), and the product the team intends to keep building. This document is the target architecture of the unified repository (27 October 2026). The authoritative product specification is the team's v2 specification (26 October); the decisions that shaped this document are listed as ADRs at the end and in `docs/DECISIONS.md`.
+Steward is a company context layer for every AI a team already uses. It is the OSEF submission to the Open Agent Hackathon 2026, Track 03 (Reasoning Architecture), and the product the team intends to keep building. This document is the target architecture of the unified repository (27 October 2026) and matches the code on the `unify` branch; where it describes a step not yet run live (the Zetaris registration, the Nemotron run), it says so. The authoritative product specification is the team's v2 specification (26 October); the decisions that shaped this document are the ADRs at the end and D24 to D32 in `docs/DECISIONS.md`.
 
 ## 1. Context
 
@@ -116,14 +116,16 @@ Raw text never enters the memory: only the extracted items do, and each person c
 
 **Quality rule.** The register script verifies each source after registration by reading it back and comparing with the CSV; the USL activation uses `COALESCE` on NOT NULL columns; every read has a 45 s timeout and three retries; a failed read is an error in the trace, never a silent default.
 
-**`SAMPLE_MODE=true`.** The same SQL runs on an in-memory SQLite copy of the pack's CSVs (`app/adapters/zetaris.py::SampleData`), the H-MEM service is replaced by the local fallback with the same `supersedes` semantics, and model calls are replayed from `data/llm_cache.jsonl` when the exact prompt was recorded, otherwise the deterministic path runs. Every trace line carries `cached: true` and the stack line says `sample-sqlite`, `local-fallback`, `offline`. Nothing is faked silently: the console header and `/health` show which stack is running.
+**`SAMPLE_MODE=true`.** The same SQL runs on an in-memory SQLite copy of the pack's CSVs (`app/adapters/zetaris.py::SampleData`), the H-MEM service is replaced by the local fallback with the same `supersedes` semantics, and model calls are replayed from `data/llm_cache.jsonl` when the exact prompt was recorded, otherwise the deterministic path runs. Model-call lines (Decider, Critic) carry `cached: true` when replayed; the `run_started` line, the console header and `/health` say which stack is running (`sample-sqlite`, `local-fallback`, `offline`). The same labelled stack is used when no key or token is configured at all; the difference is that with a real stack configured (a Zetaris key or a Nightshift token), an unreachable H-MEM is an error (`MemoryUnavailable`), never a second store (ADR-9).
+
+**Source 2 depends on the Steward app being up** (it serves `GET /finance/budgets`): the setup scripts and `docker compose` start it; when only an MCP server process runs, Zetaris cannot read the finance table, and contexts and weak signals carry a `warnings` entry (`source_unavailable`) instead of failing. In `SAMPLE_MODE` the finance CSV is read directly.
 
 ## 5. Model calls
 
 - Single provider: Meterless Nightshift, `http://127.0.0.1:8088/v1`, headers `Authorization: Bearer <runtime token>`, `meterless-app`, `meterless-scope: user`. The NVIDIA key lives only in Nightshift (Providers), never in the app.
 - Three lanes, pinned on Nemotron by exact model id (verified by the team on 27/10 through Nightshift): fast = `nvidia/nemotron-3.5-lightning-30b-a3b` (extractor), deep = `nvidia/nemotron-3-ultra-550b-a55b` (arbiter), judge = the same ultra model. `nvidia/nemotron-3-super-120b` returns a 404 from NVIDIA and is not used. If the ids are not available, `scripts/configure_nightshift.py` falls back to the routing modes `meterless/fast` and `meterless/deep` and says so.
 - The served model is read from the answer (`meterless.routed_model` receipt, else the `model` field) and written to every trace line (`logs/trace-<run>.jsonl`, field `model`), with `receipt_id` when present.
-- Timeouts: 120 s per call; one retry on a transport error; a malformed JSON answer is parsed leniently (`parse_json`: fences, `<think>` blocks, first object with the expected keys) and, if still invalid, the judge treats it as a failed revision and escalates after two.
+- Timeouts: 90 s per call (`LLM_TIMEOUT`), two retries by the OpenAI client on transport errors; a malformed JSON answer is parsed leniently (`parse_json`: fences, `<think>` blocks, first object with the expected keys) and, if still invalid, the judge treats it as a failed revision and escalates after two.
 - Errors are never hidden: a lane that does not answer puts the harness on the deterministic path for that item, the trace says `source: fallback`, and the console shows `LLM offline`.
 
 ## 6. Security and privacy
@@ -202,11 +204,15 @@ Raw text never enters the memory: only the extracted items do, and each person c
 
 **ADR-8. Extracts only.** The raw excerpt is never stored; items are.
 
-**ADR-9. One writer per company memory.** Cross-process lock; the console and every MCP server process share it.
+**ADR-9. One writer per company memory, one store.** A cross-process lock (`fcntl`, or `msvcrt` on Windows) guards the whole critical section of a write: the "already waiting" check, the arbitration, the commit to H-MEM, the alerts it triggers, a progress report, a CEO ruling, an author's answer, and the seed of an empty memory. The console and every MCP server process share it. The lock serialises writers; `MemoryUnavailable` (ADR-5's section 4 paragraph) keeps them on one store.
 
 **ADR-10. Two demo data sets, one demo.** Brikk is the demo (spec v2); the Atlas corpus (project Atlas, Orion) stays as the team's test fixtures and a second data set, not as a second product.
 
-## 11. Known limits (also in the README)
+## 11. Review log
+
+Round 1 (`architect-reviewer`, 27/10 18:55): FAIL, one blocker (lanes and receipt not implemented as described) and five majors. Fixed in commit `57c2a56`: receipt-based served model and exact Nemotron ids (`app/llm.py`, `app/config.py`, `.env.example`, `configure_nightshift.py`); the `clarifications` tool; one critical section for dedup, run, alerts, progress and seed; `MemoryUnavailable` instead of a silent second store; the bridge imports `atlas.*` (commit `d81f26f`); the finance source may be down without breaking contexts. Minors answered in this document: timeouts (90 s, two client retries), the `cached` flag wording, the files the document names now exist (`docs/DECISIONS.md` D24-D32, `docs/PLAN.md`, `docs/SPONSORS.md`, `docs/PRIOR_WORK.md`, `.github/workflows/tests.yml`). Section 4 states the console-up dependency of source 2 and that the Brikk registration has not run live.
+
+## 12. Known limits (also in the README)
 
 - The watch layer relies on the client AI following the server instructions; MCP cannot read a conversation by itself.
 - Identity is declared in the client configuration; production needs OAuth.

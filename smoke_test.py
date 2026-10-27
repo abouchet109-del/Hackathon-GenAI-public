@@ -50,21 +50,35 @@ def zetaris_sql():
 
 
 def nemotron():
-    need("MODEL_BASE_URL", "MODEL_API_KEY", "NEMOTRON_MODEL")
+    """Nightshift answers on the deep lane, and the model that answered is a Nemotron (read from the receipt)."""
+    need("METERLESS_BASE_URL", "METERLESS_RUNTIME_TOKEN")
+    model = os.environ.get("METERLESS_MODEL_DEEP") or os.environ.get("NEMOTRON_MODEL") or "meterless/deep"
     client = OpenAI(
-        base_url=os.environ["MODEL_BASE_URL"],
-        api_key=os.environ["MODEL_API_KEY"],
+        base_url=os.environ["METERLESS_BASE_URL"],
+        api_key=os.environ["METERLESS_RUNTIME_TOKEN"],
+        default_headers={"meterless-app": os.environ.get("METERLESS_APP", "osef-hackathon"), "meterless-scope": "user"},
     )
     reply = client.chat.completions.create(
-        model=os.environ["NEMOTRON_MODEL"],
+        model=model,
         messages=[{"role": "user", "content": "Reply with the single word: ready"}],
     )
     assert reply.choices, "no reply from the model"
+    from app.llm import served_model
+    served, receipt = served_model(reply, model)
+    assert "nemotron" in served.lower(), f"answered by {served}, not a Nemotron model: set the NVIDIA key in Nightshift"
+    results.append(("INFO", "Power: model that answered", served + (f" (receipt {receipt})" if receipt else "")))
+
+
+def hmem():
+    url = os.environ.get("HMEM_URL", "http://127.0.0.1:8787")
+    r = requests.get(f"{url}/health", timeout=3)
+    assert r.status_code == 200, f"{url}/health -> {r.status_code}"
 
 
 check("Data: Zetaris web interface", zetaris_web)
 check("Data: Zetaris runs SQL over its REST API", zetaris_sql)
-check("Power: Nemotron replies", nemotron)
+check("Power: Nightshift answers with a Nemotron model", nemotron)
+check("Build: Meterless H-MEM service", hmem)
 
 for status, name, detail in results:
     print(f"{status} {name} {detail}")
