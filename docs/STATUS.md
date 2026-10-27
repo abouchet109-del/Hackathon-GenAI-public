@@ -25,7 +25,8 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 - [ ] Données Atlas : déposer le kit dans `external/kit-demo-atlas/`, ou demander à Claude de générer le corpus dans `data/sample/`. Ajouter les tâches et objectifs de chaque membre et un projet passé (« Orion »).
 
 ### En cours
-- Architecture : brouillon du 27/10 dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Restent : sources Zetaris, flux de données, déclenchements et limites, vue manager, garde-fous, tests, coupes.
+- Architecture : brouillon du 27/10 dans [architecture.md](architecture.md), notes manuscrites dans [architecture-notes/](architecture-notes/). Deuxième revue intégrée (27/10) : briques 4 et 5, orchestrateur, trois couches Zetaris / World Model / H-MEM (D12, D13). Restent : sources Zetaris définitives, flux de données, seuils et limites, vue manager, tests.
+- À coder (repéré à la revue) : contradiction entre membres (S6) et blocages par tickets (règle 5) dans `agent/progress.py` ; signaux de coordination à la place des réunions du cas 4.
 
 ### Question ouverte apparue
 - **Intégrer H-MEM à l'application** (voir [DECISIONS.md](DECISIONS.md), D11). H-MEM est une spécification avec une implémentation de référence en TypeScript, alors que l'application est en Python.
