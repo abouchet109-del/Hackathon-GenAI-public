@@ -126,10 +126,20 @@ class LocalMemory:
         self._save()
 
 
+class MemoryUnavailable(RuntimeError):
+    """H-MEM does not answer while a real stack is configured (a Zetaris key or a Nightshift token): refuse to start
+    rather than write to a second store. With no stack configured at all, the local fallback is used and labelled."""
+
+
 def make_memory(settings=SETTINGS, space: str | None = None):
     client = HMemClient(settings, space)
     if client.health():
         return client
+    if settings.zetaris_ready or settings.llm_ready:  # a real deployment: never fall back to a second store
+        raise MemoryUnavailable(
+            f"Meterless H-MEM does not answer at {settings.hmem_url}. Start it (cd hmem-service && npm start, or "
+            "docker compose up hmem) or set SAMPLE_MODE=true to run on the local fallback. Steward never writes to "
+            "two memories at once.")
     return LocalMemory(space or settings.hmem_space)
 
 

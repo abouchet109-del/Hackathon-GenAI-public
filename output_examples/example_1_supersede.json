@@ -1,0 +1,27 @@
+{
+  "run_id": "example_1_supersede",
+  "about": "The head of Customer Success changes the policy of his own topic: the new decision replaces the old record, which is kept in the history (supersede), both cited.",
+  "stack": {
+    "data": "sample-sqlite",
+    "memory": "local-fallback",
+    "llm": "offline (replay + deterministic fallback)",
+    "sample_mode": true,
+    "domain": "project_memory"
+  },
+  "decision": "supersede",
+  "summary": "Authorised change: the new decision replaces the old one, which is kept as history",
+  "citations": [
+    "S07",
+    "lm-6"
+  ],
+  "critic_score": 9,
+  "needs_ceo": false,
+  "applied": {
+    "memory_id": "lm-14",
+    "supersedes": "lm-6",
+    "journal_id": "j-1793122395716",
+    "status": "done"
+  },
+  "alerts_sent": [],
+  "trace": "logs/trace-example_1_supersede.jsonl"
+}

@@ -1,0 +1,13 @@
+{
+  "run_id": "example_2_escalate",
+  "input": {
+    "content": "Sponsor the Salon des Artisans for 15,000 EUR.",
+    "author": "Inès Roux",
+    "ai_tool": "ChatGPT",
+    "kind": "decision",
+    "topic": "marketing_spend"
+  },
+  "options": {
+    "profile": "full"
+  }
+}

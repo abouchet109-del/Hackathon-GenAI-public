@@ -6,17 +6,21 @@ from pathlib import Path
 os.environ["SAMPLE_MODE"] = "true"
 os.environ.setdefault("HMEM_URL", "http://127.0.0.1:1")  # force the local fallback unless the service is up
 
+import dataclasses  # noqa: E402
+
 from app.agents import Context, critique  # noqa: E402
+from app.config import SETTINGS  # noqa: E402
 from app.evaluation import load_cases  # noqa: E402
 from app.pipeline import Harness  # noqa: E402
 from app.trace import Tracer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
+ADMIN = dataclasses.replace(SETTINGS, domain="admin")  # these tests exercise the second pack
 CASES = {c["id"]: c for c in load_cases(ROOT / "domains" / "admin")}
 
 
 def make(space):
-    h = Harness(memory_space=space, quiet=True)
+    h = Harness(ADMIN, memory_space=space, quiet=True)
     h.memory.reset()
     return h
 

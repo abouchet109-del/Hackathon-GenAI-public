@@ -207,6 +207,7 @@ def compose_context(name: str, task: str, data, schema: str, memory, journal: li
     wl = watchlist(data, schema)
     owners = {t["topic"]: t["owner"] for t in wl}
     task_topics = topics_in(task or "", wl)
+    warnings: list[str] = []
     focus_topics = {"technical": {"tech_stack", "roadmap", "launch_date"},
                     "managerial": {"pricing", "marketing_budget", "hiring", "target_market", "launch_date"},
                     "commercial": {"pricing", "customer_deals", "customers", "marketing_spend", "sales_process"},
@@ -250,7 +251,7 @@ def compose_context(name: str, task: str, data, schema: str, memory, journal: li
             body.append(line)
             used += len(line)
     if task_topics and any(t in {"marketing_spend", "marketing_budget", "customer_deals"} for t in task_topics):
-        for f in finance(data, schema):
+        for f in finance(data, schema, warnings):
             if f["department"] in {prof.get("department"), "marketing"}:
                 line = (f"Budget {f['department']} {f['period']}: {f['committed_eur']:,.0f} of {f['budget_eur']:,.0f} EUR "
                         f"committed ({f['ratio']:.0%}).")
@@ -267,6 +268,7 @@ def compose_context(name: str, task: str, data, schema: str, memory, journal: li
         used += len(line)
     text = "\n".join(header + [""] + body)
     return {"context": text, "approx_tokens": len(text) // CHARS_PER_TOKEN, "budget_tokens": budget_tokens,
+            "warnings": warnings,
             "memory_ids": ids, "task_topics": task_topics, "profile": {k: prof.get(k) for k in (
                 "name", "role", "department", "level", "focus", "detail_level", "topics_followed")}}
 
@@ -286,8 +288,17 @@ def procedures_for(prof: dict, task: str | None, data, schema: str) -> list[dict
     return out
 
 
-def finance(data, schema: str) -> list[dict]:
-    rows = _rows(data, schema, "finance", ["department", "period", "budget_eur", "committed_eur", "note"])
+FINANCE_WARNING = ("finance source unavailable: Zetaris could not read the budgets (the REST source is served by the "
+                   "Steward app on :8000; start `python run.py serve` or docker compose). Budget signals are skipped.")
+
+
+def finance(data, schema: str, warnings: list[str] | None = None) -> list[dict]:
+    try:
+        rows = _rows(data, schema, "finance", ["department", "period", "budget_eur", "committed_eur", "note"])
+    except Exception as error:  # noqa: BLE001 - a source that is down must be reported, not fatal for the context
+        if warnings is not None:
+            warnings.append(f"{FINANCE_WARNING} ({type(error).__name__})")
+        return []
     for r in rows:
         r["budget_eur"], r["committed_eur"] = float(r["budget_eur"]), float(r["committed_eur"])
         r["ratio"] = r["committed_eur"] / r["budget_eur"] if r["budget_eur"] else 0.0
@@ -329,6 +340,7 @@ def whats_new(name: str, data, schema: str, memory, journal: list[dict], advance
 # ---------- the CEO agent ----------
 
 def weak_signals(data, schema: str, memory, journal: list[dict]) -> list[dict]:
+    warnings: list[str] = []
     members = _rows(data, schema, "members", ["name", "department", "level"])
     lead = {m["department"]: m["name"] for m in members if m["level"] in {"lead", "ceo"}}
     ceo = lead.get("executive", "CEO")
@@ -349,7 +361,7 @@ def weak_signals(data, schema: str, memory, journal: list[dict]) -> list[dict]:
                             "concerned": people,
                             "suggested_meeting": {"participants": people, "minutes": 20,
                                                   "agenda": f"Agree on the {topic.replace('_', ' ')} and record one decision."}})
-    for f in finance(data, schema):
+    for f in finance(data, schema, warnings):
         if f["ratio"] >= 0.85:
             people = sorted({lead.get(f["department"], ceo), lead.get("finance", ceo), ceo})
             signals.append({"kind": "budget", "topic": f"{f['department']} budget", "severity": "medium",
@@ -361,4 +373,7 @@ def weak_signals(data, schema: str, memory, journal: list[dict]) -> list[dict]:
         signals.append({"kind": "decisions_waiting", "topic": "CEO queue", "severity": "low",
                         "signal": f"{len(pending)} decision(s) wait for the CEO.", "concerned": [ceo],
                         "suggested_meeting": None})
+    for w in warnings:  # a source that is down is a signal too, never a silent gap
+        signals.append({"kind": "source_unavailable", "topic": "finance source", "severity": "low", "signal": w,
+                        "concerned": [], "suggested_meeting": None})
     return signals

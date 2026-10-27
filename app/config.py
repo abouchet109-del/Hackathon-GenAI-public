@@ -22,7 +22,7 @@ def _set(value: str) -> bool:
 @dataclass(frozen=True)
 class Settings:
     sample_mode: bool = field(default_factory=lambda: _bool("SAMPLE_MODE", False))
-    domain: str = field(default_factory=lambda: os.getenv("DOMAIN", "admin"))
+    domain: str = field(default_factory=lambda: os.getenv("DOMAIN", "project_memory"))
     data_schema: str = field(default_factory=lambda: os.getenv("DATA_SCHEMA", "osef"))
     # DATA: Zetaris
     zetaris_rest_url: str = field(default_factory=lambda: os.getenv("ZETARIS_REST_URL", "http://localhost:8888/api/v1.0"))
@@ -32,9 +32,9 @@ class Settings:
     # POWER: Meterless Nightshift (OpenAI-compatible)
     meterless_base_url: str = field(default_factory=lambda: os.getenv("METERLESS_BASE_URL", "http://127.0.0.1:8088/v1"))
     meterless_token: str = field(default_factory=lambda: os.getenv("METERLESS_RUNTIME_TOKEN", ""))
-    model_fast: str = field(default_factory=lambda: os.getenv("METERLESS_MODEL_FAST", os.getenv("METERLESS_MODEL", "meterless/fast")))
-    model_deep: str = field(default_factory=lambda: os.getenv("METERLESS_MODEL_DEEP", os.getenv("METERLESS_MODEL", "meterless/deep")))
-    model_judge: str = field(default_factory=lambda: os.getenv("METERLESS_MODEL_JUDGE", os.getenv("METERLESS_MODEL", "meterless/auto")))
+    model_fast: str = field(default_factory=lambda: os.getenv("METERLESS_MODEL_FAST", os.getenv("METERLESS_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b")))
+    model_deep: str = field(default_factory=lambda: os.getenv("METERLESS_MODEL_DEEP", os.getenv("METERLESS_MODEL", "nvidia/nemotron-3-ultra-550b-a55b")))
+    model_judge: str = field(default_factory=lambda: os.getenv("METERLESS_MODEL_JUDGE", os.getenv("METERLESS_MODEL", "nvidia/nemotron-3-ultra-550b-a55b")))
     meterless_app: str = field(default_factory=lambda: os.getenv("METERLESS_APP", "osef-hackathon"))
     llm_timeout: float = field(default_factory=lambda: float(os.getenv("LLM_TIMEOUT", "90")))
     record_llm: bool = field(default_factory=lambda: _bool("RECORD_LLM", True))

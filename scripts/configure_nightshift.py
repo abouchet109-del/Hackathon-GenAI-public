@@ -62,9 +62,11 @@ def main() -> int:
     r.raise_for_status()
     models = [m.get("id") for m in r.json().get("data", []) if m.get("id")]
     print(f"{len(models)} models/lanes visible. Nemotron: {[m for m in models if 'nemotron' in m.lower()] or 'none'}")
-    fast = pick(models, r"nemotron.*(nano|lightning|mini)", r"nemotron")
-    deep = pick(models, r"nemotron.*super", r"nemotron.*ultra", r"nemotron")
-    judge = pick(models, r"nemotron.*ultra", r"nemotron.*super", r"nemotron")
+    # Exact ids first (verified through Nightshift on 27/10: lightning answers, ultra answers, super returns a 404),
+    # then any Nemotron, then Nightshift's routing modes.
+    fast = pick(models, r"^nvidia/nemotron-3\.5-lightning", r"nemotron.*(nano|lightning|mini)", r"nemotron")
+    deep = pick(models, r"^nvidia/nemotron-3-ultra", r"nemotron.*ultra", r"nemotron.*(?<!super)$")
+    judge = deep
     if not (fast and deep and judge):
         # Nightshift usually exposes routing modes (meterless/fast, meterless/deep, meterless/<class>.<mode>),
         # not model ids: the lanes then point at those modes, and the model actually served is read back from

@@ -9,6 +9,7 @@ credentials.json
 __pycache__/
 logs/*
 !logs/.gitkeep
+!logs/samples/
 node_modules/
 vendor/
 .DS_Store

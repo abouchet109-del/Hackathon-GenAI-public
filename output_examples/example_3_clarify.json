@@ -1,0 +1,27 @@
+{
+  "run_id": "example_3_clarify",
+  "about": "An account executive contradicts the CEO's price: her AI is asked 'error or real change?' first.",
+  "stack": {
+    "data": "sample-sqlite",
+    "memory": "local-fallback",
+    "llm": "offline (replay + deterministic fallback)",
+    "sample_mode": true,
+    "domain": "project_memory"
+  },
+  "decision": "clarify",
+  "summary": "Ask the author first: error or real change? A confirmed change goes to the topic owner or the CEO",
+  "citations": [
+    "S06",
+    "lm-1"
+  ],
+  "critic_score": 9,
+  "needs_ceo": false,
+  "applied": {
+    "memory_id": null,
+    "supersedes": null,
+    "journal_id": "j-1793122395743",
+    "status": "awaiting_author"
+  },
+  "alerts_sent": [],
+  "trace": "logs/trace-example_3_clarify.jsonl"
+}

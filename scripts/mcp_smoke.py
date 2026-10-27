@@ -44,9 +44,16 @@ async def main() -> int:
             resources = [str(r.uri) for r in (await session.list_resources()).resources]
             prompts = [p.name for p in (await session.list_prompts()).prompts]
             print("resources:", resources, "prompts:", prompts)
-            ok = {"remember", "recall", "project_brief", "why", "escalations", "resolve_escalation", "observe",
-                  "my_context", "whats_new", "answer_clarification", "onboard", "my_contributions",
-                  "my_tasks", "report_progress", "my_alerts"} <= set(tools)
+            SPEC_V2 = ["onboard", "observe", "remember", "my_context", "whats_new", "clarifications",
+                       "answer_clarification", "recall", "why", "project_brief", "my_contributions",
+                       "escalations", "resolve_escalation"]
+            COORDINATION = ["my_tasks", "report_progress", "my_alerts"]
+            missing = [t for t in SPEC_V2 + COORDINATION if t not in tools]
+            print(f"spec v2 tools: {len(SPEC_V2) - len([t for t in SPEC_V2 if t in missing])}/13, coordination: "
+                  f"{len(COORDINATION) - len([t for t in COORDINATION if t in missing])}/3, missing: {missing or 'none'}")
+            clar = json.loads(_text(await session.call_tool("clarifications", {})))
+            print("clarifications ->", len(clar["clarifications"]), "waiting for Karim")
+            ok = not missing and len(clar["clarifications"]) >= 1
             ok = ok and obs["outcomes"] and obs["outcomes"][0]["decision"] == "clarify" and "osef://watchlist" in resources
             print("PASS" if ok and res["decision"] == "store" else "FAIL")
             return 0 if ok else 1

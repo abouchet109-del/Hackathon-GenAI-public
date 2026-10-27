@@ -28,6 +28,20 @@ class LLMResult:
     text: str
     model: str
     source: str  # "nightshift" | "replay"
+    receipt_id: str | None = None  # Nightshift's receipt, when the runtime returns one
+
+
+def served_model(resp, requested: str) -> tuple[str, str | None]:
+    """The model that actually answered, and the receipt id. Nightshift puts both in a `meterless` block
+    (`routed_model`, `receipt_id`); without it, the OpenAI `model` field; without that, the lane requested.
+    The team verified the receipt shape against Nightshift on 27/10 (atlas/structured.py)."""
+    try:
+        data = resp.model_dump() if hasattr(resp, "model_dump") else dict(resp)
+    except Exception:  # noqa: BLE001 - an unexpected response shape must not lose the answer
+        data = {}
+    receipt = data.get("meterless") if isinstance(data.get("meterless"), dict) else {}
+    model = receipt.get("routed_model") or data.get("model") or getattr(resp, "model", None) or requested
+    return str(model), (str(receipt["receipt_id"]) if receipt.get("receipt_id") else None)
 
 
 def _key(lane_model: str, messages: list[dict[str, str]]) -> str:
@@ -78,10 +92,10 @@ class LLM:
             try:
                 resp = self._client.chat.completions.create(model=model, messages=messages, temperature=0.2)
                 text = resp.choices[0].message.content or ""
-                served_by = getattr(resp, "model", None) or model
+                served_by, receipt_id = served_model(resp, model)
                 if self.s.record_llm:
                     self._record(key, model, served_by, text)
-                return LLMResult(text=text, model=served_by, source="nightshift")
+                return LLMResult(text=text, model=served_by, source="nightshift", receipt_id=receipt_id)
             except Exception as error:  # noqa: BLE001 - network/provider failures fall back
                 self.last_error = f"{type(error).__name__}: {error}"[:200]
         hit = self._cache.get(key)

@@ -139,6 +139,14 @@ def remember(content: str, kind: str = "fact", topic: str = "", ctx: Context = N
     return steward().remember(content, author=member, ai_tool=ai, kind=kind, topic=topic or None)
 
 
+@server.tool(annotations=READ)
+def clarifications(ctx: Context = None) -> dict:
+    """The questions Steward is asking this person: proposals of theirs that contradict the current record,
+    each waiting for "error or real change?". Answer with answer_clarification."""
+    member, _ = _me(ctx)
+    return {"clarifications": steward().clarifications(member)}
+
+
 @server.tool(annotations=WRITE)
 def answer_clarification(journal_id: str, answer: str, note: str = "") -> dict:
     """Answer the Steward's question about a contradiction. answer: "error" (withdraw it) or "change"

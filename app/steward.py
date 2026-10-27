@@ -78,6 +78,10 @@ class Steward:
 
     # ----- setup -----
     def reset(self, seed: bool = True, policies: bool = True) -> int:
+        with _exclusive(self._lock_path):
+            return self._reset(seed, policies)
+
+    def _reset(self, seed: bool, policies: bool) -> int:
         self.memory.reset()
         journal = self.logic._journal_path(self.memory)
         if journal.exists():
@@ -104,21 +108,22 @@ class Steward:
             found = self.ctx.topics_in(content, self.watchlist())
             topic = found[0] if found else ""
         item = {"content": content, "author": author, "ai_tool": ai_tool, "kind": kind, "topic": topic or ""}
-        waiting = next((e for e in self.logic.journal(self.memory)
-                        if e["status"] in {"pending", "awaiting_author"} and e.get("topic") == (topic or "")
-                        and e.get("content", "").strip().lower() == content.strip().lower()), None)
-        if waiting:  # the same proposal is already waiting: answer with it instead of queuing it twice
-            return {"decision": waiting["decision"], "why": "Already waiting for a person: " + (waiting.get("reason") or ""),
-                    "citations": waiting.get("citations", []),
-                    "applied": {"journal_id": waiting["journal_id"], "memory_id": None, "status": waiting["status"]},
-                    "needs_ceo": waiting["status"] == "pending", "critic_score": None, "trace": None,
-                    "stack": self.describe()}
-        with _exclusive(self._lock_path):
+        with _exclusive(self._lock_path):  # the dedup check, the run and the alerts are one critical section
+            waiting = next((e for e in self.logic.journal(self.memory)
+                            if e["status"] in {"pending", "awaiting_author"} and e.get("topic") == (topic or "")
+                            and e.get("content", "").strip().lower() == content.strip().lower()), None)
+            if waiting:  # the same proposal is already waiting: answer with it instead of queuing it twice
+                return {"decision": waiting["decision"], "why": "Already waiting for a person: " + (waiting.get("reason") or ""),
+                        "citations": waiting.get("citations", []),
+                        "applied": {"journal_id": waiting["journal_id"], "memory_id": None, "status": waiting["status"]},
+                        "needs_ceo": waiting["status"] == "pending", "critic_score": None, "trace": None,
+                        "stack": self.describe()}
             res = self.h.run(item, run_id=run_id, commit=True)
+            alerts = self._alert_on(((res.get("output") or {}).get("applied") or {}).get("memory_id")) \
+                if res.get("status") == "success" else []
         if res["status"] != "success":
             return {"status": "error", "error": res.get("error"), "trace": res.get("log_file")}
         out = res["output"]
-        alerts = self._alert_on((out.get("applied") or {}).get("memory_id"))
         return {"decision": out["decision"], "why": out["summary"], "citations": out["citations"],
                 "applied": out.get("applied"), "needs_ceo": out["decision"] == "escalate", "alerts_sent": alerts,
                 "critic_score": (out.get("critic") or {}).get("total"), "trace": res["log_file"],
@@ -178,8 +183,9 @@ class Steward:
             raise ValueError("decision must be store, supersede or reject")
         with _exclusive(self._lock_path):
             entry = self.logic.resolve(journal_id, decision, self.memory, policy)
+            alerts = self._alert_on(entry.get("memory_id"))
         out = {k: entry.get(k) for k in ("journal_id", "status", "memory_id", "supersedes", "policy_id", "content")}
-        out["alerts_sent"] = self._alert_on(entry.get("memory_id"))
+        out["alerts_sent"] = alerts
         return out
 
 
@@ -272,9 +278,10 @@ class Steward:
         if task.member != name:
             raise ValueError(f"{task_id} belongs to {task.member}, not {name}")
         from datetime import datetime
-        self.progress_store.add({"member": name, "task_id": task_id, "progress": max(0.0, min(1.0, float(progress))),
-                                 "reported_at": datetime.now().replace(microsecond=0).isoformat(),
-                                 "assumptions": {k: str(v) for k, v in (assumptions or {}).items()}, "note": note})
+        with _exclusive(self._lock_path):
+            self.progress_store.add({"member": name, "task_id": task_id, "progress": max(0.0, min(1.0, float(progress))),
+                                     "reported_at": datetime.now().replace(microsecond=0).isoformat(),
+                                     "assumptions": {k: str(v) for k, v in (assumptions or {}).items()}, "note": note})
         return self.progress(name)
 
     def alerts(self, name: str) -> list[dict]:

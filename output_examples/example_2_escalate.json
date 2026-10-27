@@ -1,0 +1,26 @@
+{
+  "run_id": "example_2_escalate",
+  "about": "Marketing commits above the topic limit and above the CEO's standing policy (12,000 EUR per trade show): escalated to the CEO, nothing written.",
+  "stack": {
+    "data": "sample-sqlite",
+    "memory": "local-fallback",
+    "llm": "offline (replay + deterministic fallback)",
+    "sample_mode": true,
+    "domain": "project_memory"
+  },
+  "decision": "escalate",
+  "summary": "Spending above the limit needs the CEO",
+  "citations": [
+    "S05"
+  ],
+  "critic_score": 9,
+  "needs_ceo": true,
+  "applied": {
+    "memory_id": null,
+    "supersedes": null,
+    "journal_id": "j-1793122395730",
+    "status": "pending"
+  },
+  "alerts_sent": [],
+  "trace": "logs/trace-example_2_escalate.jsonl"
+}
