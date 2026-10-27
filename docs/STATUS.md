@@ -33,13 +33,13 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 - **Intégrer H-MEM à l'application** (voir [DECISIONS.md](DECISIONS.md), D11). H-MEM est une spécification avec une implémentation de référence en TypeScript, alors que l'application est en Python.
 
 ### Prochaines étapes
-1. Architecture : terminer [architecture.md](architecture.md), trancher D11, puis revue avec Claude.
-2. Données Atlas et enregistrement dans Zetaris.
-3. Parcours complet minimal sur le scénario S1, avec traces.
-4. Agents LLM (extracteur, mise à jour, contrôleur, analyse, manager), skill et serveur MCP.
-5. Scénarios suivants, vue manager.
-6. README final, `.env.example`, `SAMPLE_MODE`, test depuis un clone propre.
-7. Vidéo, deck, explication des sponsors, soumission.
+Détail, estimations et méthode : [PLAN.md](PLAN.md) (27/10, 17:20). Gel du code à 22:30, soumission vers 00:15 (heure de Paris).
+1. **En cours — incrément 0** : contrats entre composants, corpus Atlas et résultats attendus, enregistrement dans Zetaris, client Zetaris, Nemotron imposé et journalisé, appel LLM commun.
+2. À trancher par l'équipe après l'incrément 0 : D11, sort de World Model, fusion de l'analyste, brique 5 réduite, choix des incréments (PLAN, sections 3 et 4).
+3. Incréments 1 (bout en bout) et 2 (H-MEM, en parallèle) : le projet devient soumissible.
+4. Incréments suivants selon le temps : remontées (brique 7), MCP et skill manager, correction du brief.
+5. README final, `.env.example`, `SAMPLE_MODE`, test depuis un clone propre.
+6. Vidéo, deck, explication des sponsors, soumission.
 
 ### Avant la soumission
 - [ ] Le repo est public depuis le 26/10 : décider si l'on garde `docs/strategie/` et `docs/hackathon/`.

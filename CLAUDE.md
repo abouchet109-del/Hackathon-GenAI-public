@@ -5,6 +5,7 @@ Projet pour l'Open Agent Hackathon 2026. Clôture : 27 octobre 2026, 23:45 UTC.
 ## À lire au démarrage d'une session
 1. `docs/CONTEXT.md` : le hackathon, l'idée, le cas d'usage, l'environnement.
 2. `docs/STATUS.md` : où on en est et la prochaine étape.
+   `docs/PLAN.md` : l'inventaire de ce qu'il reste à construire, les estimations (la maximale sert de limite de temps), les incréments et la méthode de travail.
    `docs/DECISIONS.md` : les décisions déjà prises, à ne pas rediscuter sans raison nouvelle.
 3. Selon la tâche : `docs/use-case-atlas.md`, `docs/architecture.md`, `docs/reference/guide-architecture-agentique.md`, `docs/strategie/prompt-jury.md`.
 

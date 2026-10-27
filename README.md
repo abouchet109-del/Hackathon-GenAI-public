@@ -83,6 +83,7 @@ smoke_test.py       Test de connexion à Zetaris et au modèle
 | [docs/use-case-atlas.md](docs/use-case-atlas.md) | Le cas d'usage en détail : scénario, règles, données, démo |
 | [docs/architecture.md](docs/architecture.md) | L'architecture (en cours) |
 | [docs/STATUS.md](docs/STATUS.md) | Ce qui est fait, ce qui bloque, la suite |
+| [docs/PLAN.md](docs/PLAN.md) | Ce qu'il reste à construire, estimations, incréments et méthode de travail |
 | [docs/reference/guide-architecture-agentique.md](docs/reference/guide-architecture-agentique.md) | Les principes d'architecture que l'on suit |
 | [docs/strategie/](docs/strategie/) | Prompt jury et évaluation des use cases |
 | [docs/hackathon/](docs/hackathon/) | Documents officiels du hackathon |
