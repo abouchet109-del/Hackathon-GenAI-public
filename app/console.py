@@ -1,4 +1,4 @@
-"""Web console for the OSEF Steward: CEO queue, shared truth, clarifications, context preview, onboarding.
+"""Web console for Steward: CEO queue, shared truth, clarifications, context preview, onboarding.
 
 The people of the team keep working in their own AI (MCP); this page is for the CEO, for the
 judges and for the demo. Every endpoint is a thin wrapper over app/steward.py.

@@ -7,7 +7,7 @@
   python run.py demo-memory                # 3 sessions: wrong, corrected, remembered
   python run.py seed-memory                # load domains/<domain>/memory_seed.jsonl
 
-OSEF Steward (shared project memory for a team of different AIs):
+Steward (shared project memory for a team of different AIs):
   python run.py mcp                        # MCP server on stdio (Claude Desktop, Cursor...)
   python run.py steward-demo               # the demo: escalation, CEO policy, remembered, replaced, protected
   python run.py steward-brief              # the current shared truth

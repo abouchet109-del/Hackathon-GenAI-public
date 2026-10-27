@@ -1,4 +1,4 @@
-"""MCP server: the OSEF Steward, a context layer on top of each person's own AI.
+"""MCP server: Steward, a context layer on top of each person's own AI.
 
 Every member keeps their AI (Claude Desktop, Cursor, ChatGPT...). This server adds three things to
 that AI's harness:

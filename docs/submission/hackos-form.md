@@ -12,7 +12,7 @@ Steward is a company context layer for every AI: through MCP it watches what mat
 In a small company, everyone already works with a different AI, and each of those AIs knows a different, partial, outdated version of the company. Steward plugs into Claude, Cursor, ChatGPT and others through MCP. People keep their interface, and their AI gains three layers. The watch layer sends relevant excerpts. The truth layer runs a prosecutor/judge pair of agents over Nemotron, reads governance data through Zetaris (who leads what, budget limits, trust weights by role and domain), and decides for each proposal whether to store it, supersede an older decision (kept, never deleted, in Meterless H-MEM), reject it, redact it, ask its author "error or real change?", escalate it to the CEO, or quarantine it as an injection. The context layer gives each person's AI the smallest useful, cited context for their role and task. An ablation on 34 labelled cases measures what memory adds: without H-MEM, contradictions enter the record. With it, they don't, and the CEO is asked three times less often.
 
 ## Links
-- Repository: https://github.com/rdalierdulys-arch/[repository]
+- Repository: https://github.com/rdalierdulys-arch/steward
 - Video: [YouTube or Drive link, 1 to 4 min]
 - Deck: [PDF exported from the deck]
 

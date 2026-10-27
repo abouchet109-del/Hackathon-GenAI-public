@@ -1,4 +1,4 @@
-"""The OSEF Steward as a service: one shared project memory, many AIs.
+"""Steward as a service: one shared project memory, many AIs.
 
 Wraps the harness with the 'project_memory' domain pack. Every write goes through the
 full pipeline (guard -> Zetaris org data -> H-MEM recall -> Decider <-> Critic) and is

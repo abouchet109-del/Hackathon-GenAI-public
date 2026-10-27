@@ -1,6 +1,6 @@
-# OSEF Steward: the company context layer for every AI
+# Steward: the company context layer for every AI
 
-**The pitch.** In a small company, everyone already works with their own AI: Claude, ChatGPT, Cursor, Gemini, Mistral. Each of these AIs knows a different, partial, often outdated version of the company. The OSEF Steward plugs into each of them through MCP. The user keeps the AI interface they like. Their AI gains three layers:
+**The pitch.** In a small company, everyone already works with their own AI: Claude, ChatGPT, Cursor, Gemini, Mistral. Each of these AIs knows a different, partial, often outdated version of the company. Steward plugs into each of them through MCP. The user keeps the AI interface they like. Their AI gains three layers:
 
 | Layer | What it does |
 | --- | --- |

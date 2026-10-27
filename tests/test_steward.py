@@ -1,4 +1,4 @@
-"""Offline tests for the OSEF Steward (domain project_memory). Run: python -m pytest -q"""
+"""Offline tests for Steward (domain project_memory). Run: python -m pytest -q"""
 import json
 import os
 from pathlib import Path

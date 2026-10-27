@@ -20,7 +20,7 @@ _harness: Harness | None = None
 
 @app.get("/console", include_in_schema=False)
 def console() -> FileResponse:
-    """OSEF Steward web console (CEO queue, shared truth, context preview, onboarding)."""
+    """Steward web console (CEO queue, shared truth, context preview, onboarding)."""
     return FileResponse(CONSOLE_HTML, media_type="text/html")
 
 

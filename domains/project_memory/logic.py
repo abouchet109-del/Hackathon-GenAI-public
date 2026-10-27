@@ -1,4 +1,4 @@
-"""Deterministic logic for the 'project_memory' domain: the OSEF Steward.
+"""Deterministic logic for the 'project_memory' domain: Steward.
 
 Every member of a small team works with their own AI (Claude, ChatGPT, Cursor, Gemini...).
 Those AIs propose facts and decisions to ONE shared project memory through MCP. For each

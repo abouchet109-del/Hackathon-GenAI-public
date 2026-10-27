@@ -1,4 +1,4 @@
-"""Generate the synthetic evaluation set for the 'project_memory' domain (the OSEF Steward).
+"""Generate the synthetic evaluation set for the 'project_memory' domain (Steward).
 
 Brikk is a fictional 12-person startup. Each case is a proposal sent by one member's AI to the
 shared project memory. `expected` is the Steward decision written before any run.

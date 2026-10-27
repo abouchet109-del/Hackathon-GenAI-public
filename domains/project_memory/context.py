@@ -1,4 +1,4 @@
-"""Context engineering for the OSEF Steward: what each person's AI receives, and what it sends.
+"""Context engineering for Steward: what each person's AI receives, and what it sends.
 
 - watchlist        the domains the MCP watch layer listens for (Zetaris 'topics' + keywords)
 - extract          turns a conversation excerpt, a document or meeting notes into candidate items

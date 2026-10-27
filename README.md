@@ -1,16 +1,22 @@
-# OSEF Steward: one company context, every AI
+# Steward: one company context, every AI
 
 **Track 03, Reasoning Architecture.** Open Agent Hackathon 2026, team OSEF.
 
-In a small company, everyone already works with their own AI: Claude, ChatGPT, Cursor, Gemini, Mistral. Each of these AIs knows a different, partial, outdated version of the company. **OSEF Steward** plugs into each of them through MCP. People keep the AI interface they like, and their AI gains three layers:
+In a small company, everyone already works with their own AI: Claude, ChatGPT, Cursor, Gemini, Mistral. Each of these AIs knows a different, partial, outdated version of the company. **Steward** plugs into each of them through MCP. People keep the AI interface they like, and their AI gains three layers:
 
-- **Watch.** When a conversation touches a company domain (prices, dates, budgets, deals, customers, stack...), the AI sends the relevant excerpt to the Steward. Facts are extracted; the raw conversation is never stored.
+- **Watch.** When a conversation touches a company domain (prices, dates, budgets, deals, customers, stack...), the AI sends the relevant excerpt to Steward. Facts are extracted; the raw conversation is never stored.
 - **Truth.** Every proposed fact or decision is arbitrated before it becomes shared truth: store, supersede, reject, redact, clarify, escalate or quarantine. Sources are weighted by role × domain: the CEO is a source of truth everywhere, the CTO on tech, an intern barely. A contradiction is first checked with its author ("error or real change?"), then escalated to whoever has authority.
 - **Context.** Before answering, the AI receives the smallest useful company context for its owner's role and current task (about 1,500 tokens, every line cited), what changed since their last session, and the formal procedures of their role.
 
-> **We help small companies whose people each use a different AI keep one coherent, role-aware company context. The Steward arbitrates what the AIs learn and serves each person the right slice of truth for the task at hand.**
+> **We help small companies whose people each use a different AI keep one coherent, role-aware company context. Steward arbitrates what the AIs learn and serves each person the right slice of truth for the task at hand.**
 
 The demo company is **Brikk**: a fictional 12-person startup, plus one intern, selling quote and invoicing software to building craftsmen. All data is synthetic.
+
+## Demo
+
+- Video (1 to 4 min): link added at submission.
+- Console walkthrough, recorded from the real app: `python scripts/video/record_console.py` (start `STEWARD_SPACE=video python run.py serve` first).
+- Terminal run of the full scenario: `python run.py steward-demo`.
 
 ## How it works
 
@@ -76,7 +82,7 @@ Docker: `docker compose up --build` starts the app (port 8000), the H-MEM engine
 
 | Sponsor | Load-bearing role | Where |
 | --- | --- | --- |
-| **Zetaris** | One SQL door over three sources: (1) Postgres `brikk`: org chart, trust weights role × domain, topic owners and watchlist, Steward rules, role profiles; (2) the finance REST API: budgets and commitments; (3) the company drive (S3/MinIO): role procedures. A Unified Semantic Layer spans them. Without it, the Steward cannot tell who may decide, how much a source weighs, what to watch or what budget is left. | `scripts/zetaris/register_steward.sql`, `domains/project_memory/logic.py`, `context.py` |
+| **Zetaris** | One SQL door over three sources: (1) Postgres `brikk`: org chart, trust weights role × domain, topic owners and watchlist, Steward rules, role profiles; (2) the finance REST API: budgets and commitments; (3) the company drive (S3/MinIO): role procedures. A Unified Semantic Layer spans them. Without it, Steward cannot tell who may decide, how much a source weighs, what to watch or what budget is left. | `scripts/zetaris/register_steward.sql`, `domains/project_memory/logic.py`, `context.py` |
 | **Meterless H-MEM** | The company memory. Records carry `source`, `confidence` (= the author's trust weight, which multiplies every ranking score), topic, author and AI. Replaced decisions are kept and down-ranked (`supersedes`), and the trust ledger holds the history. CEO policies are corrections that change the next arbitration. | `hmem-service/` (adds `supersedes` and `/list` over the reference), `app/adapters/memory.py`; test: `npm run conformance` |
 | **Meterless Nightshift** | Primary AI provider (OpenAI-compatible), three lanes: fast (extraction), deep (arbitration), judge (critique) | `app/llm.py` |
 | **NVIDIA Nemotron** | Pinned on the three lanes in Nightshift; the model name is logged on every call | `logs/trace-*.jsonl` (`model` field) |
