@@ -1,6 +1,6 @@
 # Submission: ready-to-paste answers and the video script
 
-Open Agent Hackathon 2026 (GenAI.Works), Track 03 Reasoning Architecture. Team OSEF: Ryan Dalier-Dulys (lead, main contact, rdalierdulys@gmail.com), Adam Semlali, Alexandre Bouchet. Repository: https://github.com/abouchet109-del/Hackathon-GenAI-public (branch `main`; the unified work arrives through the `unify` branch). Deadline 27 October 2026, 23:45 UTC.
+Open Agent Hackathon 2026 (GenAI.Works), Track 03 Reasoning Architecture. Team OSEF: Ryan Dalier-Dulys (lead, main contact, rdalierdulys@gmail.com), Adam Semlali, Alexandre Bouchet. Repository: https://github.com/abouchet109-del/Hackathon-GenAI-public (branch `main`, which holds the unified work since the merge of pull request #2 on 27 October). Deadline 27 October 2026, 23:45 UTC.
 
 ## Name
 
@@ -29,7 +29,7 @@ Everything written by the team dates from the event (from 22 October 2026). Thir
 ## What a judge can run in two minutes
 
 ```bash
-git clone -b unify https://github.com/abouchet109-del/Hackathon-GenAI-public && cd Hackathon-GenAI-public   # -b unify: the unified branch, also fine once it is merged into main
+git clone https://github.com/abouchet109-del/Hackathon-GenAI-public && cd Hackathon-GenAI-public
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 SAMPLE_MODE=true .venv/bin/python run.py steward-demo        # the 8-step scenario, one trace per arbitration in logs/
 .venv/bin/python -m pytest -q                                 # 197 tests, 9 skipped without the team's engine services

@@ -3,7 +3,7 @@
 Fill in this order. Texts to paste: `docs/SUBMISSION.md` (name, one sentence, description, sponsor usage, prior work) and `docs/submission/hackos-form.md` (team table, limitations).
 
 - [ ] **Team locked?** Open hackathon.genai.works/dashboard and check that the team OSEF lists Ryan Dalier-Dulys (lead), Adam Semlali, Alexandre Bouchet before the first Submit (the team locks at the first submission).
-- [ ] **Repository link**: `https://github.com/abouchet109-del/Hackathon-GenAI-public` — decide first whether `main` = `unify` (merge the pull request `unify -> main`) or whether the form points at the branch: `https://github.com/abouchet109-del/Hackathon-GenAI-public/tree/unify`. The jury clones the default branch: merging is safer.
+- [x] **Repository link**: `https://github.com/abouchet109-del/Hackathon-GenAI-public` — `main` = `unify` since pull request #2 was merged (27 October 22:13 Paris, `20cd3b9`); the form points at the repository.
 - [ ] **Repository is public** (it is) and `git clone` + the README's three commands work from a fresh folder (verified 27/10 20:10 on `unify`; CI run 40568677619 green).
 - [ ] **Video** (1 to 4 minutes, target 3:00): record with `docs/SUBMISSION.md` ("Video script") or `for-repo/docs/VIDEO.md` from session C if it exists; upload to YouTube (unlisted) or Drive (anyone with the link); paste the link.
 - [ ] **Deck**: export the deck artifact (https://claude.ai/artifact/8SnkV2StL6ipGMn5ygHjRZ, updated by session C if it ran) as PDF; upload or link it.
