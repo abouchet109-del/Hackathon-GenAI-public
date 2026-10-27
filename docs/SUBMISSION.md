@@ -28,6 +28,8 @@ Everything written by the team dates from the event (from 22 October 2026). Thir
 
 ## What a judge can run in two minutes
 
+Windows, macOS, Linux, step by step, with the expected output of each command: `docs/INSTALL.md`.
+
 ```bash
 git clone https://github.com/abouchet109-del/Hackathon-GenAI-public && cd Hackathon-GenAI-public
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt

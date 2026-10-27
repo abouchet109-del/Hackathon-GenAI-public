@@ -16,7 +16,7 @@ The demo company is **Brikk**: a fictional 12-person startup, plus an intern, se
 
 ## Start in three commands (no account, no key)
 
-From a clone of the repository (`git clone https://github.com/abouchet109-del/Hackathon-GenAI-public`; `main` holds the unified work since 27 October 22:13 Paris):
+From a clone of the repository (`git clone https://github.com/abouchet109-del/Hackathon-GenAI-public`, or **Code → Download ZIP**; `main` holds the unified work since 27 October 22:13 Paris). Step by step for a new machine, Windows included, with what to expect and what to do when something fails: [docs/INSTALL.md](docs/INSTALL.md).
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt     # Windows: .venv\Scripts\pip
@@ -120,7 +120,7 @@ atlas/          the team's Atlas modules: decision register, progress per member
 data/           the Atlas corpus and caches (tracked); runtime state (ignored)
 hmem-service/   the H-MEM service around the vendored Meterless reference
 scripts/        Zetaris registration, Nightshift lanes, Mac and Windows setup, examples, video kit
-docs/           ARCHITECTURE, SPONSORS, INVENTORY, PLAN, DECISIONS, TEAM-AND-MERGE, SUBMISSION, PRIOR_WORK, zetaris/ (the Zetaris scoring documents), mcp/, submission/, atlas/ (the team's documents)
+docs/           INSTALL (another machine, Windows/macOS/Linux), ARCHITECTURE, SPONSORS, INVENTORY, PLAN, DECISIONS, TEAM-AND-MERGE, SUBMISSION, PRIOR_WORK, zetaris/ (the Zetaris scoring documents), mcp/, submission/, atlas/ (the team's documents)
 tests/          197 tests; input_examples/ output_examples/ logs/samples/ (traces, the conformance run)
 ```
 
