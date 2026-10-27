@@ -26,6 +26,35 @@ cd Hackathon-GenAI-public
 
 or, without Git: on the repository page, **Code → Download ZIP**, unzip it, and open a terminal in the unzipped folder (`Hackathon-GenAI-public-main`). Everything the offline level needs is in the archive: sample data, recorded traces, tests. Only level 3 downloads something else (the Meterless H-MEM reference engine, fetched by `hmem-service/setup.sh`).
 
+## 1b. The team's Windows PC, where Zetaris and Nightshift already run (the demo machine)
+
+Adam's PC already has the clone of this repository (the former Atlas checkout), Zetaris and Nightshift running with the NVIDIA key, Node.js, Docker Desktop, and a `.env` with `ZETARIS_API_KEY`, `METERLESS_RUNTIME_TOKEN` and `METERLESS_STATE_DIR`. Since 27 October 22:13 `main` holds the unified product, so the clone only needs a pull; `.env`, `.settings.json` and `external/meterless` are untracked and stay in place. In PowerShell, from the clone:
+
+```powershell
+git status                                   # must be clean; otherwise: git stash
+git pull --ff-only                           # agent/ becomes atlas/, Steward arrives in app/, domains/, hmem-service/
+powershell -ExecutionPolicy Bypass -File scripts\windows\setup.ps1 -AtlasDir (Get-Location).Path
+```
+
+`setup.ps1` (logged in `logs\setup-windows.log`): installs the Python dependencies in `.venv`, keeps the Zetaris and Nightshift values of the existing `.env` and reads the runtime token from `.settings.json` if it is there (nothing is printed), sets `SAMPLE_MODE=false` and `HMEM_URL=http://127.0.0.1:8787`, vendors the Meterless H-MEM reference from `external\meterless` (no download when it is already there), runs its conformance suite (13 checks) and starts Steward's H-MEM service on :8787, starts the Brikk Postgres source on 127.0.0.1:5434 with Docker, pins the Nemotron lanes from what Nightshift serves (`configure_nightshift.py`, one real call), then runs the tests and the MCP smoke test. It was written during the event and not run on that PC yet: if a step fails, the log says which, and every step is one of the commands below, which can be run by hand.
+
+Then, in two PowerShell windows:
+
+```powershell
+# window 1: the finance API (source 2 of Zetaris) and the console
+.venv\Scripts\python run.py serve
+
+# window 2
+.venv\Scripts\python scripts\zetaris\run_steward_sql.py         # 21 statements: Postgres brikk, finance REST table, catalogue, USL; then reads every table back
+.venv\Scripts\python smoke_test.py                                 # Zetaris, Nightshift, Nemotron, H-MEM: one line each
+.venv\Scripts\python run.py steward-demo                           # the scenario with Nemotron on every trace line (logs\trace-*.jsonl, field "model")
+$env:DOMAIN = "project_memory"; .venv\Scripts\python run.py ablation --profiles no_memory,full   # the real figures (logs\ablation-*.md)
+```
+
+What the registration touches on the shared Zetaris: it creates objects named `brikk`, `BRIKK_FINANCE_REST`, `BRIKK_CATALOGUE`, `brikk_api`, `brikk_drive` and the USL `brikk_usl`; it drops nothing and does not touch the team's `ATLAS` objects. Zetaris runs in Docker, so the SQL reaches the PC through `host.docker.internal` (Postgres on 5434, the finance API on 8000): keep window 1 open while it runs. Source 3 is served by jsDelivr from this repository, pinned on the last commit that touched `domains/project_memory/data/procedures.json` (checked: it resolves).
+
+For the video on that PC: `$env:STEWARD_SPACE = "video"; $env:STEWARD_SEED_POLICIES = "true"; .venv\Scripts\python run.py serve` then `http://127.0.0.1:8000/console`; the MCP side is Cursor (`.cursor\mcp.json`, level 2) and Claude Desktop if it is installed; otherwise two Cursor projects with two configs (the CEO and the CTO), or the console's **Simulate an AI** for the second person.
+
 ## 2. Level 1: run it offline (five minutes)
 
 Offline means: the same agents and the same SQL, on SQLite copies of the governance data, a local memory with the same `supersedes` semantics, and the deterministic path instead of the model. The console header, `/health` and every trace say so (`sample-sqlite`, `local-fallback`, `offline`). With no `.env` and no services, Steward takes that path by itself; `SAMPLE_MODE=true` makes it explicit and guarantees that nothing real is touched even if a `.env` exists.
