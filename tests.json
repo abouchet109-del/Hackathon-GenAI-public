@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T19:52:08+01:00",
+  "updated": "2026-10-27T20:08:38+01:00",
   "statuses": {
     "passing": 22,
     "failing": 0,
@@ -10,9 +10,9 @@
       "id": "R01",
       "requirement": "A fresh clone runs the offline test suite in SAMPLE_MODE",
       "command": "python -m pytest -q",
-      "expected": "190 passed, 9 skipped (tests/conftest.py sets SAMPLE_MODE)",
+      "expected": "197 passed, 9 skipped (tests/conftest.py sets SAMPLE_MODE)",
       "status": "passing",
-      "note": "verified 27/10 19:55 Paris after merging the team's main 801575a: 190 passed, 9 skipped, 48 subtests"
+      "note": "verified 27/10 20:10 Paris on a fresh clone of cdb0fad: 197 passed, 9 skipped, 48 subtests"
     },
     {
       "id": "R02",
@@ -107,10 +107,11 @@
     {
       "id": "R14",
       "requirement": "Zetaris: three sources registered and the USL brikk_usl compiled; Steward reads through it",
-      "command": "python scripts/zetaris/run_steward_sql.py && ZETARIS_USE_USL=true python run.py steward-brief",
+      "command": "python scripts/zetaris/run_steward_sql.py && ZETARIS_USE_USL=true python scripts/zetaris/run_steward_sql.py --verify-only",
       "expected": "19+ statements succeed; brief reads members through lightning.metastore.osef.brikk_usl",
       "status": "not_started",
-      "note": "needs a machine with Zetaris: Ryan's Mac (not reachable at 18:12) or the team's PC"
+      "note": "the read-back check exists and is tested offline (tests/test_verify_sources.py); not run against a live Zetaris yet (session B owns the stack)",
+      "name": "Zetaris: three sources registered and the USL brikk_usl compiled; the read-back check (counts vs CSVs) passes; Steward reads through them"
     },
     {
       "id": "R15",
@@ -204,7 +205,7 @@
       "command": "git ls-remote https://github.com/abouchet109-del/Hackathon-GenAI-public unify main",
       "expected": "unify present; main contains the unified tree after Ryan's merge",
       "status": "not_started",
-      "note": "push from this session refused; bundle handed to Ryan"
+      "note": "unify at cdb0fad, bundle on Ryan's Mac (~/open-agent-hack/unify.bundle, sync-unify.sh); push blocked: the Claude GitHub App is not installed on Alexandre's account (403) and the Mac has no GitHub credential; transport-branch workflow prepared (_transport/import-bundle.yml)"
     },
     {
       "id": "R27",

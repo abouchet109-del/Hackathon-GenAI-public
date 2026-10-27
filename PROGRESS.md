@@ -28,5 +28,11 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 - State: 124 tests (with or without SAMPLE_MODE), mcp_smoke PASS, make_examples --check OK, steward-demo runs, console checked with Playwright (every tab, a ruling with a policy, the trace dialog, 375 px). tests.json: 22 passing, 0 failing, 6 not started (R14-R17 real stack, R26 push, R28 Windows).
 - Not re-run after the fixes: the review agents themselves (time); `tests/test_review_round2.py` covers the architect's points.
 
+## 20:10 Merges, round 3, push attempts
+- Merged the team's main twice (`9889b6b`: extractor/updater/controller/writer/manager/World Model/services; `903d1b2`: orchestrator, `POST /run` on 8080, Nemotron replay cache, D16-D17); their new files live in `atlas/` with `atlas.*` imports, their docs in `docs/atlas/`; `ATLAS_HMEM_URL` separates their H-MEM wrapper (8765) from Steward's (8787).
+- `9cfb6b3` Zetaris quality rule in code (read-back counts vs CSVs, tested offline). `cdb0fad` architect round 3 (opus): blocker + 3 majors fixed (loopback compose, hard cases decided in code with masked evidence, alerts/seed under the lock, accountable console operator), 4 tests. Fresh clone of `cdb0fad`: 197 passed, 9 skipped; demo, smoke, examples OK.
+- Push: `git push` from this session is refused (403: the Claude GitHub App is not installed on Alexandre's account; the GitHub API confirms Ryan has push rights). Ryan ran `push-unify.sh`: the Mac is on `unify` but has no GitHub credential, so the push step failed. Prepared: `~/open-agent-hack/_transport/import-bundle.yml` (a workflow on a `transport` branch that turns an uploaded bundle into `unify`), to be uploaded through Ryan's GitHub session in Chrome; the Mac and the Chrome extension dropped at 20:00.
+- Session B/C (Ryan's plan of 19:20): not seen yet (`~/steward-lanes/` absent); Project docs `contexte/04` and `06` rewritten for them.
+
 ## Next action
-- Build `unify.bundle`, put it on Ryan's Mac with the push commands, send him the diff summary; wait for his go before any merge into `main`. Then, if time: a second architect pass, the Nemotron run on a machine with Nightshift (R15, R16).
+- As soon as the Mac or Chrome is back: transport branch + bundle + workflow (or Alexandre installs the App, then `git push origin unify`). Keep `unify.bundle` on the Mac current (`sync-unify.sh`). Then import `for-repo/`, final report by 23:45.
