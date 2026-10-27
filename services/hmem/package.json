@@ -1,6 +1,6 @@
 {
   "name": "atlas-hmem-service",
   "private": true,
-  "description": "Local HTTP service around the Meterless H-MEM reference implementation. No dependencies: tsx comes from the reference (scripts/hmem-service.ps1).",
+  "description": "Local HTTP service around the Meterless H-MEM reference implementation. No dependencies: tsx comes from the reference (scripts/engine_service.py).",
   "type": "module"
 }

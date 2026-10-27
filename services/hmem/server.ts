@@ -2,8 +2,8 @@
 // over local HTTP for the Python agents (agent/hmem.py, decision D11 bis).
 //
 // The reference is loaded from external/meterless (Apache-2.0, not copied in
-// this repository: scripts/hmem-service.ps1 fetches it). The official
-// conformance suite runs against that same module (scripts/hmem-conformance.ps1).
+// this repository: scripts/engine_service.py fetches it). The official
+// conformance suite runs against that same module (scripts/engines_conformance.py).
 //
 // What the service adds around the engine, and nothing else:
 // - an external id per memory (tag "ext:<id>"), so writes are idempotent;
@@ -15,7 +15,7 @@
 // - a request clock ("at", ms): records carry the date of the decision, and
 //   the same requests give the same state.
 //
-// Usage: npx tsx services/hmem/server.ts   (HMEM_PORT, HMEM_DATA_DIR, HMEM_REFERENCE)
+// Usage: python scripts/engine_service.py hmem   (HMEM_PORT, HMEM_DATA_DIR, HMEM_REFERENCE)
 
 import http from "node:http";
 import path from "node:path";

@@ -28,7 +28,7 @@ def service_running():
 
 @unittest.skipUnless(service_running(),
                      f"H-MEM service not running at {URL}: start it with "
-                     f"scripts/hmem-service.ps1 (README, section H-MEM)")
+                     f"python scripts/engine_service.py hmem (README, section Engines)")
 class HMemServiceTest(unittest.TestCase):
     def setUp(self):
         self.memory = HMem(base_url=URL, sample=False)

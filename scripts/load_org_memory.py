@@ -3,7 +3,7 @@
 The archives are read through Zetaris (or its cache, see agent/zetaris.py);
 each lesson becomes a long-term memory with its provenance, so S9 can recall
 Orion's lesson. Idempotent: a lesson already in memory is not written again.
-Start the H-MEM service first (README, section H-MEM); without it, the client
+Start the H-MEM service first (README, section Engines); without it, the client
 falls back to its local memory and says so.
 
     python scripts/load_org_memory.py
