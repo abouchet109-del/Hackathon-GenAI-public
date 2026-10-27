@@ -68,6 +68,18 @@ class CodeChecksTest(unittest.TestCase):
         p = proposal(kind="new_decision", supersedes=None)
         self.assertEqual(self.failed(p), {"no_conflict"})
 
+    def test_restating_a_replaced_decision_before_its_replacement_is_history(self):
+        p = proposal(kind="supersede", value="2026-11-03", supersedes="DEC-004")
+        p = p.model_copy(update={"stated_at": datetime(2026, 9, 15, 9, 30)})
+        checks = {c.name: c for c in code_checks(p, self.state, "messages/MSG-099")}
+        self.assertFalse(checks["not_duplicate"].passed)
+        self.assertIn("replaced by DEC-004", checks["not_duplicate"].detail)
+
+    def test_older_statement_cannot_replace_a_newer_decision(self):
+        p = proposal(value="2026-11-05").model_copy(
+            update={"stated_at": datetime(2026, 10, 1, 9)})
+        self.assertEqual(self.failed(p), {"no_conflict"})
+
     def test_decision_kind_on_a_proposal_is_inconsistent(self):
         self.assertIn("schema", self.failed(proposal(info_type="proposal")))
 
@@ -118,7 +130,13 @@ class ControlTest(unittest.TestCase):
         first = control(llm, proposal(), self.state, "messages/MSG-099", "text")
         self.assertEqual((first.verdict, first.revision_request), ("revision", "proposal"))
         second = control(llm, proposal(revision=1), self.state, "messages/MSG-099", "text")
-        self.assertEqual(second.verdict, "escalated")
+        self.assertEqual((second.verdict, second.escalate_to), ("escalated", "marc"))  # lea proposed it
+
+    def test_unsupported_fact_after_revision_is_not_written_nor_escalated(self):
+        llm = ScriptedLLM(['{"supported": false, "reason": "not said"}'])
+        p = proposal(kind="observation", info_type="observation", supersedes=None, revision=1)
+        result = control(llm, p, self.state, "messages/MSG-099", "text")
+        self.assertEqual((result.verdict, result.decision), ("ignored", None))
 
     def test_other_project_is_ignored_without_llm(self):
         llm = ScriptedLLM([])

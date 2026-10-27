@@ -11,7 +11,7 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from agent.structured import (LLMClient, LLMOutputError, LLMUnavailable, Route, Tracer,
-                              extract_json)
+                              extract_json, unwrap_schema_echo)
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -118,6 +118,22 @@ class StructuredCallTest(unittest.TestCase):
 
     def test_json_in_code_fences_is_accepted(self):
         self.assertEqual(extract_json(f"Here it is:\n```json\n{VALID}\n```"), VALID)
+
+    def test_cache_first_answers_a_known_prompt_without_calling(self):
+        ScriptedRuntime.script = [VALID]
+        self.call(self.client())
+        client = self.client()
+        client.cache_first = True
+        _, reply = self.call(client)
+        self.assertEqual(reply.route, "cache")
+        self.assertEqual(len(ScriptedRuntime.seen), 1)
+
+    def test_an_answer_wrapped_in_properties_is_unwrapped(self):
+        ScriptedRuntime.script = ['{"type": "object", "properties": ' + VALID + '}']
+        output, _ = self.call(self.client())
+        self.assertEqual(output.decision_id, "DEC-004")
+        self.assertEqual(len(ScriptedRuntime.seen), 1)  # no retry needed
+        self.assertEqual(unwrap_schema_echo('{"properties": 1}', LaunchDate), '{"properties": 1}')
 
     def test_unreachable_route_falls_back_to_the_next_one(self):
         ScriptedRuntime.script = [VALID]

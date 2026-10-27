@@ -76,6 +76,14 @@ class UpdaterTest(unittest.TestCase):
         [p1] = propose(llm, [c1], atlas_state())
         self.assertEqual(p1.attribute, "launch_date")
 
+    def test_the_code_sets_the_kind_of_a_fact(self):
+        c1, _ = self.candidates()
+        llm = ScriptedLLM([drafts(
+            (c1.id, "supersede", "atlas-launch", "launch_date", "2026-11-12", "proposal",
+             "DEC-004"))])
+        [p1] = propose(llm, [c1], atlas_state())
+        self.assertEqual((p1.kind, p1.supersedes), ("observation", None))
+
     def test_unknown_candidate_is_an_error(self):
         c1, _ = self.candidates()
         llm = ScriptedLLM([drafts(("CAND-X", "no_change", "a", "b", "c", "decision", None))])

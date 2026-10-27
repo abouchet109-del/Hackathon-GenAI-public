@@ -73,12 +73,23 @@ def proposal_prompt(candidates, state):
             f"Project state on these keys:\n{_state_lines(state, keys)}")
 
 
+# Only a decision has a choice of kind (new, replacing, or restating what is
+# in force): for the other types the kind follows from the type, so the code
+# sets it rather than leaving a fixed mapping to the model.
+KIND_OF_FACT_TYPE = {"observation": "observation", "proposal": "observation",
+                     "lesson": "observation", "historical": "observation",
+                     "task_progress": "progress", "work_declaration": "work_declaration"}
+
+
 def _to_proposal(draft, candidate, revision=0):
+    is_decision = draft.info_type == "decision"
     return UpdateProposal(
         id=f"PROP-{candidate.id.removeprefix('CAND-')}", candidate_ids=[candidate.id],
-        kind=draft.kind, project=candidate.project, subject=draft.subject,
+        kind=draft.kind if is_decision else KIND_OF_FACT_TYPE[draft.info_type],
+        project=candidate.project, subject=draft.subject,
         attribute=draft.attribute, value=draft.value, info_type=draft.info_type,
-        author=candidate.author, stated_at=candidate.stated_at, supersedes=draft.supersedes,
+        author=candidate.author, stated_at=candidate.stated_at,
+        supersedes=draft.supersedes if is_decision else None,
         rationale=draft.rationale, evidence=candidate.evidence,
         confidence=draft.confidence, revision=revision)
 
