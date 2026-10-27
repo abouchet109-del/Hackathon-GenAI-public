@@ -15,6 +15,12 @@ Format d'une entrée :
 
 ---
 
+## 27/10 18:12–20:55 — Unification avec Steward sur la branche `unify` (session A, Ryan avec Claude)
+- Fait : fusion des deux historiques ; `agent/` devient `atlas/` (imports réécrits, rien supprimé), les documents de l'équipe passent dans `docs/atlas/`, `docs/DECISIONS.md` garde la numérotation (D1–D17) et continue (D24–D36). `atlas.decisions`, `atlas.progress`, `atlas.alerts` tournent dans Steward (`app/coordination/bridge.py`). Le client `atlas/hmem.py` lit `ATLAS_HMEM_URL` (8765) pour ne pas entrer en collision avec `HMEM_URL` du service Steward (8787). Deux fusions des commits de l'équipe (`eb8199f`, `801575a`) sans perte.
+- Tâches du plan : hors plan Atlas (prompt d'unification de Ryan) ; les briques 4, 5 et 7 restent telles quelles dans `atlas/`.
+- Commits : 35c18ee (fusion), d81f26f (atlas/), 9889b6b et 903d1b2 (fusions de main), 23dd2a1 (état à 20:55) ; branche `unify` poussée sur GitHub.
+- Vérifié : `python -m pytest -q` = 197 passés, 9 ignorés (vos tests d'intégration sans services) ; CI du dépôt verte sur `unify` (Linux, Windows, conformité H-MEM). Non vérifié : vos services `services/hmem` et `services/world_model` n'ont pas été lancés dans cette session.
+
 ## 27/10 19:25 — Incrément 1 : bout en bout (n° 6, 10, 11, 12, 13, 21, 22, 23) (session dédiée)
 - Fait : état du projet versionné derrière `StateStore` (`atlas/state.py`) ; extracteur et agent de mise à jour séparés, prompts versionnés dans `atlas/prompts/` ; contrôleur (contrôles en code, puis preuves par le LLM, une révision, puis escalade à l'arbitre de la table des rôles) ; écriture de l'état (seul écrivain, alertes, décisions validées dans H-MEM) ; agent manager (verdicts en code, rapport contrôlé) ; orchestrateur (Zetaris, World Model, H-MEM, limites, replis, `SAMPLE_MODE`, trace JSONL par run) ; `POST /run`. Décisions D16 (Nemotron 3 Ultra pour les runs) et D17 (le registre fait foi, chronologie).
 - Tâches du plan : n° 6, 10, 11, 12, 13, 21, 22 et 23 (incrément 1), faites.
