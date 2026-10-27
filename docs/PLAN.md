@@ -181,8 +181,8 @@ Mis à jour par chaque session à chaque tâche terminée (heure de Paris). Éta
 | 0 | 3. Client Zetaris | Faite | 27/10 17:49 | `agent/zetaris.py`, cache dans `data/cache/zetaris/` (167c618) ; 60 tests au vert à 17:58 |
 | 0 | 4. Nemotron imposé et journalisé | Faite | 27/10 17:58 | Identifiant `nvidia/nemotron-3.5-lightning-30b-a3b` dans Nightshift ; modèle lu dans le reçu `meterless.routed_model` |
 | 0 | 5. Appel LLM commun | Faite | 27/10 17:58 | `agent/structured.py`, testé contre un faux runtime et par un appel réel |
-| 1 | 6, 10, 12, 13, 21, 22, 23 | À faire | — | — |
-| 2 | 8. H-MEM | À faire | — | À construire en parallèle de l'incrément 1 |
+| 1 | 6, 10, 11, 12, 13, 21, 22, 23 | En cours | 27/10 18:05 | Session dédiée ; extracteur et agent de mise à jour séparés (D15) |
+| 2 | 8. H-MEM, puis 7. World Model | En cours | 27/10 18:05 | Session dédiée, en parallèle de l'incrément 1 ; H-MEM via un service TypeScript (D11) |
 | 3 | 18, 19 | À faire | — | — |
 | 4 | 24, 26, 27 | À faire | — | — |
 | 5 | 15 | À faire | — | — |
