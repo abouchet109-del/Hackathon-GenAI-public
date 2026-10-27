@@ -8,6 +8,76 @@ Principes suivis : [reference/guide-architecture-agentique.md](reference/guide-a
 
 ---
 
+## Vue d'ensemble fonctionnelle
+
+Ce que fait le système, de bout en bout, et ce qui est déjà codé (état au 27/10, 11:00 UTC). Le détail des boucles et des branchements est dans la section 3.
+
+```mermaid
+flowchart LR
+  subgraph IN["Entrées"]
+    SRC["Sources de l'entreprise<br/>messages, réunions, briefs,<br/>tickets, registre, tâches"]
+    COL["Collaborateurs et leur IA<br/>Claude, Cursor..."]
+    MAN["Manager ou personne habilitée"]
+  end
+
+  ZET[("Zetaris<br/>sources en SQL, lecture seule")]
+
+  subgraph SYS["Système, piloté par l'orchestrateur"]
+    B1["Brique 1 — Contexte fiable<br/>extraire, qualifier, trancher, contrôler"]
+    B2["Brique 2 — Avancement<br/>classer chaque tâche"]
+    B4["Brique 4 — Livrables<br/>repérer et corriger les passages périmés"]
+    B5["Brique 5 — Réunions<br/>trier, juger, apprendre des verdicts"]
+    AM["Agent manager<br/>synthèse"]
+  end
+
+  subgraph MEM["État et mémoires"]
+    WM[("World Model<br/>état courant du projet")]
+    HM[("H-MEM<br/>journée, projet, organisation")]
+  end
+
+  subgraph OUT["Sorties"]
+    AL["Alertes par membre"]
+    DIFF["Diff du livrable<br/>avec ses sources"]
+    REC["Recommandation de réunion<br/>ou message ciblé"]
+    REP["Rapport et remontées"]
+  end
+
+  SRC --> ZET
+  ZET --> B1
+  ZET --> B4
+  COL -->|"report_progress, MCP"| B1
+  B1 -->|"seul écrivain"| WM
+  B1 --> HM
+  WM --> B2
+  WM --> B4
+  B2 -->|"signaux de coordination"| B5
+  HM -->|"précédents, Orion"| B5
+  B1 --> AL
+  B2 --> AL
+  B4 --> DIFF
+  B5 --> REC
+  AL -->|"get_alerts, MCP"| COL
+  DIFF --> COL
+  REC --> MAN
+  MAN -->|"verdict"| B5
+  MAN -->|"POST /run"| AM
+  WM --> AM
+  HM --> AM
+  AM --> REP
+  REP --> MAN
+
+  classDef done fill:#c8e6c9,stroke:#2e7d32,color:#000
+  classDef partial fill:#ffe0b2,stroke:#ef6c00,color:#000
+  classDef todo fill:#eeeeee,stroke:#9e9e9e,color:#000
+  class B1,B2,AL,ZET,HM partial
+  class B4,B5,AM,WM,DIFF,REC,REP todo
+```
+
+| Couleur | Signification | Composants |
+|---|---|---|
+| Orange | En partie fait | Brique 1 : règles d'autorité et conflits codés et testés, agents à faire. Brique 2 : classement codé, outil MCP et cas S6 à faire. Alertes : boîtes codées, outils MCP à faire. Zetaris : connexion vérifiée, sources à enregistrer. H-MEM : conformité au vert (13/13), intégration à faire |
+| Gris | À construire | Briques 4 et 5, agent manager, orchestrateur, World Model, serveur MCP, `POST /run` |
+
 ## 1. Objectif, décision, action
 Quelle décision le système aide-t-il à prendre, et quelle action en découle ?
 Le système aide à gérer la cohérence dans le travail entre différentes personnes utilisant plusieurs modèle d'IA différentes sur leur PC dans un projet d'entreprises. Il alerte si jamais une personne fait un travail qui a été rendu obsolète par une décision qui a été prise par un autre colaborateur ou une contrainte technique qui est survenu. Il gère aussi généralement l'ensemble des informations relative a un projet ( quelle est la répartition des tâches, quel est le projet en question, quelles sont les deadlines, quelles sont les postes de chacun, quelle est l'avancement de chaque tâches ) et peut en ressortir des informations pertinentes pour la personne en charge du projet ou le manager de l'équipe ( ce système s'adapte donc aussi bien à la gestion d'une équipe par un manager qu'a la réalisation d'un projet cadré, avec chef de projet etc... ). Les informations pertinentes qu'il ressort concerne aussi bien un transfert d'information horizontal ( d'un collaborateur à un autre collaborateur par exemple ), que vertical ( le harness constate une irrégularité ou un problème quelque part dans le projet, remonte l'information jusqu'au manager pour le prévenir ). C'est également lui qui, par le suivis qu'il fait de l'avancé du projet ou du travail de chacun, planifie les réunions lorsqu'il est pertinent et utile d'en faire une pour l'avancer du projet ( l'idée est de limiter le nombre de réunion et de n'avoir que des réunions qui soient utile ). Le système stock également à différentes échelles de mémoire les avancées du projet et garde toutes les données de base qu'il peut récolter ( compte rendu de réunion par exemple, historique des informations d'un projet une fois le projet terminé etc... avec donc des mémoires à plusieurs échelles : mémoire sur le projet en cours, la journée de travail etc... et mémoire de l'ensemble des projets qui ont été fait )
