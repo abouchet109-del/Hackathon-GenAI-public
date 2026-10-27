@@ -15,6 +15,13 @@ Format d'une entrée :
 
 ---
 
+## 27/10 17:58 — Incrément 0, tâches 4 et 5 (session dédiée)
+- Fait : Nemotron imposé dans Nightshift par son identifiant ; appel LLM commun `agent/structured.py` (schéma pydantic, une nouvelle tentative, timeout, routes Nightshift puis `MODEL_*` puis cache, trace JSONL avec le modèle lu dans le reçu de Nightshift). Horodatages de `docs/STATUS.md` corrigés (des heures fausses avaient été écrites pour les tâches 1 à 3).
+- Tâches du plan : n° 4 et 5 (incrément 0), faites. Incrément 0 terminé.
+- Commits : voir le commit « Impose Nemotron in Nightshift and add the common LLM call ».
+- Vérifié : 68 tests au vert ; appel réel via Nightshift (MSG-007 → proposition, modèle `nvidia/nemotron-3.5-lightning-30b-a3b`, reçu tracé).
+- Reste : décisions de l'équipe (D11, World Model, fusion de l'analyste, brique 5 réduite), puis incréments 1 et 2.
+
 ## 27/10 17:49 — Incrément 0, tâches 2 et 3 (session dédiée)
 - Fait : sources Atlas enregistrées dans Zetaris (script idempotent), client Zetaris avec cache pour `SAMPLE_MODE`.
 - Tâches du plan : n° 2 et 3 (incrément 0), faites.

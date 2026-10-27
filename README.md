@@ -34,15 +34,15 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 | Étape | État |
 |---|---|
 | Environnement (Zetaris en local, provider Meterless Runtime testé contre un faux runtime) | Fait |
-| Zetaris | Connexion vérifiée le 27/10 : SQL via l'API REST avec la clé de l'équipe |
+| Zetaris | **Fonctionne** (27/10) : base `ATLAS`, une table REST par source Atlas (jsDelivr épinglé), relues en SQL par `agent/zetaris.py` ; cache pour `SAMPLE_MODE` |
 | Meterless Nightshift | **Fonctionne** (27/10) : runtime en ligne sur le port 8088, réponse reçue via `meterless/auto` |
-| Modèle Nemotron | Répond via la route `MODEL_*` (test de fumée) ; le choix explicite de Nemotron dans Nightshift reste à vérifier |
+| Modèle Nemotron | **Imposé dans Nightshift** (27/10) par son identifiant (`nvidia/nemotron-3.5-lightning-30b-a3b`) ; le modèle réellement utilisé est lu dans le reçu de Nightshift et écrit dans la trace JSONL (`agent/structured.py`) |
 | Cas d'usage Atlas | Défini |
 | Architecture | **Brouillon complété** (27/10) : trois revues intégrées ; briques 1, 2, 4, 5 et 7, orchestrateur, couches Zetaris / World Model / H-MEM, schéma fonctionnel |
-| Fondations déterministes | **Faites et testées** (27/10) : format des décisions, classement en quatre cas, boîtes d'alertes |
+| Fondations déterministes | **Faites et testées** (27/10) : format des décisions, classement en quatre cas, boîtes d'alertes, contrats entre composants (`agent/contracts.py`), appel LLM commun (sortie JSON validée, une nouvelle tentative, timeout, repli, trace) |
 | Engine H-MEM | Implémentation de référence installée, **suite de conformité officielle au vert (13/13)** ; intégration à l'application à décider (D11) |
 | Engine World Model | Retenu pour l'état courant du projet (D12) ; intégration à faire, repli possible sur un état JSON |
-| Données Atlas pour Zetaris | À créer |
+| Données Atlas pour Zetaris | **Faites** (27/10) : corpus synthétique, variantes S2 et S3, résultats attendus S1 à S9 |
 | Agents LLM (6), orchestrateur, serveur MCP, `POST /run`, vue manager | Pas commencés |
 
 **Fondations déjà codées** (toutes couvertes par des tests unitaires, 36 tests au vert) :

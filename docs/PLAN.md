@@ -176,11 +176,11 @@ Mis à jour par chaque session à chaque tâche terminée (heure de Paris). Éta
 | Incrément | Tâche (n° de la section 2) | État | Mis à jour | Note |
 |---|---|---|---|---|
 | 0 | Contrats entre composants | Faite | 27/10 17:31 | `agent/contracts.py` (76d3b58) |
-| 0 | 1. Corpus Atlas et résultats attendus | Faite | 27/10 17:40 | Variantes S2 et S3, attendus S1 à S9 (8501863) ; relecture de l'équipe à confirmer |
+| 0 | 1. Corpus Atlas et résultats attendus | Faite | 27/10 17:40 | Variantes S2 et S3, attendus S1 à S9 (8501863) ; relu par l'équipe |
 | 0 | 2. Enregistrement dans Zetaris | Faite | 27/10 17:49 | Sources Atlas enregistrées, script `scripts/register_zetaris.py` (167c618) |
 | 0 | 3. Client Zetaris | Faite | 27/10 17:49 | `agent/zetaris.py`, cache dans `data/cache/zetaris/` (167c618) ; 60 tests au vert à 17:58 |
-| 0 | 4. Nemotron imposé et journalisé | À faire | — | — |
-| 0 | 5. Appel LLM commun | À faire | — | — |
+| 0 | 4. Nemotron imposé et journalisé | Faite | 27/10 17:58 | Identifiant `nvidia/nemotron-3.5-lightning-30b-a3b` dans Nightshift ; modèle lu dans le reçu `meterless.routed_model` |
+| 0 | 5. Appel LLM commun | Faite | 27/10 17:58 | `agent/structured.py`, testé contre un faux runtime et par un appel réel |
 | 1 | 6, 10, 12, 13, 21, 22, 23 | À faire | — | — |
 | 2 | 8. H-MEM | À faire | — | À construire en parallèle de l'incrément 1 |
 | 3 | 18, 19 | À faire | — | — |

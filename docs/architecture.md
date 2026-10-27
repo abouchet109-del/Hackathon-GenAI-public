@@ -500,7 +500,7 @@ L'équipe définira les sources plus tard (décision du 27/10). Proposition de d
 
 Les déclencheurs de la brique 5 qui portent sur les sources (échéances, dépendances, fils de messages) peuvent être des requêtes SQL sur Zetaris.
 
-### Ce qui est réellement en place (vérifié le 27/10, 18:55)
+### Ce qui est réellement en place (vérifié le 27/10, 17:49)
 - **Base Lightning `ATLAS`**, une **table REST par source** : `documents`, `messages`, `tickets`, `decisions`, `tasks`, `milestones`, `reports`, `roles`, `past_projects`. Chaque table lit `https://cdn.jsdelivr.net/gh/abouchet109-del/Hackathon-GenAI-public@<commit>/data/sample/<source>.json`, épinglé sur le commit `85018638` (une URL de branche serait mise en cache par jsDelivr).
 - **Enregistrement** : `scripts/register_zetaris.py` (idempotent ; `--dry-run`, `--verify-only`, `--repin <source>` après une modification du corpus, qui supprime et recrée la table sur le nouveau commit).
 - **Requête des agents**, une par source : `SELECT to_json(r) AS record FROM atlas.<source> LATERAL VIEW explode(records) AS r` ; chaque ligne est validée par le modèle pydantic de la source (`agent/sources.py`). Vérification : les 9 sources rendent exactement les enregistrements des fichiers locaux.
