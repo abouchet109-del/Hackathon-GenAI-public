@@ -1,0 +1,14 @@
+member_id,focus,detail_level,topics_followed,responsibilities
+m01,managerial,1,pricing;target_market;hiring;marketing_budget;launch_date,"Strategy, fundraising, final say on pricing and hiring"
+m02,product,2,launch_date;roadmap;brand;customers,"Roadmap, scope and launch"
+m03,technical,3,tech_stack;roadmap;launch_date;hiring,"Architecture, hosting, engineering team"
+m04,technical,3,tech_stack;roadmap,Backend and payment reminders
+m05,commercial,2,marketing_spend;brand;marketing_budget;metrics,Marketing plan and budget
+m06,commercial,2,marketing_spend;metrics;brand,Ads and growth experiments
+m07,managerial,2,marketing_budget;pricing;metrics;customer_deals,"Budgets, cash and invoicing of Brikk itself"
+m08,commercial,2,customer_deals;sales_process;pricing;customers,Sales team and contracts
+m09,commercial,1,customers;customer_deals;pricing,Pilot customers
+m10,operational,2,support_policy;customers,Support and onboarding of customers
+m11,product,2,brand;roadmap,Product design and icons
+m12,technical,3,tech_stack;roadmap,Web dashboard
+m13,commercial,1,marketing_spend;metrics,Social media posts and newsletter

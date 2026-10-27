@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import ValidationError
 
-from agent.contracts import (CandidateInfo, ControllerResult, DeliverableClaim,
+from atlas.contracts import (CandidateInfo, ControllerResult, DeliverableClaim,
                              Escalation, Evidence, StaleClaim, UpdateProposal,
                              escalation_id)
 from tests.fixtures import decision

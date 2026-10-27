@@ -1,0 +1,15 @@
+topic,owner_department,singleton,budget_limit_eur,description,keywords
+pricing,executive,yes,,Price plans and list prices,price;pricing;per user;annual plan;subscription;discount grid
+launch_date,product,yes,,Public launch date,launch;go-live;release date;public launch
+target_market,executive,yes,,Who Brikk sells to,target market;persona;segment;who we sell to
+marketing_budget,finance,yes,,Spending caps for marketing,marketing cap;marketing envelope;marketing budget
+sales_process,sales,yes,,Steps from trial to contract,trial;demo call;sales process;contract steps;contract;signature;quote sent
+support_policy,ops,yes,,Support hours and response times,support;response time;helpdesk;chat support
+roadmap,product,no,,Features and scope,roadmap;feature;mvp;scope;backlog
+tech_stack,tech,no,,"Languages, frameworks and hosting",backend;frontend;hosting;database;api;framework;deploy
+marketing_spend,marketing,no,10000,"Individual marketing commitments (events, ads)",booth;trade show;ads;sponsor;campaign;newsletter spend
+brand,marketing,no,,Visual identity and tone,brand;logo;icon;color;tone;visual identity
+customer_deals,sales,no,5000,Discounts and commitments made to customers,discount;deal;contract value;commercial offer;offer;price for
+hiring,executive,no,,Who Brikk hires and when,hire;hiring;recruit;job offer;onboarding of a new
+customers,sales,no,,Facts about customers and pilots,customer;pilot;client;churn
+metrics,finance,no,,Business and marketing metrics,open rate;visits;conversion;mrr;revenue;kpi

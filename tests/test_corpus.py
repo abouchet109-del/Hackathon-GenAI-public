@@ -3,9 +3,9 @@ import json
 import unittest
 from datetime import date
 
-from agent.decisions import conflicts, in_force
-from agent.progress import classify
-from agent.sources import ROOT, SAMPLE_DIR, SOURCES, load_all, parse_records
+from atlas.decisions import conflicts, in_force
+from atlas.progress import classify
+from atlas.sources import ROOT, SAMPLE_DIR, SOURCES, load_all, parse_records
 from evaluation.expected import load_expected
 
 TODAY = date(2026, 10, 27)

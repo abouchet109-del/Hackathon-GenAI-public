@@ -1,0 +1,3 @@
+/* Self-hosted fonts (offline demo). Load before tokens.css. Paths are relative to this file. */
+@font-face { font-family: "Archivo"; src: url("fonts/Archivo-Variable.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-style: normal; font-display: swap; }
+@font-face { font-family: "Chivo Mono"; src: url("fonts/ChivoMono-Variable.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }

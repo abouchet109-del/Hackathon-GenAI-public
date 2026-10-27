@@ -1,34 +1,45 @@
-# Secrets: never commit
 .env
 .env.*
 !.env.example
-
-# Python
+.env.local
+*.pem
+*.key
+credentials.json
 .venv/
 __pycache__/
-*.pyc
-
-# Local provider settings (holds the Meterless runtime token)
+logs/*
+!logs/.gitkeep
+!logs/samples/
+node_modules/
+vendor/
+.DS_Store
+hmem-service/vendor/
+hmem-service/package-lock.json
+.hmem-data/
+data/memory-fallback-*.json
+.pytest_cache/
+data/steward-journal-*.jsonl
+data/steward-cursors-*.json
+data/steward-profiles-*.json
+data/llm_cache.jsonl
+data/hmem/
+.cursor/
+zetaris-platform/
+zetaris-platform.zip
+# videos go to YouTube/Drive, not git
+docs/submission/video/*.mp4
+data/*.lock
+docs/submission/video/cards/
+data/alerts-*.json
+data/progress-*.json
+# Atlas modules
 .settings.json
 .test-tmp/
-
-# Third-party material not yet reviewed (e.g. the Atlas kit)
 external/
-
-# Node (if the Meterless reference engines are used)
-node_modules/
-
-# Editors and OS
+.state/
 .vscode/
 .idea/
 Thumbs.db
-.DS_Store
-
-# Python tooling caches
-.pytest_cache/
 .mypy_cache/
 .ruff_cache/
-
-# Runtime state (alert inboxes, memories) and agent traces
-.state/
-logs/
+*.pyc

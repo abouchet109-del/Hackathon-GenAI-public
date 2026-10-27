@@ -14,9 +14,9 @@ from pathlib import Path
 
 import requests
 
-from agent.sources import load_all
-from agent.state import Change, JsonStateStore, ProjectState, apply_change
-from agent.world_model import (DEFAULT_URL, WorldModelError, WorldModelStateStore,
+from atlas.sources import load_all
+from atlas.state import Change, JsonStateStore, ProjectState, apply_change
+from atlas.world_model import (DEFAULT_URL, WorldModelError, WorldModelStateStore,
                                _meta, state_diff, state_from_engine)
 from tests.fixtures import task
 from tests.test_state import fact

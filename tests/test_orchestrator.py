@@ -17,12 +17,12 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
 
-from agent import api
-from agent.hmem import HMem, LocalBackend
-from agent.orchestrator import RunRequest, run
-from agent.state import JsonStateStore
-from agent.structured import LLMUnavailable
-from agent.zetaris import ZetarisClient
+from atlas import api
+from atlas.hmem import HMem, LocalBackend
+from atlas.orchestrator import RunRequest, run
+from atlas.state import JsonStateStore
+from atlas.structured import LLMUnavailable
+from atlas.zetaris import ZetarisClient
 from evaluation.expected import EXPECTED_FILE
 
 ROOT = Path(__file__).resolve().parent.parent

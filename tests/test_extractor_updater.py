@@ -2,10 +2,10 @@
 import json
 import unittest
 
-from agent import prompts
-from agent.extractor import extract_message
-from agent.sources import load_all
-from agent.updater import UnknownCandidate, from_register, propose, revise
+from atlas import prompts
+from atlas.extractor import extract_message
+from atlas.sources import load_all
+from atlas.updater import UnknownCandidate, from_register, propose, revise
 from tests.scripted import ScriptedLLM
 from tests.test_controller import atlas_state
 

@@ -1,0 +1,76 @@
+{
+  "project": "Steward",
+  "team": "OSEF",
+  "track": "Reasoning Architecture",
+  "one_liner": "Steward is a company context layer for every AI: through MCP it watches what matters in each person's own AI conversations, rules on what becomes the team's shared truth (sources weighted by role and domain, contradictions clarified then escalated), serves each person the right context for their role and task, and keeps the team coordinated (progress, alerts, meetings).",
+  "sponsors": {
+    "zetaris": {
+      "role": "governance data over 3 sources (Postgres org chart and trust, finance REST API, catalogue as a REST table on the public repository) and a Unified Semantic Layer",
+      "files": [
+        "scripts/zetaris/register_steward.sql",
+        "scripts/zetaris/run_steward_sql.py",
+        "app/adapters/zetaris.py",
+        "domains/project_memory/logic.py",
+        "domains/project_memory/context.py",
+        "scripts/register_zetaris.py",
+        "atlas/zetaris.py"
+      ]
+    },
+    "meterless_engines": [
+      {
+        "engine": "H-MEM",
+        "role": "the company memory: versioned decisions (supersedes), provenance, trust-weighted confidence, CEO policies",
+        "files": [
+          "hmem-service/",
+          "app/adapters/memory.py"
+        ],
+        "test": "cd hmem-service && bash setup.sh && npm run conformance (committed run: logs/samples/hmem-conformance.txt)"
+      }
+    ],
+    "meterless_nightshift": {
+      "role": "primary AI provider",
+      "lanes": [
+        "fast (extraction)",
+        "deep (arbitration)",
+        "judge (critique)"
+      ],
+      "files": [
+        "app/llm.py",
+        "scripts/configure_nightshift.py",
+        "atlas/llm.py",
+        "atlas/structured.py"
+      ]
+    },
+    "nvidia": {
+      "role": "Nemotron pinned by exact id on the three lanes (nvidia/nemotron-3.5-lightning-30b-a3b, nvidia/nemotron-3-ultra-550b-a55b), served model logged per call"
+    },
+    "cursor": {
+      "role": "development environment and one of the MCP clients in the demo"
+    }
+  },
+  "entry_points": {
+    "demo": "SAMPLE_MODE=true python run.py steward-demo",
+    "mcp": "SAMPLE_MODE=true python run.py mcp",
+    "http": "SAMPLE_MODE=true python run.py serve (console at /console on 127.0.0.1:8000, POST /run)",
+    "examples": "python scripts/make_examples.py --check",
+    "tests": "python -m pytest -q (the suite sets SAMPLE_MODE itself)"
+  },
+  "sample_mode": "SAMPLE_MODE=true",
+  "data": "synthetic, fictional",
+  "pre_existing_components": [
+    "Meterless H-MEM reference implementation (Apache-2.0, vendored)",
+    "Archivo and Chivo Mono fonts (OFL)"
+  ],
+  "domains": {
+    "project_memory": "Steward (main submission, company Brikk)",
+    "admin": "personal admin desk (second pack on the same harness)"
+  },
+  "license": "All rights reserved, evaluation license for the hackathon (LICENSE); vendored Meterless code Apache-2.0 (NOTICE)",
+  "repository": "https://github.com/abouchet109-del/Hackathon-GenAI-public",
+  "team_members": [
+    "Ryan Dalier-Dulys (lead)",
+    "Adam Semlali",
+    "Alexandre Bouchet"
+  ],
+  "atlas_modules": "atlas/ (decision register, progress per member, alert inboxes, Zetaris and Nightshift clients) by Adam Semlali and Alexandre Bouchet, wired into Steward through app/coordination/bridge.py"
+}

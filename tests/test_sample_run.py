@@ -14,7 +14,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from agent.orchestrator import RunRequest, run
+from atlas.orchestrator import RunRequest, run
 from tests.test_orchestrator import EXPECTED, TODAY
 
 ROOT = Path(__file__).resolve().parent.parent

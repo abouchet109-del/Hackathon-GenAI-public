@@ -5,9 +5,9 @@ import unittest
 from datetime import date, datetime
 from pathlib import Path
 
-from agent.contracts import Evidence
-from agent.sources import load_all
-from agent.state import Change, Fact, JsonStateStore, ProjectState, apply_change
+from atlas.contracts import Evidence
+from atlas.sources import load_all
+from atlas.state import Change, Fact, JsonStateStore, ProjectState, apply_change
 from tests.fixtures import decision, task
 
 ROOT = Path(__file__).resolve().parent.parent

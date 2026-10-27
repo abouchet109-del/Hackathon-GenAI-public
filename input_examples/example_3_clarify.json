@@ -1,0 +1,13 @@
+{
+  "run_id": "example_3_clarify",
+  "input": {
+    "content": "The price is now 19 EUR per user per month.",
+    "author": "Julie Caron",
+    "ai_tool": "ChatGPT",
+    "kind": "decision",
+    "topic": "pricing"
+  },
+  "options": {
+    "profile": "full"
+  }
+}

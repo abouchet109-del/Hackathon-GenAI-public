@@ -1,0 +1,13 @@
+{
+  "run_id": "example_1_supersede",
+  "input": {
+    "content": "Support hours move to 9:00-18:00 on weekdays, with a 4-hour first-response target.",
+    "author": "Yanis Moreau",
+    "ai_tool": "Claude",
+    "kind": "decision",
+    "topic": "support_policy"
+  },
+  "options": {
+    "profile": "full"
+  }
+}

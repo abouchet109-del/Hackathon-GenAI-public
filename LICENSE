@@ -1,0 +1,11 @@
+Copyright (c) 2026 Ryan Dalier-Dulys, Adam Semlali, Alexandre Bouchet. All rights reserved.
+
+This repository is published so that the judges and organisers of the Open Agent Hackathon 2026
+(GenAI.Works) can read, run and evaluate it. No other right is granted: copying, modifying,
+distributing, sublicensing or using this code, in whole or in part, for any other purpose requires
+the prior written permission of the copyright holder.
+
+Third-party components keep their own licences:
+- hmem-service/vendor/ contains the Meterless H-MEM reference implementation and conformance suite,
+  Copyright Meterless, licensed under the Apache License 2.0 (see hmem-service/vendor/LICENSE-meterless).
+- Python and Node dependencies are installed from their registries under their own licences.

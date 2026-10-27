@@ -4,12 +4,12 @@ import unittest
 from datetime import datetime
 from pathlib import Path
 
-from agent.contracts import Evidence, UpdateProposal
-from agent.controller import arbiter, code_checks, control
-from agent.decisions import Decision
-from agent.sources import load_all
-from agent.state import Change, ProjectState, apply_change
-from agent.updater import from_register
+from atlas.contracts import Evidence, UpdateProposal
+from atlas.controller import arbiter, code_checks, control
+from atlas.decisions import Decision
+from atlas.sources import load_all
+from atlas.state import Change, ProjectState, apply_change
+from atlas.updater import from_register
 from tests.scripted import ScriptedLLM
 
 ROOT = Path(__file__).resolve().parent.parent

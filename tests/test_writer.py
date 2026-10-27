@@ -4,14 +4,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from agent.alerts import AlertInbox
-from agent.contracts import ControllerResult
-from agent.controller import control
-from agent.hmem import HMem, LocalBackend
-from agent.sources import load_all
-from agent.state import JsonStateStore
-from agent.updater import from_register
-from agent.writer import StateWriter
+from atlas.alerts import AlertInbox
+from atlas.contracts import ControllerResult
+from atlas.controller import control
+from atlas.hmem import HMem, LocalBackend
+from atlas.sources import load_all
+from atlas.state import JsonStateStore
+from atlas.updater import from_register
+from atlas.writer import StateWriter
 from tests.scripted import ScriptedLLM
 from tests.test_controller import proposal
 

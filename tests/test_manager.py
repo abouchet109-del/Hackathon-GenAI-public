@@ -2,7 +2,7 @@
 import json
 import unittest
 
-from agent.manager import DEFAULT_QUESTION, Escalated, check_report, ManagerDraft, \
+from atlas.manager import DEFAULT_QUESTION, Escalated, check_report, ManagerDraft, \
     project_facts, write_report
 from tests.fixtures import TODAY
 from tests.scripted import ScriptedLLM

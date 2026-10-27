@@ -3,7 +3,7 @@ import unittest
 
 from pydantic import ValidationError
 
-from agent.decisions import Decision, conflicts, in_force
+from atlas.decisions import Decision, conflicts, in_force
 from tests.fixtures import decision
 
 

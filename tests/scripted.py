@@ -1,5 +1,5 @@
 """A scripted LLM client for the agents' tests: same call_json() as
-agent.structured.LLMClient, answers taken from a list, calls recorded."""
+atlas.structured.LLMClient, answers taken from a list, calls recorded."""
 from types import SimpleNamespace
 
 

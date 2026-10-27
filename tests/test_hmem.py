@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 
 import requests
 
-from agent.hmem import HMem, HMemError, HttpBackend, LocalBackend, load_org_lessons
-from agent.sources import load_source
+from atlas.hmem import HMem, HMemError, HttpBackend, LocalBackend, load_org_lessons
+from atlas.sources import load_source
 
 AT = datetime(2026, 10, 27, 9, 0, tzinfo=timezone.utc)
 

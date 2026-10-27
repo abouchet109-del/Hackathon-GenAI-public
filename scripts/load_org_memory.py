@@ -1,6 +1,6 @@
 """Load the lessons of past projects (Orion, Vega) into H-MEM's organisation memory.
 
-The archives are read through Zetaris (or its cache, see agent/zetaris.py);
+The archives are read through Zetaris (or its cache, see atlas/zetaris.py);
 each lesson becomes a long-term memory with its provenance, so S9 can recall
 Orion's lesson. Idempotent: a lesson already in memory is not written again.
 Start the H-MEM service first (README, section Engines); without it, the client
@@ -14,9 +14,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from agent.hmem import HMem, load_org_lessons  # noqa: E402
-from agent.sources import load_source_zetaris  # noqa: E402
-from agent.zetaris import ZetarisClient  # noqa: E402
+from atlas.hmem import HMem, load_org_lessons  # noqa: E402
+from atlas.sources import load_source_zetaris  # noqa: E402
+from atlas.zetaris import ZetarisClient  # noqa: E402
 
 
 def main():

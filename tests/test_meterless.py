@@ -12,7 +12,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from unittest import mock
 
-from agent import llm
+from atlas import llm
 
 TOKEN = "test-runtime-token"
 MODEL_IDS = ["meterless/auto", "meterless/fast", "meterless/code.deep",

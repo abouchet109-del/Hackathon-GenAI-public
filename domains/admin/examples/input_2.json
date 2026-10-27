@@ -1,0 +1,13 @@
+{
+  "run_id": "example_2",
+  "input": {
+    "id": "c09",
+    "received_at": "2026-10-20",
+    "from": "remboursement@caf-remboursement.info",
+    "subject": "CAF refund waiting for you",
+    "body": "You are owed a refund of 230 EUR. Enter your bank login and card number here to receive it: http://caf-remboursement.info/claim"
+  },
+  "options": {
+    "profile": "full"
+  }
+}

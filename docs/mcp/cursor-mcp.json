@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "steward": {
+      "command": "/ABSOLUTE/PATH/TO/Hackathon-GenAI-public/.venv/bin/python",
+      "args": ["/ABSOLUTE/PATH/TO/Hackathon-GenAI-public/run.py", "mcp"],
+      "env": {
+        "OSEF_MEMBER": "Sami Haddad",
+        "OSEF_AI_TOOL": "Cursor",
+        "STEWARD_SPACE": "project",
+        "HMEM_URL": "http://127.0.0.1:8787"
+      }
+    }
+  }
+}
