@@ -10,7 +10,7 @@ Two codebases grew in parallel during the event and were merged on 27 October 20
 
 ## What the merged version takes from each side
 
-- **From Steward (the base):** the arbitration pipeline, the company memory in H-MEM, the role-aware context, the 15 MCP tools, the console, the Zetaris sources, the evaluation.
+- **From Steward (the base):** the arbitration pipeline, the company memory in H-MEM, the role-aware context, the 16 MCP tools, the console, the Zetaris sources, the evaluation.
 - **From Atlas, ported as is and credited** (`app/coordination/`, from commit `961f320`, with 23 of their tests in `tests/coordination/`):
   - `decisions.py`: which decision is in force, and conflicts between applicable decisions;
   - `progress.py`: each task classified as ok, late or obsolete, and meetings recommended when a decision makes several people's work obsolete or a late task blocks someone else;

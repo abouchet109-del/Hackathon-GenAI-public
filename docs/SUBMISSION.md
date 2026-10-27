@@ -32,7 +32,7 @@ Everything written by the team dates from the event (from 22 October 2026). Thir
 git clone https://github.com/abouchet109-del/Hackathon-GenAI-public && cd Hackathon-GenAI-public
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 SAMPLE_MODE=true .venv/bin/python run.py steward-demo        # the 8-step scenario, one trace per arbitration in logs/
-.venv/bin/python -m pytest -q                                 # 124 tests
+.venv/bin/python -m pytest -q                                 # 197 tests, 9 skipped without the team's engine services
 .venv/bin/python scripts/mcp_smoke.py                         # a real MCP client: 16 tools, the resource, the prompt
 SAMPLE_MODE=true .venv/bin/python run.py serve                # console at http://127.0.0.1:8000/console
 ```
