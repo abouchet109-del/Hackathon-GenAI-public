@@ -107,7 +107,7 @@ flowchart LR
 | CEO agent | Escalation queue, standing policies raised from a ruling, weak signals (tensions, budgets, late and obsolete work), suggested meetings | Code over the journal, the finance source and the team's progress modules |
 | Context composer | The per-role, per-task context served to every AI | Code over H-MEM and Zetaris |
 
-Full description, data model, security and ADRs: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Sponsor usage, file by file: [docs/SPONSORS.md](docs/SPONSORS.md).
+Full description, data model, security and ADRs: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Sponsor usage, file by file: [docs/SPONSORS.md](docs/SPONSORS.md). The Zetaris scoring documents (sources, queries with outputs, the executed quality rule, three reflections on the USL): [docs/zetaris/](docs/zetaris/README.md).
 
 ## Repository
 
@@ -118,7 +118,7 @@ atlas/          the team's Atlas modules: decision register, progress per member
 data/           the Atlas corpus and caches (tracked); runtime state (ignored)
 hmem-service/   the H-MEM service around the vendored Meterless reference
 scripts/        Zetaris registration, Nightshift lanes, Mac and Windows setup, examples, video kit
-docs/           ARCHITECTURE, SPONSORS, INVENTORY, PLAN, DECISIONS, TEAM-AND-MERGE, SUBMISSION, PRIOR_WORK, mcp/, atlas/ (the team's documents)
+docs/           ARCHITECTURE, SPONSORS, INVENTORY, PLAN, DECISIONS, TEAM-AND-MERGE, SUBMISSION, PRIOR_WORK, zetaris/ (the Zetaris scoring documents), mcp/, submission/, atlas/ (the team's documents)
 tests/          197 tests; input_examples/ output_examples/ logs/samples/ (traces, the conformance run)
 ```
 
