@@ -12,7 +12,7 @@ Steward is a company context layer for every AI: through MCP it watches what mat
 In a small company, everyone already works with a different AI, and each of those AIs knows a different, partial, outdated version of the company. Steward plugs into Claude, Cursor, ChatGPT and others through MCP. People keep their interface, and their AI gains three layers. The watch layer sends relevant excerpts. The truth layer runs a prosecutor/judge pair of agents over Nemotron, reads governance data through Zetaris (who leads what, budget limits, trust weights by role and domain), and decides for each proposal whether to store it, supersede an older decision (kept, never deleted, in Meterless H-MEM), reject it, redact it, ask its author "error or real change?", escalate it to the CEO, or quarantine it as an injection. The context layer gives each person's AI the smallest useful, cited context for their role and task. Each person's AI also reports progress on their tasks: Steward flags late work and work built on a value a newer decision changed, alerts the people concerned and recommends the meetings that unblock them. An ablation on 34 labelled cases measures what memory adds: without H-MEM, contradictions enter the record. With it, they don't, and the CEO is asked three times less often.
 
 ## Links
-- Repository: https://github.com/rdalierdulys-arch/steward
+- Repository: https://github.com/abouchet109-del/Hackathon-GenAI-public
 - Video: [YouTube or Drive link, 1 to 4 min]
 - Deck: [PDF exported from the deck]
 
@@ -23,8 +23,8 @@ In a small company, everyone already works with a different AI, and each of thos
 | Adam Semlali | [email] | [github] | Atlas: use case, architecture, coordination modules (decisions, progress, alerts), live sponsor checks |
 | Alexandre Bouchet | [email] | abouchet109-del | Atlas: use case, architecture, coordination modules, Meterless provider, live sponsor checks |
 
-## Sponsor technology (short version; long version in docs/STEWARD.md and README)
-- **Zetaris:** one SQL door over three sources: Postgres org chart and trust weights, the finance REST API, and an S3 drive with role procedures. A Unified Semantic Layer spans them. Every arbitration reads who the author is, how much they weigh, who owns the topic and its limits.
+## Sponsor technology (short version; long version in docs/SPONSORS.md and README)
+- **Zetaris:** one SQL door over three sources: Postgres org chart and trust weights, the finance REST API, and the role procedures catalogue as a REST table on a pinned public URL. A Unified Semantic Layer spans them. Every arbitration reads who the author is, how much they weigh, who owns the topic and its limits.
 - **Meterless H-MEM:** the company record. It holds versioned decisions (`supersedes`; replaced, never deleted), provenance, confidence set to the author's trust weight, CEO policies and the trust ledger. Conformance 13/13.
 - **Meterless Nightshift:** primary AI provider, with three lanes: extraction, arbitration, judgment.
 - **NVIDIA Nemotron:** pinned on the three lanes; the model is logged on every trace line.

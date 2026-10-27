@@ -22,5 +22,11 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 - Not done yet: MCP text mode (design rules section 12), trace viewer in the console, SUBMISSION.md, the bundle for Ryan, LICENSE line (Ryan), the real-stack run (team or Mac).
 - Ryan has not answered the 18:20 message yet (team alignment, license).
 
+## 19:30 Reviews answered, submission files complete
+- `3d0acb4` text mode for MCP results and the CLI. Six review agents ran 18:50-19:05: architect round 2 FAIL (1 blocker, 5 majors), claims-auditor FAIL (2 majors), qa-runner PASS on a fresh clone (1 major: bare pytest red), brand FAIL (6 majors), ui FAIL (1 major), ux FAIL (4 majors).
+- All blockers and majors fixed: `b50419d` (console loopback + operator checks, guard before the model, receipt ids, typed boundary, author-only answers, conftest), `65e49be` (policy scope, rulings restamped, trace viewer, escalation facts, text mode polish, console kit compliance), `fcb00f5` (labelled context, why/recall/brief text), `fe53c66` (conformance log, README/metadata/SPONSORS/PRIOR_WORK claims, fake token), then this commit (ARCHITECTURE review log, DECISIONS D31 applied + D33-D36, SUBMISSION.md, LICENSE line with the three names after Ryan's "ok licence").
+- State: 124 tests (with or without SAMPLE_MODE), mcp_smoke PASS, make_examples --check OK, steward-demo runs, console checked with Playwright (every tab, a ruling with a policy, the trace dialog, 375 px). tests.json: 22 passing, 0 failing, 6 not started (R14-R17 real stack, R26 push, R28 Windows).
+- Not re-run after the fixes: the review agents themselves (time); `tests/test_review_round2.py` covers the architect's points.
+
 ## Next action
-- Launch architect round 2, claims-auditor and qa-runner; implement MCP text mode; then brand/ui/ux reviews; bundle for Ryan before 21:30.
+- Build `unify.bundle`, put it on Ryan's Mac with the push commands, send him the diff summary; wait for his go before any merge into `main`. Then, if time: a second architect pass, the Nemotron run on a machine with Nightshift (R15, R16).

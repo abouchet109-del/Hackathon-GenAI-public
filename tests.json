@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-27T19:14:25+01:00",
+  "updated": "2026-10-27T19:17:24+01:00",
   "statuses": {
-    "passing": 21,
+    "passing": 22,
     "failing": 0,
-    "not_started": 7
+    "not_started": 6
   },
   "requirements": [
     {
@@ -195,7 +195,8 @@
       "requirement": "docs/SUBMISSION.md ready to paste: name, one sentence, sponsor usage, prior work, video script with commands",
       "command": "test -s docs/SUBMISSION.md",
       "expected": "present and complete",
-      "status": "not_started"
+      "status": "passing",
+      "note": "written 27/10 19:25: name, one sentence, short description, sponsor usage with status, prior work, judge commands, video script with commands and timings"
     },
     {
       "id": "R26",
