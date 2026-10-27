@@ -40,8 +40,8 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 | Cas d'usage Atlas | Défini |
 | Architecture | **Brouillon complété** (27/10) : trois revues intégrées ; briques 1, 2, 4, 5 et 7, orchestrateur, couches Zetaris / World Model / H-MEM, schéma fonctionnel |
 | Fondations déterministes | **Faites et testées** (27/10) : format des décisions, classement en quatre cas, boîtes d'alertes, contrats entre composants (`agent/contracts.py`), appel LLM commun (sortie JSON validée, une nouvelle tentative, timeout, repli, trace) |
-| Engine H-MEM | Implémentation de référence installée, **suite de conformité officielle au vert (13/13)** ; intégration à l'application à décider (D11) |
-| Engine World Model | Retenu pour l'état courant du projet (D12) ; intégration à faire, repli possible sur un état JSON |
+| Engine H-MEM | **Intégré** (27/10, 18:10) : service TypeScript `services/hmem/` autour de l'implémentation de référence, inchangée (D11 bis), client Python `agent/hmem.py` (décisions avec provenance et confiance, journal de confiance qui répond à « pourquoi le 10 novembre ? », retours helpful/wrong, enseignements d'Orion) ; **conformité officielle 13/13** ; repli local en Python |
+| Engine World Model | **Intégré** (27/10, 18:30) : service `services/world_model/` autour de la référence, inchangée ; `agent/world_model.py` implémente l'interface d'état (`agent/state.py`) : événements en ajout seul, pas de doublon à la réingestion, arêtes datées ; **conformité officielle 8/8** ; repli sur l'état JSON (D12) |
 | Données Atlas pour Zetaris | **Faites** (27/10) : corpus synthétique, variantes S2 et S3, résultats attendus S1 à S9 |
 | Agents LLM (6), orchestrateur, serveur MCP, `POST /run`, vue manager | Pas commencés |
 
@@ -49,7 +49,7 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 - `agent/decisions.py` : l'enregistrement d'une décision (sujet, attribut, valeur, statut, auteur, source, date, confiance, décision remplacée) et les règles qui disent quelle décision est en vigueur. Deux décisions approuvées incompatibles sont un conflit à arbitrer, jamais « la dernière gagne ».
 - `agent/progress.py` : le classement de l'avancement de chaque membre en quatre cas (tout va bien, retard, travail rendu obsolète par une décision, réunion nécessaire).
 - `agent/alerts.py` : les boîtes d'alertes par membre, déposées par l'algorithme de notification et récupérées une seule fois via MCP.
-- `scripts/hmem-conformance.ps1` : récupère le repo Meterless et lance la suite de conformité H-MEM.
+- `scripts/engine_service.py` lance un service d'engine Meterless (H-MEM ou World Model) ; `scripts/engines_conformance.py` lance leurs deux suites de conformité officielles ; `scripts/load_org_memory.py` charge les enseignements des projets passés dans la mémoire de l'organisation (S9).
 
 **Track : 03 — Reasoning Architecture.**
 
@@ -71,7 +71,8 @@ data/sample/        Corpus Atlas synthétique : un JSON {"records": [...]} par s
 data/scenarios/     Variantes injectées pour les scénarios S2, S3 et S8
 data/expected/      Résultats attendus des scénarios S1 à S9 (évaluation seulement, jamais lus par les agents)
 evaluation/         Chargement des résultats attendus
-scripts/            Scripts utilitaires (register_zetaris.py : enregistrement et vérification des sources dans Zetaris)
+scripts/            Scripts utilitaires (register_zetaris.py : sources Zetaris ; engine_service.py : services H-MEM et World Model)
+services/           Services locaux autour des engines Meterless (H-MEM, World Model), en TypeScript
 input_examples/     Exemples d'entrées (à venir)
 output_examples/    Exemples de sorties (à venir)
 logs/               Traces des agents (créées à l'exécution)
@@ -116,10 +117,33 @@ Remplir `.env` avec ses propres valeurs (jamais de clé dans le repo), puis :
 .venv/Scripts/python -m agent.llm status
 ```
 
-Suite de conformité H-MEM (Node.js requis) :
+### Engines Meterless (H-MEM et World Model)
+Node.js 20 ou plus requis. Les implémentations de référence (Apache-2.0) ne sont pas copiées dans le repo : au premier lancement, le script clone https://github.com/Meterless/Meterless dans `external/meterless` (ignoré par git) et installe leurs outils de développement (`npm ci`, sans dépendance d'exécution). Chaque service tourne dans son propre terminal :
 
 ```bash
-powershell -File scripts/hmem-conformance.ps1
+.venv/Scripts/python scripts/engine_service.py hmem
+```
+
+```bash
+.venv/Scripts/python scripts/engine_service.py world_model
+```
+
+H-MEM écoute sur `http://127.0.0.1:8765` (`HMEM_URL`), World Model sur `http://127.0.0.1:8766` (`WORLD_MODEL_URL`) ; les données restent dans `.state/` (ignoré par git). Sans service, ou avec `SAMPLE_MODE=true`, les clients Python prennent leur repli (mémoire locale pour H-MEM, état JSON pour World Model) et le disent (`origin`). Les tests d'intégration (`tests/test_hmem_service.py`, `tests/test_world_model.py`) sont ignorés, avec un message, quand les services ne tournent pas ; ils écrivent sous un sujet ou un projet de test à eux.
+
+Charger les enseignements des projets passés (Orion, Vega) dans la mémoire de l'organisation ; puis, une fois qu'un run a enregistré les décisions validées (l'écrivain, `agent/writer.py`, les écrit dans H-MEM), demander « pourquoi cette date ? » :
+
+```bash
+.venv/Scripts/python scripts/load_org_memory.py
+```
+
+```bash
+.venv/Scripts/python -m agent.hmem explain atlas-launch launch_date
+```
+
+Suites de conformité officielles (H-MEM 13/13, World Model 8/8) :
+
+```bash
+.venv/Scripts/python scripts/engines_conformance.py
 ```
 
 Les instructions complètes (sources Zetaris, `SAMPLE_MODE`, point d'entrée de l'agent) seront ajoutées au fil de la construction.

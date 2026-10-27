@@ -15,6 +15,14 @@ Format d'une entrée :
 
 ---
 
+## 27/10 18:30 — Incrément 2 : H-MEM (n° 8), Orion (n° 9), World Model (n° 7) (session dédiée)
+- Fait : client `agent/hmem.py` (décision avec provenance et confiance, `explain` qui répond à « pourquoi le 10 novembre ? » par l'historique et le journal de confiance, retours helpful/not_helpful/wrong, rappel des enseignements), avec repli local en Python ; service `services/hmem/` autour de la référence H-MEM inchangée (résolution automatique des conflits jamais appelée) ; `scripts/load_org_memory.py` (enseignements d'Orion et Vega lus via Zetaris) ; service `services/world_model/` et adaptateur `agent/world_model.py` qui implémente `StateStore` sans toucher à `agent/state.py`, repli sur l'état JSON ; `scripts/engine_service.py` (lancement des deux services) et `scripts/engines_conformance.py` (les deux suites officielles).
+- Tâches du plan : n° 8 faite ; n° 9 faite côté mémoire (le rappel reste à brancher dans la brique 5 ou le brief) ; n° 7 faite.
+- Commits : 499df21, 0bd1728, 7aa6e21, puis le commit de cette entrée.
+- Vérifié : 144 tests au vert avec les deux services lancés (intégration H-MEM 5/5, World Model 4/4 contre les vrais services) ; sans service, ces tests sont ignorés avec un message ; conformité H-MEM 13/13 et World Model 8/8 ; chargement d'Orion contre le service, sur repli et en `SAMPLE_MODE`.
+- Non vérifié : le lanceur PowerShell (`.ps1`) ne peut pas s'exécuter sur ce poste (politique d'exécution) : lanceurs écrits en Python à la place ; `scripts/hmem-conformance.ps1` est gardé tel quel.
+- Reste / prochaine session : brancher `WorldModelStateStore` et `HMem` dans l'orchestrateur (fichiers de l'incrément 1), recharger les enseignements à chaque run en `SAMPLE_MODE`, rappeler Orion dans la brique 5 ou le brief (S9).
+
 ## 27/10 17:58 — Incrément 0, tâches 4 et 5 (session dédiée)
 - Fait : Nemotron imposé dans Nightshift par son identifiant ; appel LLM commun `agent/structured.py` (schéma pydantic, une nouvelle tentative, timeout, routes Nightshift puis `MODEL_*` puis cache, trace JSONL avec le modèle lu dans le reçu de Nightshift). Horodatages de `docs/STATUS.md` corrigés (des heures fausses avaient été écrites pour les tâches 1 à 3).
 - Tâches du plan : n° 4 et 5 (incrément 0), faites. Incrément 0 terminé.
