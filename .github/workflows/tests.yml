@@ -1,0 +1,39 @@
+name: tests
+
+on:
+  push:
+    branches: [main, unify]
+  pull_request:
+
+jobs:
+  offline:
+    name: pytest in SAMPLE_MODE (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      SAMPLE_MODE: "true"
+      HMEM_URL: "http://127.0.0.1:1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: python run.py steward-demo
+      - run: python scripts/mcp_smoke.py
+      - run: python scripts/make_examples.py --check
+
+  hmem-conformance:
+    name: Meterless H-MEM conformance (reference engine)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: bash hmem-service/setup.sh
+      - run: cd hmem-service && npm run conformance
