@@ -13,7 +13,7 @@ Principes suivis : [reference/guide-architecture-agentique.md](reference/guide-a
 Ce que fait le système, de bout en bout, et ce qui est déjà codé (état au 27/10, 11:00 UTC). Le détail des boucles et des branchements est dans la section 3.
 
 ```mermaid
-flowchart LR
+flowchart TD
   subgraph IN["Entrées"]
     SRC["Sources de l'entreprise<br/>messages, réunions, briefs,<br/>tickets, registre, tâches"]
     COL["Collaborateurs et leur IA<br/>Claude, Cursor..."]
@@ -57,14 +57,12 @@ flowchart LR
   B4 --> DIFF
   B5 --> REC
   AL -->|"get_alerts, MCP"| COL
-  DIFF --> COL
   REC --> MAN
   MAN -->|"verdict"| B5
   MAN -->|"POST /run"| AM
   WM --> AM
   HM --> AM
   AM --> REP
-  REP --> MAN
 
   classDef done fill:#c8e6c9,stroke:#2e7d32,color:#000
   classDef partial fill:#ffe0b2,stroke:#ef6c00,color:#000
