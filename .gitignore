@@ -29,3 +29,4 @@ zetaris-platform.zip
 docs/submission/video/*.mp4
 data/*.lock
 docs/submission/video/cards/
+data/alerts-*.json

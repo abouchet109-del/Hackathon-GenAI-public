@@ -43,6 +43,9 @@ def main() -> int:
     cfg = dotenv_values(ENV)
     base = (cfg.get("METERLESS_BASE_URL") or "http://127.0.0.1:8088/v1").rstrip("/")
     token = cfg.get("METERLESS_RUNTIME_TOKEN") or ""
+    state_dir = cfg.get("METERLESS_STATE_DIR")
+    if (not token or token.startswith("your-")) and state_dir and (Path(state_dir) / "proxy-token").exists():
+        token = (Path(state_dir) / "proxy-token").read_text(encoding="utf-8").strip()  # the runtime writes it there
     if not token or token.startswith("your-"):
         print("METERLESS_RUNTIME_TOKEN is missing in .env: copy it from the Nightshift Console.")
         return 2
@@ -63,8 +66,14 @@ def main() -> int:
     deep = pick(models, r"nemotron.*super", r"nemotron.*ultra", r"nemotron")
     judge = pick(models, r"nemotron.*ultra", r"nemotron.*super", r"nemotron")
     if not (fast and deep and judge):
-        print("No Nemotron lane found. In Nightshift: Setup > Providers > NVIDIA (paste the key), then assign Nemotron"
-              " models to lanes, and run this again.")
+        # Nightshift usually exposes routing modes (meterless/fast, meterless/deep, meterless/<class>.<mode>),
+        # not model ids: the lanes then point at those modes, and the model actually served is read back from
+        # each answer (it is logged on every trace line).
+        fast = pick(models, r"^meterless/fast$", r"^meterless/[a-z]+\.fast$", r"^meterless/auto$")
+        deep = pick(models, r"^meterless/deep$", r"^meterless/[a-z]+\.deep$", r"^meterless/auto$")
+        judge = pick(models, r"^meterless/deep$", r"^meterless/fusion$", r"^meterless/auto$")
+    if not (fast and deep and judge):
+        print("No usable lane found. In Nightshift: Setup > Providers > NVIDIA (paste the key), then run this again.")
         return 1
     print(f"fast={fast}\ndeep={deep}\njudge={judge}")
     if not args.check:
@@ -78,7 +87,11 @@ def main() -> int:
     r = requests.post(f"{base}/chat/completions", headers=headers, json=body, timeout=120)
     r.raise_for_status()
     data = r.json()
-    print(f"Test call served by: {data.get('model')} -> {data['choices'][0]['message']['content'][:80]!r}")
+    served = data.get("model") or "?"
+    print(f"Test call on {deep} served by: {served} -> {data['choices'][0]['message']['content'][:80]!r}")
+    if "nemotron" not in served.lower():
+        print("Note: the answer did not come from a Nemotron model. In Nightshift, put the NVIDIA key in Providers and "
+              "make Nemotron the model behind these lanes (Setup > Fleets / Controls), then run this again.")
     return 0
 
 
