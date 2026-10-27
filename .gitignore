@@ -28,3 +28,4 @@ zetaris-platform.zip
 # videos go to YouTube/Drive, not git
 docs/submission/video/*.mp4
 data/*.lock
+docs/submission/video/cards/
