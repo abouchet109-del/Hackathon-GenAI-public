@@ -41,11 +41,12 @@ READ, WRITE = _hint(True), _hint(False)
 
 INSTRUCTIONS = """You are connected to Steward, the company's shared context. Follow these rules in every conversation:
 
-1. CONTEXT FIRST. Before answering anything about the company (prices, dates, customers, budgets, stack, roadmap, who decided what), call my_context with the user's task, and answer from it, citing the [ids]. At the start of a work session, call whats_new and tell the user what changed and what is waiting for them.
+1. CONTEXT FIRST. Before answering anything about the company (prices, dates, customers, budgets, stack, roadmap, who decided what), call my_context with the user's task, and answer from it, citing the [ids]. At the start of a work session, call whats_new and my_alerts and tell the user what changed and what is waiting for them.
 2. WATCH LAYER. While you work with the user (emails, documents, plans, code, meetings), watch for the domains listed in the watchlist resource (pricing, launch date, budgets, deals, customers, stack, hiring, ...). When the user states or produces something in one of those domains (a decision, a fact, a figure, a date, a task done or planned), call observe with the relevant excerpt only (a few sentences), source = conversation, document or meeting. Never send small talk or personal matters.
 3. TELL THE OUTCOME. observe and remember return the Steward's verdict per item (stored, replaced an older decision, masked, rejected, needs clarification, escalated, quarantined). Tell the user in one line. If a clarification is needed, ask the user the question ("error or real change?") and send the answer with answer_clarification.
 4. NEVER put passwords, keys, bank details or personal data in what you send; the Steward masks them anyway.
-5. Personal preferences about how the user likes to work stay in your own memory, not in the company's."""
+5. PROGRESS. When the user finishes or advances one of their tasks (see my_tasks), call report_progress with the progress and the company values the work relies on (launch date, price, ...).
+6. Personal preferences about how the user likes to work stay in your own memory, not in the company's."""
 
 server = _Server("osef-steward", instructions=INSTRUCTIONS)
 _steward: Steward | None = None
@@ -156,6 +157,32 @@ def onboard(responsibilities: str, topics_followed: str, focus: str, detail_leve
 
 
 # ---------- CEO ----------
+
+@server.tool(annotations=READ)
+def my_tasks(ctx: Context = None) -> dict:
+    """This person's tasks (from Zetaris) and where each stands: on track, late, or relying on a value a newer
+    decision changed; plus the meetings Steward recommends that involve them."""
+    member, _ = _me(ctx)
+    return {"tasks": steward().tasks(member), **steward().progress(member)}
+
+
+@server.tool(annotations=WRITE)
+def report_progress(task_id: str, progress: float, assumptions: dict | None = None, note: str = "",
+                    ctx: Context = None) -> dict:
+    """Report where one of this person's tasks stands. progress is 0 to 1. assumptions lists the company values
+    the work relies on, keyed by topic, e.g. {"launch_date": "2026-12-01", "pricing": "29 EUR"}: Steward flags
+    the work as obsolete when a decision in force says otherwise."""
+    member, _ = _me(ctx)
+    return steward().report_progress(member, task_id, progress, assumptions, note)
+
+
+@server.tool(annotations=WRITE)
+def my_alerts(ctx: Context = None) -> dict:
+    """Decisions that changed something this person works on, each returned once. Call it at the start of a
+    session and tell the person before anything else."""
+    member, _ = _me(ctx)
+    return {"alerts": steward().alerts(member)}
+
 
 @server.tool(annotations=READ)
 def escalations() -> dict:

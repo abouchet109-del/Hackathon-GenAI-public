@@ -27,6 +27,7 @@ tables:          # sample mode: one SQLite copy of every CSV
   profiles: profiles
   procedures: procedures
   finance: finance
+  tasks: tasks
 # With Zetaris: three sources behind one SQL door (see scripts/zetaris/register_steward.sql)
 #   Postgres "brikk"     org chart, trust, topics, rules, profiles  (datasource)
 #   REST finance API     budgets and commitments                    (lightning REST table + view)
@@ -40,6 +41,7 @@ zetaris_tables:
   profiles: brikk.profiles
   finance: brikk_api.finance
   procedures: brikk_drive.procedures
+  tasks: brikk.tasks
 # ZETARIS_USE_USL=true: the same reads through the Unified Semantic Layer (finance as departments)
 zetaris_usl_tables:
   members: lightning.metastore.osef.brikk_usl.member

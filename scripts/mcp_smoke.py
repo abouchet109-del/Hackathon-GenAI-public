@@ -17,6 +17,9 @@ def _text(result) -> str:
 
 
 async def main() -> int:
+    sys.path.insert(0, str(ROOT))
+    from app.steward import Steward
+    Steward(space="mcp-smoke").reset()  # start from the seeded company memory every time
     env = {**os.environ, "STEWARD_SPACE": "mcp-smoke", "OSEF_MEMBER": "Karim Diallo", "OSEF_AI_TOOL": "Cursor"}
     params = StdioServerParameters(command=sys.executable, args=[str(ROOT / "run.py"), "mcp"], env=env, cwd=str(ROOT))
     async with stdio_client(params) as (read, write):
@@ -42,7 +45,8 @@ async def main() -> int:
             prompts = [p.name for p in (await session.list_prompts()).prompts]
             print("resources:", resources, "prompts:", prompts)
             ok = {"remember", "recall", "project_brief", "why", "escalations", "resolve_escalation", "observe",
-                  "my_context", "whats_new", "answer_clarification", "onboard", "my_contributions"} <= set(tools)
+                  "my_context", "whats_new", "answer_clarification", "onboard", "my_contributions",
+                  "my_tasks", "report_progress", "my_alerts"} <= set(tools)
             ok = ok and obs["outcomes"] and obs["outcomes"][0]["decision"] == "clarify" and "osef://watchlist" in resources
             print("PASS" if ok and res["decision"] == "store" else "FAIL")
             return 0 if ok else 1

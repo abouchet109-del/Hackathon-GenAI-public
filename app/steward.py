@@ -9,12 +9,13 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
-import fcntl
 import importlib.util
 import json
+import os
 from collections import defaultdict
 
 from .adapters.memory import load_seed
+from .coordination import bridge
 from .config import SETTINGS
 from .pipeline import Harness
 
@@ -38,12 +39,23 @@ def _exclusive(path):
     """One writer at a time per company memory, across processes (each AI client runs its own MCP server):
     otherwise two contradictory values could both pass the arbitration and both be stored."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "a") as handle:
-        fcntl.flock(handle, fcntl.LOCK_EX)
-        try:
-            yield
-        finally:
-            fcntl.flock(handle, fcntl.LOCK_UN)
+    with open(path, "a+") as handle:
+        if os.name == "nt":  # Windows: lock the first byte (blocking, retried by msvcrt every second)
+            import msvcrt
+            handle.seek(0)
+            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+            try:
+                yield
+            finally:
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(handle, fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(handle, fcntl.LOCK_UN)
 
 
 class Steward:
@@ -58,7 +70,11 @@ class Steward:
         self.ctx.logic = self.logic
         self.data, self.schema = self.h.data, self.settings.data_schema
         self.ctx.TABLES = self.h.domain.tables_for(self.data)
-        self._lock_path = self.settings.log_dir.parent / "data" / f"steward-{space}.lock"
+        self._state_dir = self.settings.log_dir.parent / "data"
+        self._lock_path = self._state_dir / f"steward-{space}.lock"
+        self.space = space
+        self.progress_store = bridge.ProgressStore(space, self._state_dir)
+        self.inbox = bridge.inbox(space, self._state_dir)
 
     # ----- setup -----
     def reset(self, seed: bool = True, policies: bool = True) -> int:
@@ -67,6 +83,9 @@ class Steward:
         if journal.exists():
             journal.write_text("", encoding="utf-8")  # emptied, not deleted
         self.ctx.reset_state(self.memory)
+        self.progress_store.reset(self.h.domain.path / "progress_seed.jsonl" if seed else None)
+        if self.inbox.path.exists():
+            self.inbox.path.write_text("[]", encoding="utf-8")
         if not seed:
             return 0
         name = "memory_seed.jsonl" if policies else "memory_seed_no_policies.jsonl"
@@ -99,8 +118,9 @@ class Steward:
         if res["status"] != "success":
             return {"status": "error", "error": res.get("error"), "trace": res.get("log_file")}
         out = res["output"]
+        alerts = self._alert_on((out.get("applied") or {}).get("memory_id"))
         return {"decision": out["decision"], "why": out["summary"], "citations": out["citations"],
-                "applied": out.get("applied"), "needs_ceo": out["decision"] == "escalate",
+                "applied": out.get("applied"), "needs_ceo": out["decision"] == "escalate", "alerts_sent": alerts,
                 "critic_score": (out.get("critic") or {}).get("total"), "trace": res["log_file"],
                 "stack": res["stack"]}
 
@@ -158,7 +178,9 @@ class Steward:
             raise ValueError("decision must be store, supersede or reject")
         with _exclusive(self._lock_path):
             entry = self.logic.resolve(journal_id, decision, self.memory, policy)
-        return {k: entry.get(k) for k in ("journal_id", "status", "memory_id", "supersedes", "policy_id", "content")}
+        out = {k: entry.get(k) for k in ("journal_id", "status", "memory_id", "supersedes", "policy_id", "content")}
+        out["alerts_sent"] = self._alert_on(entry.get("memory_id"))
+        return out
 
 
     # ----- v2: the watch layer, role context, clarifications, CEO agent, onboarding -----
@@ -204,7 +226,74 @@ class Steward:
                 for e in self.logic.journal(self.memory) if e.get("author") == name]
 
     def signals(self) -> list[dict]:
-        return self.ctx.weak_signals(self.data, self.schema, self.memory, self.logic.journal(self.memory))
+        signals = self.ctx.weak_signals(self.data, self.schema, self.memory, self.logic.journal(self.memory))
+        prog = self.progress()
+        for m in prog["meetings"]:
+            signals.append({"kind": "coordination", "topic": "team progress", "severity": "high",
+                            "signal": m["reason"].capitalize() + ".", "concerned": m["participants"],
+                            "suggested_meeting": {"participants": m["participants"], "minutes": 15,
+                                                  "agenda": "Agree on what changes for each task: " + ", ".join(m["evidence"]) + "."}})
+        for f in prog["findings"]:
+            if f["case"] in {"late", "obsolete"}:
+                signals.append({"kind": f["case"], "topic": f"{f['task_id']} {f.get('title') or ''}".strip(),
+                                "severity": "medium", "signal": f"{f['member']}: {f['reason']}.",
+                                "concerned": [f["member"]], "suggested_meeting": None})
+        return signals
+
+    # ----- team coordination (ported from the team's Atlas modules, app/coordination) -----
+    def _today(self):
+        return bridge.as_of(self.ctx._rows(self.data, self.schema, "project", ["key", "value"]))
+
+    def _tasks(self):
+        rows = self.ctx._rows(self.data, self.schema, "tasks", ["task_id", "member", "topic", "title", "due", "depends_on"])
+        return bridge.tasks_from_rows(rows)
+
+    def _decisions(self):
+        singles = {r["topic"] for r in self.ctx._rows(self.data, self.schema, "topics", ["topic", "singleton"])
+                   if str(r["singleton"]).lower() in {"yes", "true", "1"}}
+        return bridge.decisions_from_memory(self.memory, singles, self._today())
+
+    def tasks(self, name: str | None = None) -> list[dict]:
+        return [t.model_dump(mode="json") for t in self._tasks() if name is None or t.member == name]
+
+    def progress(self, name: str | None = None) -> dict:
+        out = bridge.classification(self._tasks(), self.progress_store.reports(), self._decisions(), self._today())
+        if name:
+            out["findings"] = [f for f in out["findings"] if f["member"] == name]
+            out["meetings"] = [m for m in out["meetings"] if name in m["participants"]]
+        return out
+
+    def report_progress(self, name: str, task_id: str, progress: float, assumptions: dict | None = None,
+                        note: str = "") -> dict:
+        """A person's AI reports where a task stands, and the values the work relies on (e.g. launch_date)."""
+        task = next((t for t in self._tasks() if t.id == task_id), None)
+        if task is None:
+            raise ValueError(f"unknown task {task_id}")
+        if task.member != name:
+            raise ValueError(f"{task_id} belongs to {task.member}, not {name}")
+        from datetime import datetime
+        self.progress_store.add({"member": name, "task_id": task_id, "progress": max(0.0, min(1.0, float(progress))),
+                                 "reported_at": datetime.now().replace(microsecond=0).isoformat(),
+                                 "assumptions": {k: str(v) for k, v in (assumptions or {}).items()}, "note": note})
+        return self.progress(name)
+
+    def alerts(self, name: str) -> list[dict]:
+        """Alerts waiting for this person, returned once."""
+        return [a.model_dump(mode="json") for a in self.inbox.pending(name)]
+
+    def _alert_on(self, memory_id: str | None) -> list[str]:
+        """After a decision is stored or replaces another, alert everyone whose work it touches."""
+        if not memory_id:
+            return []
+        decision = next((d for d in self._decisions() if d.id == memory_id), None)
+        if decision is None:
+            return []
+        # Task.subject holds the task's topic; the register files every decision under the project, so the tasks
+        # on the decision's topic are re-filed under the project for the inbox's "who is affected" rule.
+        touched = [t.model_copy(update={"subject": bridge.SUBJECT}) for t in self._tasks()
+                   if t.subject == decision.attribute]
+        new = self.inbox.notify(decision, touched, self.progress_store.reports())
+        return sorted({a.member for a in new})
 
     def onboarding_questions(self) -> list[dict]:
         topics = [t["topic"] for t in self.watchlist()]
