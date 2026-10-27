@@ -175,7 +175,7 @@ Raw text never enters the memory: only the extracted items do, and each person c
 ├── logs/samples/               JSONL traces from real runs (the rest of logs/ is ignored)
 ├── docs/                       ARCHITECTURE, INVENTORY, PLAN, DECISIONS, SKILLS, SPONSORS, PRIOR_WORK, SUBMISSION, STEWARD, TEAM-AND-MERGE, mcp/, submission/, atlas/ (the team's documents, moved whole)
 ├── tests/                      Steward tests (32) + Atlas tests (158, 9 skipped without the engine services); conftest.py sets SAMPLE_MODE
-├── .github/workflows/tests.yml CI: pytest in SAMPLE_MODE on Linux and Windows
+├── docs/ci-tests.yml           CI: pytest in SAMPLE_MODE on Linux and Windows (to be restored at .github/workflows/tests.yml from a user session: the transport push cannot carry workflow files)
 └── .claude/agents/ .claude/skills/   the review agents and their skills
 ```
 
