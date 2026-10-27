@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T21:35:00+01:00",
+  "updated": "2026-10-27T21:45:00+01:00",
   "statuses": {
     "passing": 23,
     "failing": 0,
@@ -94,7 +94,7 @@
       "command": "STEWARD_SPACE=review python run.py serve  # then open /console",
       "expected": "every screen renders (ui-reviewer screenshots)",
       "status": "passing",
-      "note": "Playwright run 27/10 19:05 Paris on port 8041: every tab, a ruling with a policy, the trace dialog, 375 px nav wraps; reviewed by brand/ui/ux agents (findings fixed in 65e49be, fcb00f5)",
+      "note": "Playwright run 27/10 19:05 Paris: every tab, a ruling with a policy, the trace dialog, 375 px; reviewed by brand/ui/ux agents (fixed in 65e49be, fcb00f5) | final pass 27/10 21:40 on the fresh clone of d9a1707 (STEWARD_SEED_POLICIES=true): the 6 tabs render, 0 console errors, 0 failed requests, no horizontal overflow at 375 px; through /api/remember (the console's door): booth 11,800 EUR as a decision -> store citing the CEO policy, 15,000 EUR -> escalate (S05, amount and confidence on the card), CEO price change as a decision -> supersede (S07), the same as a fact -> clarify (S10), Julie's 19 EUR mention -> clarify (S10), injection -> quarantine, password + key -> redact",
       "name": "Console screens: shared truth, escalations with policies, clarifications, weak signals, context preview, onboarding, simulate an AI with its trace"
     },
     {
