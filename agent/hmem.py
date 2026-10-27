@@ -39,6 +39,10 @@ from agent.zetaris import sample_mode
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_URL = "http://127.0.0.1:8765"
 DEFAULT_TIMEOUT = 5  # seconds: a local service either answers fast or is down
+# Recall threshold on the reference's final score (relevance x confidence).
+# Its default, 0.35, is tuned for chat memories; with its hash embedder, a
+# French lesson matched by its situation tags scores about 0.2 (Orion, S9).
+RECALL_THRESHOLD = 0.15
 
 Layer = Literal["short_term", "working", "long_term"]
 FeedbackKind = Literal["helpful", "not_helpful", "wrong"]
@@ -221,7 +225,8 @@ class HttpBackend:
         return self._request("POST", f"/memories/{memory_id}/feedback", body)["memory"]
 
     def query(self, text, top_n, layer, at_ms):
-        body = {"query": text, "topN": top_n, "layer": layer, "at": at_ms}
+        body = {"query": text, "topN": top_n, "layer": layer, "at": at_ms,
+                "threshold": RECALL_THRESHOLD}
         return [(item["memory"], item["relevance"])
                 for item in self._request("POST", "/query", body)["memories"]]
 
