@@ -35,6 +35,7 @@ Mettre à jour à chaque étape terminée (date, ce qui marche, ce qui bloque, p
 ### Prochaines étapes
 Détail, estimations et méthode : [PLAN.md](PLAN.md) (27/10, 17:20). Gel du code à 22:30, soumission vers 00:15 (heure de Paris).
 1. **En cours — incrément 0** : contrats entre composants, corpus Atlas et résultats attendus, enregistrement dans Zetaris, client Zetaris, Nemotron imposé et journalisé, appel LLM commun.
+   - **27/10, 17:45 — Contrats écrits** ([agent/contracts.py](../agent/contracts.py), testés) : information candidate, proposition de mise à jour, résultat du contrôleur, affirmation et passage périmé d'un livrable, remontée de la brique 7. Le rapport d'avancement reste `Report` ([agent/progress.py](../agent/progress.py)), complété par les blocages ; `Task` gagne une date de début, et un `Milestone` lit sa date dans la décision en vigueur. **En attente de relecture par l'équipe.**
 2. À trancher par l'équipe après l'incrément 0 : D11, sort de World Model, fusion de l'analyste, brique 5 réduite, choix des incréments (PLAN, sections 3 et 4).
 3. Incréments 1 (bout en bout) et 2 (H-MEM, en parallèle) : le projet devient soumissible.
 4. Incréments suivants selon le temps : remontées (brique 7), MCP et skill manager, correction du brief.

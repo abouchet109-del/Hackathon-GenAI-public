@@ -23,8 +23,19 @@ class Task(BaseModel):
     member: str
     subject: str
     title: str
+    start: Optional[date] = None  # needed for the R1 forecast (brick 7)
     due: date
     depends_on: list[str] = []  # ids of tasks that must finish first
+
+
+class Milestone(BaseModel):
+    """A project milestone. Its date is the decision in force on
+    (subject, attribute), never a copy, so a new decision moves it (S2)."""
+    id: str
+    subject: str  # e.g. "atlas-launch"
+    attribute: str  # e.g. "launch_date"
+    title: str
+    depends_on: list[str] = []  # ids of the tasks the milestone needs
 
 
 class Assumption(BaseModel):
@@ -40,6 +51,7 @@ class Report(BaseModel):
     progress: float = Field(ge=0.0, le=1.0)
     reported_at: datetime
     assumptions: list[Assumption] = []
+    blockers: list[str] = []  # ticket ids, or short text when there is no ticket
     note: str = ""
 
 
