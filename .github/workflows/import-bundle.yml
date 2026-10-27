@@ -1,0 +1,23 @@
+name: Import unify bundle
+# Transport branch only: a git bundle uploaded here through the GitHub web UI is turned into the real
+# `unify` branch by this workflow (the session that builds Steward cannot push directly). Delete this
+# branch after the event.
+on:
+  push:
+    branches: [transport]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: transport
+          fetch-depth: 0
+      - name: Verify and import the bundle, then push unify (fast-forward only)
+        run: |
+          git bundle verify unify.bundle
+          git fetch unify.bundle +unify:refs/heads/unify
+          git log --oneline -1 unify
+          git push origin refs/heads/unify:refs/heads/unify
