@@ -16,7 +16,7 @@ Une mémoire projet autonome, qui appartient à l'entreprise et garde l'équipe 
 - elle garde la mémoire de l'avancement du projet et celle des projets passés de l'organisation ;
 - chaque membre récupère l'état du projet depuis son IA via **MCP**.
 
-Cas de démonstration : **Atlas**, le lancement d'un portail client fictif dont les sources se contredisent. Détail : [docs/use-case-atlas.md](docs/use-case-atlas.md).
+Cas de démonstration : **Atlas**, le lancement d'un portail client fictif dont les sources se contredisent. Détail : [docs/use-case-atlas.md](use-case-atlas.md).
 
 ## Technologies
 | Technologie | Rôle |
@@ -29,7 +29,7 @@ Cas de démonstration : **Atlas**, le lancement d'un portail client fictif dont 
 | MCP | Accès à l'état du projet depuis l'IA de chaque membre |
 
 ## État d'avancement
-Détail : [docs/STATUS.md](docs/STATUS.md).
+Détail : [docs/STATUS.md](STATUS.md).
 
 | Étape | État |
 |---|---|
@@ -54,7 +54,7 @@ Détail : [docs/STATUS.md](docs/STATUS.md).
 
 **Track : 03 — Reasoning Architecture.**
 
-**Architecture du 27/10** ([docs/architecture.md](docs/architecture.md), avec un schéma fonctionnel en tête ; notes manuscrites dans [docs/architecture-notes/](docs/architecture-notes/)). Brouillon complété par deux revues, pas encore l'architecture finale. Six agents LLM, chacun avec une seule mission ; tout le reste est en code. Principe directeur : **le LLM qualifie, le code tranche** (D13).
+**Architecture du 27/10** ([docs/architecture.md](architecture.md), avec un schéma fonctionnel en tête ; notes manuscrites dans [docs/architecture-notes/](architecture-notes/)). Brouillon complété par deux revues, pas encore l'architecture finale. Six agents LLM, chacun avec une seule mission ; tout le reste est en code. Principe directeur : **le LLM qualifie, le code tranche** (D13).
 - **Brique 1 — Contexte fiable** : un extracteur tire les informations des sources lues dans Zetaris ; l'agent de mise à jour les rattache au bon sujet et les qualifie ; des règles en code décident ce qui fait foi ; un contrôleur vérifie habilitations, conflits et preuves, demande une révision au plus ou escalade. Un seul écrivain met à jour l'état (World Model) et l'historique (H-MEM), puis un algorithme dépose une alerte chez chaque personne concernée.
 - **Brique 2 — Avancement par membre** : l'IA de chaque collaborateur remonte un rapport structuré par l'outil MCP `report_progress` (un skill dit quand et quoi déclarer) ; ce rapport est aussi une source de la brique 1. Un algorithme, sans LLM, classe chaque tâche : tout va bien, retard, travail obsolète, contradiction entre membres, ou signal de coordination.
 - **Brique 4 — Correction des livrables** : les affirmations d'un livrable sont comparées en code à l'état du projet ; un rédacteur corrige seulement les passages périmés ; un validateur vérifie que chaque changement cite sa source. Résultat : un diff proposé, jamais appliqué automatiquement.
@@ -86,14 +86,14 @@ smoke_test.py       Test de connexion à Zetaris et au modèle
 ## Documentation
 | Document | Pour quoi faire |
 |---|---|
-| [docs/CONTEXT.md](docs/CONTEXT.md) | **À lire en premier** : le hackathon, l'idée, le cas d'usage, l'environnement |
-| [docs/use-case-atlas.md](docs/use-case-atlas.md) | Le cas d'usage en détail : scénario, règles, données, démo |
-| [docs/architecture.md](docs/architecture.md) | L'architecture (en cours) |
-| [docs/STATUS.md](docs/STATUS.md) | Ce qui est fait, ce qui bloque, la suite |
-| [docs/PLAN.md](docs/PLAN.md) | Ce qu'il reste à construire, estimations, incréments et méthode de travail |
-| [docs/reference/guide-architecture-agentique.md](docs/reference/guide-architecture-agentique.md) | Les principes d'architecture que l'on suit |
-| [docs/strategie/](docs/strategie/) | Prompt jury et évaluation des use cases |
-| [docs/hackathon/](docs/hackathon/) | Documents officiels du hackathon |
+| [docs/CONTEXT.md](CONTEXT.md) | **À lire en premier** : le hackathon, l'idée, le cas d'usage, l'environnement |
+| [docs/use-case-atlas.md](use-case-atlas.md) | Le cas d'usage en détail : scénario, règles, données, démo |
+| [docs/architecture.md](architecture.md) | L'architecture (en cours) |
+| [docs/STATUS.md](STATUS.md) | Ce qui est fait, ce qui bloque, la suite |
+| [docs/PLAN.md](PLAN.md) | Ce qu'il reste à construire, estimations, incréments et méthode de travail |
+| [docs/reference/guide-architecture-agentique.md](reference/guide-architecture-agentique.md) | Les principes d'architecture que l'on suit |
+| [docs/strategie/](strategie/) | Prompt jury et évaluation des use cases |
+| [docs/hackathon/](hackathon/) | Documents officiels du hackathon |
 
 ## Installation (état actuel)
 Prérequis : Python 3.12, Zetaris en local, Meterless Nightshift.
@@ -199,6 +199,6 @@ LLM_CACHE_FIRST=true .venv/Scripts/python -m atlas.orchestrator --today 2026-10-
 ```
 
 ## Travailler sur le projet
-- Lire [docs/CONTEXT.md](docs/CONTEXT.md), puis [docs/STATUS.md](docs/STATUS.md).
+- Lire [docs/CONTEXT.md](CONTEXT.md), puis [docs/STATUS.md](STATUS.md).
 - Une étape à la fois : on teste, on committe, on met à jour `docs/STATUS.md`.
 - Ne jamais committer `.env` ni aucune clé.

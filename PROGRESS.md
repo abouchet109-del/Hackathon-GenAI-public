@@ -39,5 +39,10 @@ Resume protocol: `pwd`, read this file, `tests.json`, `git log --oneline -20`, r
 - CI run 40568677619 on `unify`: pytest in SAMPLE_MODE on ubuntu-latest and windows-latest, H-MEM conformance: all green.
 - `main` untouched; Ryan's go awaited for the merge (diff summary sent 20:20).
 
+## 21:35 Final checks before the freeze
+- `unify` = `d9a1707` on GitHub (transport run 40578219363). Fresh clone **from GitHub** of that commit, judge commands as written in the README: pip install OK, `steward-demo` exit 0, `pytest` 197 passed / 9 skipped / 48 subtests in 13 s, `mcp_smoke` PASS, `make_examples --check` OK; 35 seconds end to end. Only `scripts/after-zetaris.sh` changed since CI run 40568677619, so that run still covers the Python code.
+- Relative links in the team's documents moved to `docs/atlas/` (19 broken by the move) fixed; a link checker over the 53 markdown files finds 0 broken. `docs/atlas/README.md.orig` (a merge leftover) is left for Ryan to delete: no deletion without his word.
+- Mac unchanged (`~/open-agent-hack` at 9889b6b, Zetaris log of 12:49, no `_lane-b/`): the real-stack run has not happened; README keeps `UNKNOWN` for Nemotron. `main` untouched, Ryan's go awaited.
+
 ## Next action
-- Each new commit: `git bundle create /mnt/user-data/uploads/unify.bundle unify`, upload to `transport` via Chrome, wait for the import run. Import `for-repo/` from B/C when it appears (`~/steward-lanes/`), final report by 23:45, vault note.
+- Each new commit: `git bundle create /mnt/user-data/uploads/unify.bundle unify`, upload to `transport` via Chrome, wait for the import run. If `logs/steward-demo-real.json` appears on the Mac: read it, copy a Nemotron trace into `logs/samples/`, replace the README's `UNKNOWN`, update R14-R16. Final report by 23:45, vault note.

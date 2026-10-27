@@ -118,7 +118,7 @@ Au total : **six agents LLM**, chacun avec une seule mission. Le reste est en co
 ### Brique 1 — Contexte fiable (suivi des décisions)
 Bilan de la brique : 1 capacité, l'état du projet (World Model), la mémoire des décisions (H-MEM), 3 agents, 1 algorithme.
 
-**Principe (proposition H) : le LLM qualifie, le code tranche.** L'agent de mise à jour reste le point d'entrée unique de toute information qui peut modifier l'état du projet. Il compare l'entrée avec ce qui a déjà été décidé, fait et prévu, et propose la mise à jour. Mais la question « est-ce que ça fait foi ? » n'est pas laissée à son jugement. Elle se déduit, par des règles en code ([agent/decisions.py](../agent/decisions.py)), du type d'information, de l'habilitation de l'auteur (table des rôles) et des conflits. Sinon, les règles d'autorité vivraient à deux endroits (le prompt et le code), qui finiraient par diverger. Un LLM aurait par exemple tendance à préférer le message le plus récent, ce que la règle 2 du cas d'usage interdit.
+**Principe (proposition H) : le LLM qualifie, le code tranche.** L'agent de mise à jour reste le point d'entrée unique de toute information qui peut modifier l'état du projet. Il compare l'entrée avec ce qui a déjà été décidé, fait et prévu, et propose la mise à jour. Mais la question « est-ce que ça fait foi ? » n'est pas laissée à son jugement. Elle se déduit, par des règles en code ([agent/decisions.py](../../atlas/decisions.py)), du type d'information, de l'habilitation de l'auteur (table des rôles) et des conflits. Sinon, les règles d'autorité vivraient à deux endroits (le prompt et le code), qui finiraient par diverger. Un LLM aurait par exemple tendance à préférer le message le plus récent, ce que la règle 2 du cas d'usage interdit.
 
 | Composant | Type (LLM / code) | Rôle | Entrées | Sorties | Modèle |
 |---|---|---|---|---|---|
@@ -135,7 +135,7 @@ Bilan de la brique : 1 capacité, l'état du projet (World Model), la mémoire d
 ### Brique 2 — Avancement par membre
 Elle s'appuie sur l'état du projet tenu par la brique 1 (décisions en vigueur, tâches, rôles).
 
-**Principe (proposition I) : le rapport arrive déjà structuré, donc la brique 2 n'a pas d'agent LLM.** Le contrat, c'est le **schéma de l'outil MCP** `report_progress`. Tout client MCP le reçoit (Claude, Cursor…), et le serveur rejette un rapport invalide avec un message qui dit quoi corriger : l'IA du collaborateur se corrige seule. Le **skill** dit seulement à l'IA quand et comment faire son rapport (en fin de session de travail, en déclarant les valeurs sur lesquelles le travail repose). C'est donc l'IA du collaborateur qui fait la structuration, et la comparaison avec ce qui aurait dû être fait est un algorithme ([agent/progress.py](../agent/progress.py)).
+**Principe (proposition I) : le rapport arrive déjà structuré, donc la brique 2 n'a pas d'agent LLM.** Le contrat, c'est le **schéma de l'outil MCP** `report_progress`. Tout client MCP le reçoit (Claude, Cursor…), et le serveur rejette un rapport invalide avec un message qui dit quoi corriger : l'IA du collaborateur se corrige seule. Le **skill** dit seulement à l'IA quand et comment faire son rapport (en fin de session de travail, en déclarant les valeurs sur lesquelles le travail repose). C'est donc l'IA du collaborateur qui fait la structuration, et la comparaison avec ce qui aurait dû être fait est un algorithme ([agent/progress.py](../../atlas/progress.py)).
 
 **Le rapport est aussi une source pour la brique 1** (proposition J). L'avancement et le travail déclaré modifient l'état du projet : ils passent par l'agent de mise à jour et le contrôleur, comme toute autre source, pour qu'il n'y ait qu'un seul écrivain. Les champs structurés (avancement d'une tâche par son propre responsable) passent les contrôles en code sans appel LLM ; seul le commentaire libre passe par l'agent de mise à jour.
 
@@ -242,7 +242,7 @@ Le LLM n'intervient qu'en aval, pour la **forme** : l'agent manager existant ré
 | Règles de remontée | Code déterministe | Évalue les règles R1 à R7 à chaque nouvelle version de l'état et à chaque run ; attribue un niveau P1, P2 ou P3 | Nouvelle version de l'état, constats de la brique 2, escalades du contrôleur, diffs de la brique 4, recommandations de la brique 5, tolérances du projet | Remontées candidates | — |
 | Routage | Code déterministe | Désigne le destinataire : la **personne habilitée sur le sujet** (table des rôles), à défaut le manager ; sans N+1, les membres concernés (proposition O) | Remontée, table des rôles | Remontée adressée | — |
 | Dédoublonnage et agrégation | Code déterministe | Une remontée par couple (règle, sujet) ; elle n'est réémise que si la situation **s'aggrave** (niveau supérieur, écart plus grand) ou après le délai de relance | Remontées candidates, remontées ouvertes | Remontées nouvelles ou mises à jour | — |
-| Boîte de remontées | Code (seul écrivain) | Stocke les remontées ouvertes du manager ; même mécanique que les boîtes d'alertes ([agent/alerts.py](../agent/alerts.py)) : récupérées, pas poussées | Remontées adressées | Remontées ouvertes, vues, traitées | — |
+| Boîte de remontées | Code (seul écrivain) | Stocke les remontées ouvertes du manager ; même mécanique que les boîtes d'alertes ([agent/alerts.py](../../atlas/alerts.py)) : récupérées, pas poussées | Remontées adressées | Remontées ouvertes, vues, traitées | — |
 | Point périodique | Code, puis agent manager | Assemble en code les parties du point (tableau ci-dessus), puis l'agent manager le rédige | Boîte de remontées, état, constats de la brique 2, date du dernier point | Point périodique, gardé pour être récupéré par le skill | Nemotron via Nightshift (à préciser) |
 | Skill manager | Skill installé sur l'IA du manager | Récupère le point et les remontées, transmet les questions du manager, présente les P1 en premier, enregistre ses retours | Questions et retours du manager | Appels aux outils MCP du manager (section 7) | IA du manager |
 | Agent manager | LLM (existant) | Rédige le point périodique et les rapports à la demande ; les remontées P1 ouvertes sont toujours en tête | Remontées, état, mémoires | Point, rapport | Nemotron via Nightshift (à préciser) |
@@ -517,7 +517,7 @@ Les déclencheurs de la brique 5 qui portent sur les sources (échéances, dépe
 - Pas encore fait : la voie B (API locale via `host.docker.internal`), qui servirait à montrer en direct une décision ajoutée (S2, S8).
 
 ## 6. État et mémoires
-Proposition Q de la deuxième revue : **trois couches, chacune avec un rôle distinct.** Elle remplace D9 (voir [DECISIONS.md](DECISIONS.md), D12).
+Proposition Q de la deuxième revue : **trois couches, chacune avec un rôle distinct.** Elle remplace D9 (voir [DECISIONS.md](../DECISIONS.md), D12).
 
 | Couche | Ce qu'elle contient | Pourquoi elle |
 |---|---|---|

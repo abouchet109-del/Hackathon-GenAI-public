@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T20:27:06+01:00",
+  "updated": "2026-10-27T21:35:00+01:00",
   "statuses": {
     "passing": 23,
     "failing": 0,
@@ -12,14 +12,15 @@
       "command": "python -m pytest -q",
       "expected": "197 passed, 9 skipped (tests/conftest.py sets SAMPLE_MODE)",
       "status": "passing",
-      "note": "verified 27/10 20:10 Paris on a fresh clone of cdb0fad: 197 passed, 9 skipped, 48 subtests"
+      "note": "verified 27/10 21:30 Paris on a fresh clone FROM GITHUB of unify d9a1707 (judge commands as in the README): 197 passed, 9 skipped, 48 subtests in 13 s; also CI run 40568677619 (ubuntu + windows)"
     },
     {
       "id": "R02",
       "requirement": "The full scenario runs from the CLI without Zetaris or Nightshift",
       "command": "python run.py steward-demo",
       "expected": "exit 0, 8 steps printed, stack line says sample-sqlite / local-fallback / offline",
-      "status": "passing"
+      "status": "passing",
+      "note": "fresh clone of d9a1707 from GitHub, 27/10 21:30: exit 0, 8 steps, pending_escalations 2"
     },
     {
       "id": "R03",
@@ -27,7 +28,7 @@
       "command": "python scripts/mcp_smoke.py",
       "expected": "PASS and the 13 names listed",
       "status": "passing",
-      "note": "16 tools; smoke prints 13/13 + 3/3, PASS"
+      "note": "16 tools; smoke prints 13/13 + 3/3, PASS (fresh clone of d9a1707 from GitHub, 27/10 21:30)"
     },
     {
       "id": "R04",
@@ -142,7 +143,7 @@
       "command": "python scripts/make_examples.py --check",
       "expected": "3 inputs, 3 outputs, outputs equal a fresh run",
       "status": "passing",
-      "note": "3 inputs, 3 outputs, --check: outputs match a fresh run"
+      "note": "3 inputs, 3 outputs, --check: outputs match a fresh run (fresh clone of d9a1707 from GitHub, 27/10 21:30)"
     },
     {
       "id": "R19",
@@ -158,7 +159,7 @@
       "command": "python -c \"import json;json.load(open('metadata.json'))\" && ls LICENSE NOTICE CONTRIBUTING.md docs/SPONSORS.md docs/PRIOR_WORK.md .github/workflows/tests.yml",
       "expected": "all present",
       "status": "passing",
-      "note": "all present; LICENSE carries 'Copyright (c) 2026 Ryan Dalier-Dulys. All rights reserved.' (Ryan answered 'ok licence' on 27/10); metadata.json parses; CI workflow present | 27/10 20:25: the CI workflow sits at docs/ci-tests.yml until a user session restores it at .github/workflows/tests.yml (a GitHub App token cannot push workflow files)."
+      "note": "all present on unify d9a1707: .github/workflows/tests.yml restored at 30f1a30 from Ryan's GitHub session (a GitHub App token cannot push workflow files); docs/ci-tests.yml is now a duplicate to delete with Ryan's word; LICENSE and NOTICE carry the three names after Ryan's 'ok licence'; metadata.json parses"
     },
     {
       "id": "R21",
@@ -205,7 +206,7 @@
       "command": "git ls-remote https://github.com/abouchet109-del/Hackathon-GenAI-public unify main",
       "expected": "unify present; main contains the unified tree after Ryan's merge",
       "status": "passing",
-      "note": "unify pushed at 20:20 (e2b3fd8) through the transport branch workflow; CI workflow restored on unify from Ryan's GitHub session at 20:25; main untouched, waiting for Ryan's go"
+      "note": "unify = d9a1707 on GitHub at 21:28 (bundles imported through the transport branch workflow, last run 40578219363); main untouched, waiting for Ryan's go (PR form ready in his Chrome tab)"
     },
     {
       "id": "R27",

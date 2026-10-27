@@ -40,7 +40,7 @@ Historique du choix : une première évaluation recommandait d'autres use cases 
 | [use-case-atlas.md](use-case-atlas.md) | Le cas d'usage en détail |
 | [architecture.md](architecture.md) | L'architecture (à remplir) |
 | [STATUS.md](STATUS.md) | Avancement, blocages, prochaines étapes |
-| [DECISIONS.md](DECISIONS.md) | Les décisions prises, pour ne pas les rediscuter |
+| [DECISIONS.md](../DECISIONS.md) | Les décisions prises, pour ne pas les rediscuter |
 | [reference/guide-architecture-agentique.md](reference/guide-architecture-agentique.md) | Principes d'architecture agentique à suivre |
 | [strategie/prompt-jury.md](strategie/prompt-jury.md) | Prompt qui simule le jury, pour évaluer nos choix |
 | [strategie/evaluation-use-case.md](strategie/evaluation-use-case.md) | Évaluation des use cases (historique) |
