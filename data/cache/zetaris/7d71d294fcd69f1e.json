@@ -1,0 +1,31 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.tasks LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:29.340656+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"depends_on\":[],\"due\":\"2026-10-23\",\"id\":\"TSK-001\",\"member\":\"hugo\",\"start\":\"2026-10-05\",\"subject\":\"csv-export\",\"title\":\"Terminer l'export CSV\"}"
+  ],
+  [
+   "{\"depends_on\":[\"TSK-001\"],\"due\":\"2026-11-05\",\"id\":\"TSK-002\",\"member\":\"ines\",\"start\":\"2026-10-19\",\"subject\":\"csv-export\",\"title\":\"Recette de l'export CSV\"}"
+  ],
+  [
+   "{\"depends_on\":[\"TSK-002\"],\"due\":\"2026-11-04\",\"id\":\"TSK-003\",\"member\":\"sarah\",\"start\":\"2026-10-20\",\"subject\":\"commercial-brief\",\"title\":\"Rédiger le brief commercial\"}"
+  ],
+  [
+   "{\"depends_on\":[\"TSK-003\"],\"due\":\"2026-11-06\",\"id\":\"TSK-004\",\"member\":\"lea\",\"start\":\"2026-11-02\",\"subject\":\"commercial-brief\",\"title\":\"Valider le brief commercial\"}"
+  ],
+  [
+   "{\"depends_on\":[],\"due\":\"2026-12-15\",\"id\":\"TSK-005\",\"member\":\"hugo\",\"start\":\"2026-10-26\",\"subject\":\"sso\",\"title\":\"Préparer le SSO pour la version 2\"}"
+  ],
+  [
+   "{\"depends_on\":[],\"due\":\"2026-10-16\",\"id\":\"TSK-006\",\"member\":\"ines\",\"start\":\"2026-10-01\",\"subject\":\"atlas-launch\",\"title\":\"Plan de test du portail\"}"
+  ],
+  [
+   "{\"depends_on\":[\"TSK-002\",\"TSK-004\"],\"due\":\"2026-11-10\",\"id\":\"TSK-007\",\"member\":\"lea\",\"start\":\"2026-09-15\",\"subject\":\"atlas-launch\",\"title\":\"Piloter le lancement\"}"
+  ]
+ ]
+}

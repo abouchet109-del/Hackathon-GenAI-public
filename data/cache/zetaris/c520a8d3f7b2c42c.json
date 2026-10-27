@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.documents LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:17.664970+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"author\":\"lea\",\"id\":\"DOC-001\",\"kind\":\"brief\",\"project\":\"atlas\",\"status\":\"archived\",\"text\":\"Atlas est le nouveau portail client B2B. Lancement le 3 novembre 2026. Fonctionnalités de la version 1 : export CSV des commandes et connexion SSO avec l'annuaire du client.\",\"title\":\"Brief de lancement Atlas\",\"updated_at\":\"2026-09-15T09:00:00+02:00\"}"
+  ],
+  [
+   "{\"author\":\"hugo\",\"id\":\"DOC-002\",\"kind\":\"spec\",\"project\":\"atlas\",\"status\":\"published\",\"text\":\"L'export produit un fichier CSV en UTF-8, séparateur point-virgule, une ligne par commande. Il doit tenir jusqu'à 100 000 lignes. Format unique en v1 : CSV.\",\"title\":\"Spécification de l'export CSV\",\"updated_at\":\"2026-10-02T14:00:00+02:00\"}"
+  ],
+  [
+   "{\"author\":\"sarah\",\"id\":\"DOC-003\",\"kind\":\"brief\",\"project\":\"atlas\",\"status\":\"draft\",\"text\":\"Atlas, le portail client B2B, sera disponible le 3 novembre. Vos équipes pourront exporter leurs commandes en CSV et en Excel, et se connecter avec leur compte d'entreprise grâce au SSO. Tout est prêt pour le lancement : la recette est terminée. Contact : Sarah, équipe commerciale.\",\"title\":\"Brief commercial Atlas (brouillon)\",\"updated_at\":\"2026-10-26T15:45:00+01:00\"}"
+  ],
+  [
+   "{\"author\":\"ines\",\"id\":\"DOC-004\",\"kind\":\"test_plan\",\"project\":\"atlas\",\"status\":\"published\",\"text\":\"Douze tests de recette, dont trois bloquants (EXP-03, EXP-07, EXP-11). La recette est close quand les trois tests bloquants passent.\",\"title\":\"Plan de recette de l'export CSV\",\"updated_at\":\"2026-10-19T09:00:00+02:00\"}"
+  ],
+  [
+   "{\"author\":\"hugo\",\"id\":\"DOC-005\",\"kind\":\"note\",\"project\":\"atlas\",\"status\":\"draft\",\"text\":\"Le SSO est prévu pour la version 2, après le lancement. Étude des fournisseurs d'identité en cours (TCK-DEV-007).\",\"title\":\"Note SSO version 2\",\"updated_at\":\"2026-10-26T14:10:00+01:00\"}"
+  ]
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.past_projects LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:38.719830+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"ended\":\"2025-06-30\",\"id\":\"PRJ-ORION\",\"lessons\":[{\"id\":\"LES-ORION-1\",\"situation\":[\"commercial-brief\",\"acceptance-testing\",\"launch\"],\"text\":\"Ne pas envoyer le brief commercial avant la fin de la recette des fonctionnalités qu'il annonce.\"},{\"id\":\"LES-ORION-2\",\"situation\":[\"commercial-brief\",\"scope\"],\"text\":\"Faire relire le brief commercial par le développeur de chaque fonctionnalité annoncée.\"}],\"name\":\"Orion\",\"outcome\":\"Lancement raté : le brief commercial a été envoyé aux clients avant la fin de la recette ; deux fonctionnalités annoncées ne marchaient pas le jour J et le lancement a été repoussé de trois semaines.\",\"summary\":\"Lancement d'un module de facturation en ligne pour les clients grands comptes.\"}"
+  ],
+  [
+   "{\"ended\":\"2026-02-15\",\"id\":\"PRJ-VEGA\",\"lessons\":[{\"id\":\"LES-VEGA-1\",\"situation\":[\"sso\",\"acceptance-testing\"],\"text\":\"Prévoir deux semaines de recette avec les clients pilotes pour toute intégration SSO.\"}],\"name\":\"Vega\",\"outcome\":\"Livré à l'heure, mais la recette des clients pilotes a pris deux semaines de plus que prévu.\",\"summary\":\"Migration de l'annuaire interne vers un nouveau fournisseur d'identité.\"}"
+  ]
+ ]
+}

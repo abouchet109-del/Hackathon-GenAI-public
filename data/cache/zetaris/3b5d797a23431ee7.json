@@ -1,0 +1,25 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.decisions LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:27.008790+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"attribute\":\"launch_date\",\"author\":\"lea\",\"confidence\":1.0,\"date\":\"2026-09-15\",\"id\":\"DEC-001\",\"source\":{\"ref\":\"REG-2026-014\",\"type\":\"register\"},\"status\":\"approved\",\"subject\":\"atlas-launch\",\"summary\":\"Lancement du portail Atlas fixé au 3 novembre.\",\"value\":\"2026-11-03\"}"
+  ],
+  [
+   "{\"attribute\":\"sso_release\",\"author\":\"lea\",\"confidence\":1.0,\"date\":\"2026-09-15\",\"id\":\"DEC-002\",\"source\":{\"ref\":\"REG-2026-015\",\"type\":\"register\"},\"status\":\"approved\",\"subject\":\"atlas-launch\",\"summary\":\"La connexion SSO fait partie de la version 1, avec l'export CSV.\",\"value\":\"v1\"}"
+  ],
+  [
+   "{\"attribute\":\"owner\",\"author\":\"lea\",\"confidence\":1.0,\"date\":\"2026-09-18\",\"id\":\"DEC-003\",\"source\":{\"ref\":\"REG-2026-016\",\"type\":\"register\"},\"status\":\"approved\",\"subject\":\"csv-export\",\"summary\":\"Hugo est responsable de l'export CSV.\",\"value\":\"hugo\"}"
+  ],
+  [
+   "{\"attribute\":\"launch_date\",\"author\":\"lea\",\"confidence\":1.0,\"date\":\"2026-10-20\",\"id\":\"DEC-004\",\"source\":{\"ref\":\"REG-2026-021\",\"type\":\"register\"},\"status\":\"approved\",\"subject\":\"atlas-launch\",\"summary\":\"Report du lancement au 10 novembre, le temps de terminer la recette de l'export CSV.\",\"supersedes\":\"DEC-001\",\"value\":\"2026-11-10\"}"
+  ],
+  [
+   "{\"attribute\":\"sso_release\",\"author\":\"lea\",\"confidence\":1.0,\"date\":\"2026-10-20\",\"id\":\"DEC-005\",\"source\":{\"ref\":\"REG-2026-022\",\"type\":\"register\"},\"status\":\"approved\",\"subject\":\"atlas-launch\",\"summary\":\"La connexion SSO est déplacée en version 2 ; la version 1 sort avec l'export CSV seul.\",\"supersedes\":\"DEC-002\",\"value\":\"v2\"}"
+  ]
+ ]
+}

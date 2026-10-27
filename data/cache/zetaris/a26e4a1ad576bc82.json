@@ -1,0 +1,28 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.roles LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:35.784284+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"can_approve\":[\"*\"],\"member\":\"marc\",\"name\":\"Marc\",\"project\":\"atlas\",\"role\":\"manager\"}"
+  ],
+  [
+   "{\"can_approve\":[\"atlas-launch/*\",\"csv-export/export_formats\",\"commercial-brief/*\"],\"member\":\"lea\",\"name\":\"Léa\",\"project\":\"atlas\",\"role\":\"product_owner\"}"
+  ],
+  [
+   "{\"can_approve\":[\"csv-export/implementation\"],\"member\":\"hugo\",\"name\":\"Hugo\",\"project\":\"atlas\",\"role\":\"developer\"}"
+  ],
+  [
+   "{\"can_approve\":[],\"member\":\"sarah\",\"name\":\"Sarah\",\"project\":\"atlas\",\"role\":\"sales\"}"
+  ],
+  [
+   "{\"can_approve\":[\"csv-export/qa_status\"],\"member\":\"ines\",\"name\":\"Inès\",\"project\":\"atlas\",\"role\":\"qa\"}"
+  ],
+  [
+   "{\"can_approve\":[\"helios-launch/*\"],\"member\":\"nora\",\"name\":\"Nora\",\"project\":\"helios\",\"role\":\"product_owner\"}"
+  ]
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.reports LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:33.411545+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"assumptions\":[{\"attribute\":\"launch_date\",\"subject\":\"atlas-launch\",\"value\":\"2026-11-10\"},{\"attribute\":\"sso_release\",\"subject\":\"atlas-launch\",\"value\":\"v2\"},{\"attribute\":\"export_formats\",\"subject\":\"csv-export\",\"value\":\"csv\"}],\"blockers\":[\"TCK-QA-012\"],\"id\":\"RPT-001\",\"member\":\"hugo\",\"note\":\"Correctif au-delà de 10 000 lignes en cours ; il me faut encore une semaine.\",\"progress\":0.6,\"reported_at\":\"2026-10-26T18:00:00+01:00\",\"task_id\":\"TSK-001\"}"
+  ],
+  [
+   "{\"assumptions\":[{\"attribute\":\"launch_date\",\"subject\":\"atlas-launch\",\"value\":\"2026-11-10\"}],\"blockers\":[\"TCK-QA-012\"],\"id\":\"RPT-002\",\"member\":\"ines\",\"note\":\"9 tests sur 12 passés ; EXP-07 bloque.\",\"progress\":0.4,\"reported_at\":\"2026-10-26T17:30:00+01:00\",\"task_id\":\"TSK-002\"}"
+  ],
+  [
+   "{\"assumptions\":[{\"attribute\":\"launch_date\",\"subject\":\"atlas-launch\",\"value\":\"2026-11-03\"},{\"attribute\":\"sso_release\",\"subject\":\"atlas-launch\",\"value\":\"v1\"},{\"attribute\":\"export_formats\",\"subject\":\"csv-export\",\"value\":\"csv,xlsx\"}],\"blockers\":[],\"id\":\"RPT-003\",\"member\":\"sarah\",\"note\":\"Brief presque fini, envoi prévu jeudi.\",\"progress\":0.8,\"reported_at\":\"2026-10-26T16:00:00+01:00\",\"task_id\":\"TSK-003\"}"
+  ],
+  [
+   "{\"assumptions\":[],\"blockers\":[],\"id\":\"RPT-004\",\"member\":\"ines\",\"note\":\"Plan de test publié.\",\"progress\":1.0,\"reported_at\":\"2026-10-16T17:00:00+02:00\",\"task_id\":\"TSK-006\"}"
+  ],
+  [
+   "{\"assumptions\":[{\"attribute\":\"sso_release\",\"subject\":\"atlas-launch\",\"value\":\"v2\"}],\"blockers\":[],\"id\":\"RPT-005\",\"member\":\"hugo\",\"note\":\"Étude des fournisseurs d'identité commencée.\",\"progress\":0.1,\"reported_at\":\"2026-10-26T18:05:00+01:00\",\"task_id\":\"TSK-005\"}"
+  ],
+  [
+   "{\"assumptions\":[{\"attribute\":\"launch_date\",\"subject\":\"atlas-launch\",\"value\":\"2026-11-10\"}],\"blockers\":[],\"id\":\"RPT-006\",\"member\":\"lea\",\"note\":\"\",\"progress\":0.6,\"reported_at\":\"2026-10-26T19:00:00+01:00\",\"task_id\":\"TSK-007\"}"
+  ]
+ ]
+}

@@ -71,7 +71,7 @@ data/sample/        Corpus Atlas synthétique : un JSON {"records": [...]} par s
 data/scenarios/     Variantes injectées pour les scénarios S2, S3 et S8
 data/expected/      Résultats attendus des scénarios S1 à S9 (évaluation seulement, jamais lus par les agents)
 evaluation/         Chargement des résultats attendus
-scripts/            Scripts utilitaires (enregistrement des sources dans Zetaris, à venir)
+scripts/            Scripts utilitaires (register_zetaris.py : enregistrement et vérification des sources dans Zetaris)
 input_examples/     Exemples d'entrées (à venir)
 output_examples/    Exemples de sorties (à venir)
 logs/               Traces des agents (créées à l'exécution)

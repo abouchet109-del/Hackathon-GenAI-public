@@ -109,3 +109,21 @@ def load_source(name, directory=None):
 
 def load_all(directory=None):
     return {name: load_source(name, directory) for name in SOURCES}
+
+
+# --- the same sources, read through Zetaris -----------------------------------
+
+ZETARIS_DATABASE = "atlas"
+
+
+def source_sql(name):
+    """One row per record, as JSON, so nested fields keep their shape."""
+    return (f"SELECT to_json(r) AS record FROM {ZETARIS_DATABASE}.{name} "
+            f"LATERAL VIEW explode(records) AS r")
+
+
+def load_source_zetaris(name, client):
+    """Records of one source, queried in SQL through Zetaris (or its cache)."""
+    result = client.query(source_sql(name))
+    payload = {"records": [json.loads(row[0]) for row in result.rows]}
+    return parse_records(name, payload), result.origin

@@ -1,0 +1,13 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.milestones LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:31.056047+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"attribute\":\"launch_date\",\"depends_on\":[\"TSK-001\",\"TSK-002\",\"TSK-003\",\"TSK-004\"],\"id\":\"MS-LAUNCH\",\"subject\":\"atlas-launch\",\"title\":\"Lancement du portail Atlas\"}"
+  ]
+ ]
+}

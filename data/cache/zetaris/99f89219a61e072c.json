@@ -1,0 +1,52 @@
+{
+ "sql": "SELECT to_json(r) AS record FROM atlas.messages LATERAL VIEW explode(records) AS r",
+ "limit": 1000,
+ "fetched_at": "2026-10-27T16:46:20.200671+00:00",
+ "columns": [
+  "record"
+ ],
+ "rows": [
+  [
+   "{\"author\":\"lea\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-001\",\"project\":\"atlas\",\"sent_at\":\"2026-09-15T09:30:00+02:00\",\"text\":\"Bonjour à tous : le portail Atlas sort le 3 novembre, avec l'export CSV et la connexion SSO. Le brief de lancement est dans les documents.\"}"
+  ],
+  [
+   "{\"author\":\"hugo\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-002\",\"project\":\"atlas\",\"sent_at\":\"2026-10-16T16:45:00+02:00\",\"text\":\"Le SSO ne tiendra pas pour le 3 novembre. Je propose de le sortir de la v1 et de le livrer en v2.\"}"
+  ],
+  [
+   "{\"author\":\"ines\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-003\",\"project\":\"atlas\",\"sent_at\":\"2026-10-19T15:30:00+02:00\",\"text\":\"La recette de l'export CSV prend du retard : l'export s'arrête au-delà de 10 000 lignes (TCK-QA-012). Je ne peux pas clôturer tant que ce n'est pas corrigé.\"}"
+  ],
+  [
+   "{\"author\":\"lea\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-004\",\"project\":\"atlas\",\"reply_to\":\"MSG-002\",\"sent_at\":\"2026-10-20T11:00:00+02:00\",\"text\":\"J'approuve : le lancement est reporté au 10 novembre et le SSO passe en version 2. C'est inscrit au registre.\"}"
+  ],
+  [
+   "{\"author\":\"marc\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-005\",\"project\":\"atlas\",\"reply_to\":\"MSG-004\",\"sent_at\":\"2026-10-20T11:20:00+02:00\",\"text\":\"Ok pour moi. Tenez-moi au courant pour la recette CSV.\"}"
+  ],
+  [
+   "{\"author\":\"hugo\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-006\",\"project\":\"atlas\",\"sent_at\":\"2026-10-22T10:10:00+02:00\",\"text\":\"Je retire le SSO de la branche de release v1. Je travaille sur le correctif de l'export au-delà de 10 000 lignes.\"}"
+  ],
+  [
+   "{\"author\":\"hugo\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-007\",\"project\":\"atlas\",\"sent_at\":\"2026-10-24T18:05:00+02:00\",\"text\":\"Si la recette glisse encore, on pourrait décaler le lancement au 12 novembre.\"}"
+  ],
+  [
+   "{\"author\":\"sarah\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-008\",\"project\":\"atlas\",\"sent_at\":\"2026-10-26T09:40:00+01:00\",\"text\":\"Je finalise le brief commercial : lancement le 3 novembre, SSO inclus, tout est prêt côté produit. C'est validé côté commercial, on ne change rien.\"}"
+  ],
+  [
+   "{\"author\":\"nora\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-009\",\"project\":\"helios\",\"sent_at\":\"2026-10-26T10:15:00+01:00\",\"text\":\"Pardon, mauvais canal : pour Helios, le lancement est confirmé au 17 novembre.\"}"
+  ],
+  [
+   "{\"author\":\"lea\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-010\",\"project\":\"atlas\",\"reply_to\":\"MSG-008\",\"sent_at\":\"2026-10-26T11:00:00+01:00\",\"text\":\"Pour rappel, le report au 10 novembre est approuvé et le SSO est en version 2 (voir le registre).\"}"
+  ],
+  [
+   "{\"author\":\"sarah\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-011\",\"project\":\"atlas\",\"sent_at\":\"2026-10-26T15:30:00+01:00\",\"text\":\"J'ajoute l'export Excel dans le brief, les clients pilotes le demandent tous.\"}"
+  ],
+  [
+   "{\"author\":\"hugo\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-012\",\"project\":\"atlas\",\"sent_at\":\"2026-10-27T09:00:00+01:00\",\"text\":\"Je confirme : la v1 n'exportera que du CSV, pas d'Excel.\"}"
+  ],
+  [
+   "{\"author\":\"ines\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-013\",\"project\":\"atlas\",\"sent_at\":\"2026-10-27T09:15:00+01:00\",\"text\":\"TCK-QA-012 toujours ouvert ce matin. La recette CSV reste bloquée tant que le correctif n'est pas livré.\"}"
+  ],
+  [
+   "{\"author\":\"sarah\",\"channel\":\"atlas-equipe\",\"id\":\"MSG-014\",\"project\":\"atlas\",\"sent_at\":\"2026-10-27T10:00:00+01:00\",\"text\":\"Je compte envoyer le brief aux clients pilotes jeudi.\"}"
+  ]
+ ]
+}

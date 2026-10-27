@@ -500,6 +500,14 @@ L'équipe définira les sources plus tard (décision du 27/10). Proposition de d
 
 Les déclencheurs de la brique 5 qui portent sur les sources (échéances, dépendances, fils de messages) peuvent être des requêtes SQL sur Zetaris.
 
+### Ce qui est réellement en place (vérifié le 27/10, 18:55)
+- **Base Lightning `ATLAS`**, une **table REST par source** : `documents`, `messages`, `tickets`, `decisions`, `tasks`, `milestones`, `reports`, `roles`, `past_projects`. Chaque table lit `https://cdn.jsdelivr.net/gh/abouchet109-del/Hackathon-GenAI-public@<commit>/data/sample/<source>.json`, épinglé sur le commit `85018638` (une URL de branche serait mise en cache par jsDelivr).
+- **Enregistrement** : `scripts/register_zetaris.py` (idempotent ; `--dry-run`, `--verify-only`, `--repin <source>` après une modification du corpus, qui supprime et recrée la table sur le nouveau commit).
+- **Requête des agents**, une par source : `SELECT to_json(r) AS record FROM atlas.<source> LATERAL VIEW explode(records) AS r` ; chaque ligne est validée par le modèle pydantic de la source (`agent/sources.py`). Vérification : les 9 sources rendent exactement les enregistrements des fichiers locaux.
+- **Client** (`agent/zetaris.py`) : timeout de 60 s ; chaque résultat est mis en cache dans `data/cache/zetaris/` (commité, pour qu'un clone neuf tourne en `SAMPLE_MODE`) ; si Zetaris ne répond pas (réseau, timeout, 5xx), repli sur le cache, signalé dans le résultat ; une erreur SQL n'est jamais masquée par le cache ; avec `SAMPLE_MODE=true`, aucun appel à Zetaris.
+- Constaté : une requête sur une table REST prend 3 à 10 s, car Zetaris relit l'URL à chaque fois. Le `CACHE TABLE` n'est pas utilisé, pour qu'une modification de la source apparaisse (voie B de la démo).
+- Pas encore fait : la voie B (API locale via `host.docker.internal`), qui servirait à montrer en direct une décision ajoutée (S2, S8).
+
 ## 6. État et mémoires
 Proposition Q de la deuxième revue : **trois couches, chacune avec un rôle distinct.** Elle remplace D9 (voir [DECISIONS.md](DECISIONS.md), D12).
 
