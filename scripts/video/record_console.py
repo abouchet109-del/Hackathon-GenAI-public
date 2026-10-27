@@ -140,7 +140,7 @@ def scenario(g: Guide, base: str):
 
     g.caption("Protection: a secret pasted into Cursor never enters the record.", 2.4)
     propose(g, "Léa Martin", "Cursor", "fact",
-            "For tests, the staging database password is Brikk2026! and the API key is sk-live-9f8e7d6c5b4a.", "tech_stack")
+            "For tests, the staging database password is Brikk2026! and the API key is sk-live-EXAMPLE0000FAKE.", "tech_stack")
     g.wait(1.0)
 
     g.tab("context")

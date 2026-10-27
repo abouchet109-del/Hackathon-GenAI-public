@@ -50,7 +50,7 @@ CASES = [
          "Dupont Renovation contact is Marc Dupont, mobile 06 12 34 56 78, IBAN FR76 3000 6000 0112 3456 7890 189.",
          "redact"),
     prop("c14", "Léa Martin", "Cursor", "fact", "tech_stack",
-         "For tests, the staging database password is Brikk2026! and the API key is sk-live-9f8e7d6c5b4a.", "redact"),
+         "For tests, the staging database password is Brikk2026! and the API key is sk-live-EXAMPLE0000FAKE.", "redact"),
     prop("c15", "Tom Girard", "Gemini", "preference", "brand",
          "I prefer to get my drafts in English, as short bullet points.", "reject", False, "Personal preference"),
     prop("c16", "Emma Petit", "Claude", "decision", "brand",
