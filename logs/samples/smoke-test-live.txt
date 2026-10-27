@@ -1,0 +1,5 @@
+﻿PASS Data: Zetaris web interface 
+PASS Data: Zetaris runs SQL over its REST API 
+INFO Power: model that answered nvidia/nemotron-3-ultra-550b-a55b (receipt rcpt_req_69pi6xsb)
+PASS Power: Nightshift answers with a Nemotron model 
+PASS Build: Meterless H-MEM service 

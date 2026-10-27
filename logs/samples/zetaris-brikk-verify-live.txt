@@ -1,0 +1,11 @@
+﻿source 3 reachable: https://cdn.jsdelivr.net/gh/abouchet109-del/Hackathon-GenAI-public@bbc39a31e354ed21ce31f05d1dc4e1db5ee9e75f/domains/project_memory/data/procedures.json
+ok   brikk.members          rows    13 expected    13
+ok   brikk.trust            rows     4 expected     4
+ok   brikk.topics           rows    14 expected    14
+ok   brikk.rules            rows    12 expected    12
+ok   brikk.project          rows     6 expected     6
+ok   brikk.profiles         rows    13 expected    13
+ok   brikk_api.finance      rows     7 expected     7
+ok   brikk_drive.procedures rows     5 expected     5
+ok   brikk.tasks            rows     7 expected     7
+9/9 tables match their CSV

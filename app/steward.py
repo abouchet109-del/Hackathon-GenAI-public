@@ -30,9 +30,12 @@ def _tags(mem: dict) -> dict:
 
 
 def _when(mem: dict) -> str | None:
-    """The record's own time, ISO 8601 (the fallback memory stores an epoch, H-MEM an ISO string)."""
+    """The record's own time, ISO 8601 (the fallback memory stores epoch seconds, the H-MEM service epoch
+    milliseconds, which time.localtime rejects on Windows)."""
     ts = mem.get("timestamp") or mem.get("created_at") or mem.get("at")
     if isinstance(ts, (int, float)):
+        if ts > 1e11:
+            ts = ts / 1000
         return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(ts))
     return str(ts) if ts else None
 
