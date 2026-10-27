@@ -2,7 +2,8 @@
 # Everything after "Zetaris is up", in one go:  bash ~/open-agent-hack/scripts/after-zetaris.sh
 #  1. saves your Zetaris API key in .env (from the clipboard, never shown)
 #  2. starts H-MEM, the Brikk sources (Postgres + S3 drive), the Steward app and the MCP configs
-#  3. registers the 3 Brikk sources and the semantic layer in Zetaris
+#  3. registers the 3 Brikk sources and the semantic layer in Zetaris, then reads every table back
+#  4. runs the smoke test, the demo scenario and one ablation pass on the real stack (Nemotron through Nightshift)
 # Everything is logged in logs/after-zetaris.log so Claude can read it and fix what breaks.
 set -uo pipefail
 ROOT="$HOME/open-agent-hack"
@@ -47,9 +48,22 @@ setvar METERLESS_BASE_URL "http://127.0.0.1:8088/v1"
 say "3/4 H-MEM, Brikk sources, Steward app, MCP configs, Nightshift lanes"
 bash "$ROOT/scripts/setup-steward-mac.sh"
 
-say "4/4 Register the Brikk sources and the semantic layer in Zetaris"
+say "4/5 Register the Brikk sources and the semantic layer in Zetaris"
 sleep 5
 "$ROOT/.venv/bin/python" "$ROOT/scripts/zetaris/run_steward_sql.py" || echo "Registration stopped: Claude reads logs/after-zetaris.log and fixes it."
+
+say "5/5 The real stack: smoke test, the demo scenario, one ablation pass (Nemotron through Nightshift)"
+set -a; . "$ROOT/.env"; set +a
+export SAMPLE_MODE=false STEWARD_SPACE=real-$(date +%H%M)
+"$ROOT/.venv/bin/python" "$ROOT/smoke_test.py" 2>&1 | tail -20 || echo "smoke test failed: see above"
+"$ROOT/.venv/bin/python" "$ROOT/run.py" steward-demo > "$ROOT/logs/steward-demo-real.json" 2> "$ROOT/logs/steward-demo-real.txt" \
+  && echo "demo ok: logs/steward-demo-real.txt" || echo "demo failed: logs/steward-demo-real.txt"
+tail -5 "$ROOT/logs/steward-demo-real.txt"
+DOMAIN=project_memory "$ROOT/.venv/bin/python" "$ROOT/run.py" ablation --profiles no_memory,full > "$ROOT/logs/ablation-real.txt" 2>&1 \
+  && echo "ablation ok: logs/ablation-real.txt" || echo "ablation failed: logs/ablation-real.txt"
+tail -12 "$ROOT/logs/ablation-real.txt"
+grep -h '"model": "nvidia' "$ROOT"/logs/trace-*.jsonl 2>/dev/null | head -1 | cut -c1-160 || true
+echo "Traces with the served model are in logs/trace-*.jsonl (model field)."
 
 echo
 echo "Done. Tell Claude 'after-zetaris fini' (the log is in logs/after-zetaris.log)."
