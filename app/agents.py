@@ -80,6 +80,7 @@ class Blocks:
 @dataclass
 class Context:
     item: dict
+    mask: object = None  # the pack's mask_secrets, applied to the evidence sent to the model lanes
     facts: dict = field(default_factory=dict)
     flags: list[str] = field(default_factory=list)
     matched_rules: list[dict] = field(default_factory=list)
@@ -91,6 +92,7 @@ class Context:
 
 def intake(ctx: Context, domain: Domain, blocks: Blocks, tr: Tracer) -> None:
     ctx.facts = domain.logic.intake(ctx.item)
+    ctx.mask = getattr(domain.logic, "mask_secrets", None)  # how this pack masks a secret before a model sees it
     if blocks.guard:
         ctx.flags = screen(f"{ctx.item.get('subject', '')}\n{ctx.item.get('body', '')}\n{ctx.item.get('content', '')}")
     if hasattr(domain.logic, "trace_summary"):
@@ -179,11 +181,22 @@ def match_rules(ctx: Context, domain: Domain, tr: Tracer) -> None:
 
 
 def _evidence(ctx: Context) -> str:
+    """What the model lanes see. Secrets are masked here too (the pack's mask_secrets, when it has one): a model
+    call goes through Nightshift to a provider, and a password or a key must never travel that far."""
     item = {k: ctx.item.get(k) for k in ("from", "subject", "body", "author", "ai_tool", "kind", "topic", "content")
             if ctx.item.get(k) is not None}
+    facts = dict(ctx.facts)
+    mask = getattr(ctx, "mask", None)
+    if mask:
+        for k in ("body", "content", "subject"):
+            if isinstance(item.get(k), str):
+                item[k] = mask(item[k])
+        for k in ("content", "body"):
+            if isinstance(facts.get(k), str):
+                facts[k] = mask(facts[k])
     return json.dumps({
         "item": item,
-        "facts": ctx.facts,
+        "facts": facts,
         "guard_flags": ctx.flags,
         "owner_profile": ctx.profile,
         "applicable_rules": ctx.matched_rules,
@@ -194,6 +207,17 @@ def _evidence(ctx: Context) -> str:
 
 
 def decide(ctx: Context, domain: Domain, llm: LLM, tr: Tracer, critique: str | None = None, attempt: int = 0) -> dict:
+    """The Arbiter. Hard cases (an injection, a secret: the pack's `code_decides`) never reach a model: code decides
+    and the trace says so; everything else goes to the deep lane with masked evidence."""
+    forced = domain.logic.code_decides(ctx.facts, ctx.matched_rules) if hasattr(domain.logic, "code_decides") else None
+    if forced:
+        proposal = {**forced, "model": None, "via": "code", "receipt_id": None,
+                    "action_draft": domain.logic.prepared_action(forced["decision"], ctx.facts)}
+        tr.event("Decider", "proposed_decision", input_summary=f"hard case decided in code: {forced.get('citations')}",
+                 output_summary=f"{proposal['decision']}: {proposal.get('justification', '')}", target="Critic",
+                 model=None, confidence=proposal.get("confidence"), retry=attempt, via="code", cached=False,
+                 receipt_id=None, citations=proposal.get("citations", []))
+        return proposal
     user = _evidence(ctx)
     if critique:
         user += f"\n\nThe Critic rejected your previous proposal. Fix to apply: {critique}"

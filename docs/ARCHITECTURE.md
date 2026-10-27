@@ -81,10 +81,15 @@ sequenceDiagram
   participant C as Clarifier / CEO queue
   participant K as Context composer
   AI->>MCP: observe(excerpt)  [who and which AI: clientInfo + config]
-  MCP->>X: excerpt + watchlist
-  X-->>MCP: candidate items (decision, fact, task, preference)
+  MCP->>G: guard_source: injection or secret in the raw excerpt? (code, before any model)
+  alt excerpt flagged
+    G-->>MCP: deterministic splitter, every item carries source_flags (no model call)
+  else clean excerpt
+    MCP->>X: excerpt + watchlist (fast lane; Extractor trace line with the model)
+    X-->>MCP: candidate items (decision, fact, task, preference)
+  end
   loop each item (one writer lock)
-    MCP->>G: intake: amounts, dates, secrets, injection, personal
+    MCP->>G: intake: amounts, dates, secrets, injection, personal; S01/S02 decided in code (quarantine, redact)
     G->>R: SQL: author, trust role x domain, topic owner, limit, rules
     R->>M: recall active decisions, CEO policies, similar records
     M->>A: facts + rules + memory
@@ -137,7 +142,9 @@ Raw text never enters the memory: only the extracted items do, and each person c
 - **Guard before the model.** `context.guard_source` screens the raw excerpt in code before any model sees it: an excerpt that carries an injection pattern ("ignore previous instructions", "note to all AI agents", ...) or a secret never reaches the extractor; it goes through the deterministic splitter and every item of it carries `source_flags`, which `intake` turns into the item's own `injection` flag, so the Judge's hard check quarantines each of them even if a model would have paraphrased the attempt away. Secrets (passwords, API keys, IBANs) are masked before anything is stored (`redact`); personal preferences are kept out of the company memory.
 - **Authority in code.** Trust = role x domain (CEO 1.0 everywhere, lead 0.9 in their department and 0.4 elsewhere, member 0.6 / 0.25, intern 0.3 / 0.1, interns cannot decide); spending above a topic's limit always escalates; a lower-weight contradiction always goes to its author first, and only that author can answer. These are hard checks in the judge, not prompt text.
 - **Extracts only.** `observe` stores what the extractor produced, never the excerpt; `my_contributions` shows each person what was extracted from them.
-- **One writer.** A cross-process file lock per company memory (`fcntl` on macOS and Linux, `msvcrt` on Windows), held for every write to the memory and to the local state files (journal, profiles overlay, cursors, progress, alerts).
+- **One writer.** A cross-process file lock per company memory (`fcntl` on macOS and Linux, `msvcrt` on Windows), held for every write to the memory and to the local state files (journal, profiles overlay, cursors, progress, alerts, including `alerts()` which marks them delivered), and for the seed of an empty memory (`seed_if_empty`: the emptiness check and the seed are one critical section).
+- **Nothing secret reaches a provider.** The two hard cases are decided in code before any model call (`logic.code_decides`: an injection is quarantined with S01, a secret is redacted with S02; the Decider line says `via: code`), and the evidence sent to the deep and judge lanes is masked by the pack's `mask_secrets` (`agents._evidence`).
+- **The console operator is accountable.** "Simulate an AI" proposes as the operator; only the CEO may play another member, and the journal keeps `entered_by` next to the author. `docker compose` publishes every port on `127.0.0.1` only (the console and H-MEM have no auth).
 - **Typed boundary.** `POST /run` returns 422 without a text and, for the project memory, without an author; `/api/trace/{run_id}` accepts a file stem only.
 - **Secrets at rest.** `.env` is ignored by git; the install scripts read tokens from the clipboard and never print them; the NVIDIA key never leaves Nightshift.
 
@@ -157,10 +164,11 @@ Raw text never enters the memory: only the extracted items do, and each person c
 │   └── static/                 console.html + brand/ (tokens, components, fonts, icons, logo)
 ├── domains/project_memory/     Brikk pack: domain.yaml, logic.py, context.py, prompts/, data/*.csv, cases.jsonl, seeds
 ├── domains/admin/              second pack on the same harness
-├── atlas/                      the team's Atlas modules, history preserved (decisions, progress, alerts, zetaris, structured, llm, contracts, sources, state, hmem)
+├── atlas/                      the team's Atlas modules, history preserved (decisions, progress, alerts, zetaris, structured, llm, contracts, sources, state, hmem, structured, state, hmem, world_model, contracts, sources; extractor, updater, controller, writer, manager, orchestrator, api; prompts/)
 ├── evaluation/                 Atlas expected results (S1-S9)
 ├── data/                       Atlas corpus and Zetaris cache (tracked); runtime state and fallbacks (ignored)
 ├── hmem-service/               server.ts, setup.sh; vendor/ is generated by setup.sh (Meterless reference + conformance, Apache-2.0; not tracked)
+├── services/                   the team's own wrappers of the Meterless references: hmem/ (:8765, ATLAS_HMEM_URL), world_model/ (:8766, WORLD_MODEL_URL); scripts/engine_service.py starts them
 ├── db/steward-init/            Postgres init for source 1
 ├── scripts/                    zetaris/ (register_steward.sql, run_steward_sql.py), register_zetaris.py (Atlas), video/, windows/, install-zetaris.sh, after-zetaris.sh, setup-steward-mac.sh, configure_nightshift.py, set-secret.sh, mcp_smoke.py, make_*_cases.py
 ├── input_examples/ output_examples/   three Steward inputs and their real outputs
@@ -179,7 +187,7 @@ Raw text never enters the memory: only the extracted items do, and each person c
 - **Progress per member**: their `report_progress` idea is a Steward tool, and `my_tasks` shows each person where they stand.
 - **Replaced, not kept**: the network of autonomous department agents. Since 26 October the visible agents are the people's own AIs, and Steward's sub-agents are internal. What survives of the idea is the department dimension of trust (role x domain) and of weak signals (budgets per department).
 - **Their Zetaris and Nemotron recipes** are adopted as the default (REST tables on pinned public URLs; exact Nemotron ids; receipt field).
-- **On the evolution path, not tonight**: their World Model layer (versioned project state), the deliverable-correction brick (diff of an outdated brief with sources), the manager's periodic digest (brick 7).
+- **Merged, not wired into Steward's runtime** (27/10 evening, commits `9889b6b` and `903d1b2`): their World Model layer (`atlas/world_model.py`, `services/world_model/`), the extractor/updater/controller/writer/manager agents (`atlas/*.py`, prompts in `atlas/prompts/`) and their orchestrator with its own `POST /run` on port 8080 (`python -m atlas.api`). They run on the Atlas corpus with their own tests (158); Steward's runtime still calls only `atlas.decisions`, `atlas.progress` and `atlas.alerts`. The deliverable-correction brick and the manager's periodic digest stay on the evolution path.
 
 ## 9. Evolution path (deck, point 8)
 
@@ -208,7 +216,7 @@ Raw text never enters the memory: only the extracted items do, and each person c
 
 **ADR-8. Extracts only.** The raw excerpt is never stored; items are.
 
-**ADR-9. One writer per company memory, one store.** A cross-process lock (`fcntl`, or `msvcrt` on Windows) guards the whole critical section of a write: the "already waiting" check, the arbitration, the commit to H-MEM, the alerts it triggers, a progress report, a CEO ruling, an author's answer, and the seed of an empty memory. The console and every MCP server process share it. The lock serialises writers; `MemoryUnavailable` (section 4, the `SAMPLE_MODE` paragraph) keeps them on one store. `onboard` and `whats_new(advance=True)` hold the lock too (they read-modify-write the overlay and cursor files).
+**ADR-9. One writer per company memory, one store.** A cross-process lock (`fcntl`, or `msvcrt` on Windows) guards the whole critical section of a write: the "already waiting" check, the arbitration, the commit to H-MEM, the alerts it triggers, a progress report, a CEO ruling, an author's answer, and the seed of an empty memory. The console and every MCP server process share it. The lock serialises writers; `MemoryUnavailable` (section 4, the `SAMPLE_MODE` paragraph) keeps them on one store. `onboard`, `whats_new(advance=True)`, `alerts()` and `seed_if_empty()` hold the lock too (they read-modify-write the overlay, cursor and alert files). The team's `services/hmem` (`ATLAS_HMEM_URL`, port 8765) is the store of the Atlas corpus runs, never the company memory of Steward (`HMEM_URL`, port 8787): two wrappers of the same reference engine, different APIs, to be unified after the event.
 
 **ADR-10. Two demo data sets, one demo.** Brikk is the demo (spec v2); the Atlas corpus (project Atlas, Orion) stays as the team's test fixtures and a second data set, not as a second product.
 
@@ -216,7 +224,9 @@ Raw text never enters the memory: only the extracted items do, and each person c
 
 Round 1 (`architect-reviewer`, 27/10 18:55): FAIL, one blocker (lanes and receipt not implemented as described) and five majors. Fixed in commit `57c2a56`: receipt-based served model and exact Nemotron ids (`app/llm.py`, `app/config.py`, `.env.example`, `configure_nightshift.py`); the `clarifications` tool; one critical section for dedup, run, alerts, progress and seed; `MemoryUnavailable` instead of a silent second store; the bridge imports `atlas.*` (commit `d81f26f`); the finance source may be down without breaking contexts. Minors answered in this document: timeouts (90 s, two client retries), the `cached` flag wording, the files the document names now exist (`docs/DECISIONS.md` D24-D32, `docs/PLAN.md`, `docs/SPONSORS.md`, `docs/PRIOR_WORK.md`, `.github/workflows/tests.yml`). Section 4 states the console-up dependency of source 2 and that the Brikk registration has not run live.
 
-Round 2 (`architect-reviewer`, 27/10 19:50): FAIL, one blocker (console reachable on all interfaces with no identity check, `/learn` outside the arbitration) and five majors. Fixed in commit `b50419d`: loopback binding and a console operator with CEO/author checks, `/learn` refused for the project memory, the guard in code before the extractor (`guard_source`, `source_flags`), `receipt_id` in the Decider and Critic trace lines, `onboard`/`whats_new` under the lock, author-only `answer_clarification`, typed `POST /run`; the minors are corrected in this document (sections 4, 5, 7, ADR-4, ADR-9) and in `docker-compose.yml`. Not re-run by the agent after the fixes; `tests/test_review_round2.py` covers each point.
+Round 2 (`architect-reviewer`, 27/10 19:50): FAIL, one blocker (console reachable on all interfaces with no identity check, `/learn` outside the arbitration) and five majors. Fixed in commit `b50419d`: loopback binding and a console operator with CEO/author checks, `/learn` refused for the project memory, the guard in code before the extractor (`guard_source`, `source_flags`), `receipt_id` in the Decider and Critic trace lines, `onboard`/`whats_new` under the lock, author-only `answer_clarification`, typed `POST /run`; the minors are corrected in this document (sections 4, 5, 7, ADR-4, ADR-9) and in `docker-compose.yml`. `tests/test_review_round2.py` covers the guard, the author check, the console operator, the typed boundary and the receipt id; the lock on `onboard`/`whats_new` and the loopback default are covered by code reading, not by a test.
+
+Round 3 (`architect-reviewer`, opus, 27/10 20:05): FAIL, one blocker (compose published the console and H-MEM on every interface) and three majors (unmasked secrets in the model evidence, `alerts()` outside the lock, a non-CEO console operator could propose as anyone). Fixed in the commit "Architecture review round 3" (see git log): loopback port mappings, `code_decides` + masked evidence, `alerts()` and `seed_if_empty()` under the lock, operator check with `entered_by`; minors: `by` is required on `answer_clarification`, the Extractor writes its own trace line (`logs/trace-observe-*.jsonl`), the diagram and the layout updated. Tests: `test_hard_cases_never_reach_a_model`, `test_console_simulate_cannot_forge_an_author_unless_ceo`, `test_alerts_are_read_under_the_lock`, `test_server_binds_loopback_by_default`.
 
 The same evening the `claims-auditor` (FAIL: two majors, fixed in `fe53c66`), `qa-runner` (PASS on a fresh clone; one major on the bare `pytest` command, fixed by `tests/conftest.py`), `brand-consistency`, `ui-reviewer` and `ux-reviewer` (FAIL each; fixed in `65e49be` and `fcb00f5`: policy scope, rulings restamped, trace viewer, text mode on every tool, console kit compliance) ran once; their findings and fixes are listed in `tests.json` (R12, R22, R24).
 

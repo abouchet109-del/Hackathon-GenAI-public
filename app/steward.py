@@ -13,10 +13,12 @@ import importlib.util
 import json
 import os
 import time
+import uuid
 from collections import defaultdict
 
 from .adapters.memory import load_seed
 from .coordination import bridge
+from .trace import Tracer
 from .config import SETTINGS
 from .pipeline import Harness
 
@@ -92,6 +94,15 @@ class Steward:
         with _exclusive(self._lock_path):
             return self._reset(seed, policies)
 
+    def seed_if_empty(self, policies: bool = False) -> bool:
+        """Seed the company memory when it is empty: the emptiness check and the seed are one critical section,
+        so two servers starting at once cannot both seed."""
+        with _exclusive(self._lock_path):
+            if self.memory.list(None):
+                return False
+            self._reset(True, policies)
+            return True
+
     def _reset(self, seed: bool, policies: bool) -> int:
         self.memory.reset()
         journal = self.logic._journal_path(self.memory)
@@ -114,13 +125,16 @@ class Steward:
 
     # ----- write path: every proposal is arbitrated -----
     def remember(self, content: str, author: str, ai_tool: str, kind: str = "fact", topic: str | None = None,
-                 run_id: str | None = None, source_flags: list[str] | None = None) -> dict:
+                 run_id: str | None = None, source_flags: list[str] | None = None,
+                 entered_by: str | None = None) -> dict:
         if not topic:  # the watchlist in Zetaris decides the topic, not the client
             found = self.ctx.topics_in(content, self.watchlist())
             topic = found[0] if found else ""
         item = {"content": content, "author": author, "ai_tool": ai_tool, "kind": kind, "topic": topic or ""}
         if source_flags:  # the excerpt this item comes from tried to instruct AI tools or carried a secret
             item["source_flags"] = list(source_flags)
+        if entered_by:  # the console operator who played this author (the journal keeps the item as entered)
+            item["entered_by"] = entered_by
         with _exclusive(self._lock_path):  # the dedup check, the run and the alerts are one critical section
             waiting = next((e for e in self.logic.journal(self.memory)
                             if e["status"] in {"pending", "awaiting_author"} and e.get("topic") == (topic or "")
@@ -251,6 +265,14 @@ class Steward:
         """An excerpt (or a document, or meeting notes) from someone's AI. Only extracted items are arbitrated and
         possibly stored; the raw text is never kept."""
         items = self.ctx.extract(text, self.watchlist(), self.h.llm)  # code screens the raw text before any model
+        flags = self.ctx.guard_source(text)
+        tr = Tracer(f"observe-{uuid.uuid4().hex[:6]}", self.settings.log_dir, quiet=True)  # the Extractor's own line
+        first = items[0] if items else {}
+        tr.event("Extractor", "extracted_items", input_summary=f"source={source} chars={len(text or '')} flags={flags}",
+                 output_summary=f"{len(items)} item(s): " + "; ".join(i["content"][:60] for i in items[:4]),
+                 target="Steward", model=first.get("extracted_by") if first.get("via") else None,
+                 via=first.get("via") or ("guard" if flags else "deterministic-splitter"),
+                 receipt_id=first.get("receipt_id"), cached=first.get("via") == "replay")
         outcomes = []
         for i, it in enumerate(items[:12]):
             res = self.remember(it["content"], author, ai_tool, it.get("kind", "fact"), it.get("topic") or None,
@@ -261,7 +283,8 @@ class Steward:
                              "current_record": res.get("current_record"),
                              "extracted_by": it.get("extracted_by"), "trace": res.get("trace")})
         return {"source": source, "title": title, "items_found": len(items), "outcomes": outcomes,
-                "source_flags": self.ctx.guard_source(text), "stack": self.describe(),
+                "source_flags": flags, "extractor_trace": str(tr.path.relative_to(self.settings.log_dir.parent)),
+                "stack": self.describe(),
                 "stored": sum(o["decision"] in {"store", "supersede", "redact"} for o in outcomes),
                 "raw_text_stored": False}
 
@@ -289,9 +312,9 @@ class Steward:
             out.append(row)
         return out
 
-    def answer_clarification(self, journal_id: str, answer: str, note: str = "", by: str | None = None,
+    def answer_clarification(self, journal_id: str, answer: str, note: str = "", *, by: str,
                              ceo: bool = False) -> dict:
-        """The author's answer. `by` is who answers: anyone but the author (or the CEO) is refused."""
+        """The author's answer. `by` is who answers, always named: anyone but the author (or the CEO) is refused."""
         with _exclusive(self._lock_path):
             entry = self.logic.answer_clarification(journal_id, answer, self.memory, note, by=by, ceo=ceo)
         return {k: entry.get(k) for k in ("journal_id", "status", "topic", "content", "reason", "answered_by",
@@ -356,8 +379,9 @@ class Steward:
         return self.progress(name)
 
     def alerts(self, name: str) -> list[dict]:
-        """Alerts waiting for this person, returned once."""
-        return [a.model_dump(mode="json") for a in self.inbox.pending(name)]
+        """Alerts waiting for this person, returned once (the inbox marks them delivered: a write, under the lock)."""
+        with _exclusive(self._lock_path):
+            return [a.model_dump(mode="json") for a in self.inbox.pending(name)]
 
     def _alert_on(self, memory_id: str | None) -> list[str]:
         """After a decision is stored or replaces another, alert everyone whose work it touches."""

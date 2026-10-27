@@ -78,10 +78,10 @@ def test_clarify_then_author_confirms_or_withdraws():
     assert first["decision"] == "clarify"
     jid = first["applied"]["journal_id"]
     assert [c["journal_id"] for c in st.clarifications("Paul Lefèvre")] == [jid]
-    st.answer_clarification(jid, "change", "We agreed it with two pilots")
+    st.answer_clarification(jid, "change", "We agreed it with two pilots", by="Paul Lefèvre")
     assert [e["journal_id"] for e in st.escalations()] == [jid]           # a confirmed change goes up
     second = propose(st, "c31")
-    st.answer_clarification(second["applied"]["journal_id"], "error")
+    st.answer_clarification(second["applied"]["journal_id"], "error", by="Julie Caron")
     assert second["applied"]["journal_id"] not in [e["journal_id"] for e in st.escalations()]
 
 

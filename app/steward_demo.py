@@ -51,7 +51,7 @@ def run_demo(space: str = "steward-demo") -> dict:
                   "raw_text_stored": obs["raw_text_stored"]})
     if clar:
         _say("   Julie's AI asks her: error or real change? She answers: real change (agreed with two pilots)")
-        st.answer_clarification(clar["journal_id"], "change", "Agreed with two pilots as a launch offer")
+        st.answer_clarification(clar["journal_id"], "change", "Agreed with two pilots as a launch offer", by="Julie Caron")
         _say("   -> sent to the CEO's queue")
     _say("   Meanwhile Paul (Head of Sales, Mistral Le Chat) writes a new price in his own notes")
     steps.append(_verdict("second contradiction", st.remember(

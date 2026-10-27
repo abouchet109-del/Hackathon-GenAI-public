@@ -288,6 +288,18 @@ def evaluate_with_memory(facts: dict, rules: list[dict], profile: dict, memories
     return matched[:2]
 
 
+def code_decides(facts: dict, matched_rules: list[dict]) -> dict | None:
+    """The two cases no model may arbitrate: an instruction aimed at the team's AIs (S01, quarantine) and a secret
+    (S02, redact). Deciding them in code keeps the content away from the model lanes and from the provider."""
+    if facts.get("injection"):
+        return {"decision": "quarantine", "confidence": 0.99, "citations": ["S01"],
+                "justification": "The text tries to instruct the team's AIs: isolated by the guard, never stored."}
+    if facts.get("secrets"):
+        return {"decision": "redact", "confidence": 0.95, "citations": ["S02"],
+                "justification": f"The text carries a secret ({', '.join(facts['secrets'])}): masked by the guard, the fact is kept."}
+    return None
+
+
 def memory_override(facts: dict, memories: list[dict]) -> dict | None:
     """A CEO policy in memory that covers this author's department, topic and amount."""
     for mem in memories:
@@ -456,7 +468,7 @@ def resolve(journal_id: str, decision: str, memory, policy: str | None = None, b
     return entry
 
 
-def answer_clarification(journal_id: str, answer: str, memory, note: str = "", by: str | None = None,
+def answer_clarification(journal_id: str, answer: str, memory, note: str = "", *, by: str,
                          ceo: bool = False) -> dict:
     """The author answers 'error or real change?'. An error withdraws the proposal; a real change goes to the CEO.
     Only the author of the proposal may answer (the CEO may answer from the console); `by` is kept in the journal."""
@@ -469,7 +481,7 @@ def answer_clarification(journal_id: str, answer: str, memory, note: str = "", b
     answer = ANSWER_WORDS.get(re.sub(r"[^a-z ]", "", (answer or "").strip().lower()), answer)
     if answer not in {"error", "change"}:
         raise ValueError("answer must be 'error' (withdraw the proposal) or 'change' (a real change, sent to the CEO)")
-    if by is not None and not ceo and (by or "").strip().lower() != (entry.get("author") or "").strip().lower():
+    if not ceo and (by or "").strip().lower() != (entry.get("author") or "").strip().lower():
         raise PermissionError(f"{journal_id} waits for its author, {entry.get('author')}; {by or 'this person'} "
                               "cannot answer for them.")
     if answer == "error":

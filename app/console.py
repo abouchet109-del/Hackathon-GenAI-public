@@ -27,8 +27,7 @@ def steward() -> Steward:
     global _steward
     if _steward is None:
         _steward = Steward(space=os.getenv("STEWARD_SPACE", "project"))
-        if not _steward.memory.list(None):
-            _steward.reset(seed=True, policies=os.getenv("STEWARD_SEED_POLICIES", "false").lower() == "true")
+        _steward.seed_if_empty(policies=os.getenv("STEWARD_SEED_POLICIES", "false").lower() == "true")
     return _steward
 
 
@@ -134,11 +133,18 @@ def onboard(payload: dict = Body(...)) -> dict:
 
 @router.post("/remember")
 def remember(payload: dict = Body(...)) -> dict:
+    """Simulate an AI: the operator plays a member's AI. Only the CEO may play someone else; the journal keeps
+    who entered the proposal (`entered_by`) next to the author it was entered for."""
     content = (payload.get("content") or "").strip()
     if not content:
         raise HTTPException(status_code=400, detail="content is required")
-    return _guard(steward().remember, content, payload.get("author") or "unknown member",
-                  payload.get("ai_tool") or "unknown AI", payload.get("kind") or "fact", payload.get("topic") or None)
+    who = operator()
+    author = (payload.get("author") or who.get("name") or "unknown member").strip()
+    if author.lower() != (who.get("name") or "").lower() and who.get("level") != "ceo":
+        raise HTTPException(status_code=403, detail=f"{who.get('name') or 'the console operator'} is not the CEO: "
+                            f"the console can only propose as {who.get('name')}, not as {author}.")
+    return _guard(steward().remember, content, author, payload.get("ai_tool") or "unknown AI",
+                  payload.get("kind") or "fact", payload.get("topic") or None, entered_by=who.get("name"))
 
 
 _RUN_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")

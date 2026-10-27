@@ -71,8 +71,7 @@ def steward() -> Steward:
     global _steward
     if _steward is None:
         _steward = Steward(space=os.getenv("STEWARD_SPACE", "project"))
-        if not _steward.memory.list(None):
-            _steward.reset(seed=True, policies=os.getenv("STEWARD_SEED_POLICIES", "false").lower() == "true")
+        _steward.seed_if_empty(policies=os.getenv("STEWARD_SEED_POLICIES", "false").lower() == "true")
     return _steward
 
 

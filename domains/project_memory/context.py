@@ -129,6 +129,8 @@ def extract(text: str, wl: list[dict], llm=None) -> list[dict]:
             items = [i for i in parsed["items"] if isinstance(i, dict) and i.get("content")]
             for i in items:
                 i["extracted_by"] = res.model
+                i["receipt_id"] = getattr(res, "receipt_id", None)
+                i["via"] = getattr(res, "source", None)
             return items
     items = []
     for sentence in (s.strip() for s in SENTENCE.split(text or "")):
