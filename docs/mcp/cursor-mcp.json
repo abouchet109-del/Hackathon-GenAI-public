@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "steward": {
-      "command": "/Users/ryandalier-dulys/open-agent-hack/.venv/bin/python",
-      "args": ["/Users/ryandalier-dulys/open-agent-hack/run.py", "mcp"],
+      "command": "/ABSOLUTE/PATH/TO/Hackathon-GenAI-public/.venv/bin/python",
+      "args": ["/ABSOLUTE/PATH/TO/Hackathon-GenAI-public/run.py", "mcp"],
       "env": {
         "OSEF_MEMBER": "Sami Haddad",
         "OSEF_AI_TOOL": "Cursor",
