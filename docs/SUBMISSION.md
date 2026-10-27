@@ -29,7 +29,7 @@ Everything written by the team dates from the event (from 22 October 2026). Thir
 ## What a judge can run in two minutes
 
 ```bash
-git clone https://github.com/abouchet109-del/Hackathon-GenAI-public && cd Hackathon-GenAI-public
+git clone -b unify https://github.com/abouchet109-del/Hackathon-GenAI-public && cd Hackathon-GenAI-public   # -b unify: the unified branch, also fine once it is merged into main
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 SAMPLE_MODE=true .venv/bin/python run.py steward-demo        # the 8-step scenario, one trace per arbitration in logs/
 .venv/bin/python -m pytest -q                                 # 197 tests, 9 skipped without the team's engine services

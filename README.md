@@ -16,6 +16,8 @@ The demo company is **Brikk**: a fictional 12-person startup, plus an intern, se
 
 ## Start in three commands (no account, no key)
 
+From a clone of the unified branch (`git clone -b unify https://github.com/abouchet109-del/Hackathon-GenAI-public`; `main` once the team has merged it):
+
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt     # Windows: .venv\Scripts\pip
 SAMPLE_MODE=true .venv/bin/python run.py steward-demo                   # the 8-step scenario, one trace per arbitration in logs/
